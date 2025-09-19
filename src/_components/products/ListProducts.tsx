@@ -23,6 +23,7 @@ export default function ListProducts({ products, categories, subcategories }: Li
     const [typeFilter, setTypeFilter] = useState<string[]>(["all"]);
     const isMobile = useBreakpointValue({ base: true, md: false });
     const router = useRouter();
+    console.log("PRoducts", products)
 
     const filteredProducts = useMemo(() => {
         return products.filter(p => {

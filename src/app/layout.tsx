@@ -1,7 +1,17 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import { Provider } from "@/components/ui/provider";
 import { ProviderSesion } from "./providers";
+import { Poppins } from "next/font/google";
+import "./globals.css";
+import Navbar from "@/_components/home/navbar/Navbar";
+import FooterSection from "@/_components/home/footer/FooterSection"
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,10 +25,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body className={`${poppins.className}`}>
         <Provider>
           <ProviderSesion>
+            <Navbar />
             {children}
+            <FooterSection />
           </ProviderSesion>
         </Provider>
       </body>
