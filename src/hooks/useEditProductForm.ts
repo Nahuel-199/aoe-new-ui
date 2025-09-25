@@ -3,8 +3,10 @@ import { imageUpload } from "@/utils/uploadCloudinary";
 import { updateProduct } from "@/lib/actions/product.actions";
 import { Product } from "@/types/product.types";
 import { toaster } from "@/components/ui/toaster";
+import { useRouter } from "next/navigation";
 
 export const useEditProductForm = (product: Product) => {
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [form, setForm] = useState({
         _id: product._id,
@@ -105,6 +107,7 @@ export const useEditProductForm = (product: Product) => {
                 title: "Producto actualizado",
                 duration: 3000,
             });
+            router.push("/admin/products");
         } catch (err) {
             toaster.error({
                 title: "Error al actualizar el producto",

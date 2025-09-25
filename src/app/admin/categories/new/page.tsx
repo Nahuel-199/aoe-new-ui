@@ -1,5 +1,5 @@
 import React from 'react'
-import NewCategory from '@/_components/categories/NewCategory'
+import NewCategory from '@/_components/admin/categories/NewCategory'
 
 export default function page() {
     return (

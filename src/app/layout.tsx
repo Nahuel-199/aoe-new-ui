@@ -4,7 +4,8 @@ import { ProviderSesion } from "./providers";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/_components/home/navbar/Navbar";
-import FooterSection from "@/_components/home/footer/FooterSection"
+import FooterSection from "@/_components/home/footer/FooterSection";
+import LayoutWrapper from "./layout-wrapper";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -28,9 +29,7 @@ export default function RootLayout({
       <body className={`${poppins.className}`}>
         <Provider>
           <ProviderSesion>
-            <Navbar />
-            {children}
-            <FooterSection />
+            <LayoutWrapper>{children}</LayoutWrapper>
           </ProviderSesion>
         </Provider>
       </body>

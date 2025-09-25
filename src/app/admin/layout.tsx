@@ -1,6 +1,6 @@
 'use client';
 
-import Sidebar from "@/_components/sidebar/Sidebar";
+import Sidebar from "@/_components/admin/sidebar/Sidebar";
 import { HStack, Box } from "@chakra-ui/react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

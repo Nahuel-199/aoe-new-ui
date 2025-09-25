@@ -1,4 +1,4 @@
-import ProductById from "@/_components/products/id/ProductById";
+import ProductById from "@/_components/admin/products/id/ProductById";
 import { getCategories } from "@/lib/actions/category.actions";
 import { getProductById } from "@/lib/actions/product.actions";
 import { getSubcategories } from "@/lib/actions/subcategory.actions";

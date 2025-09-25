@@ -186,7 +186,7 @@ const Navbar =() => {
                             </Link>
                           </Menu.Content>
                           <Menu.Content>
-                            <Link href={"/admin/products/create"}>
+                            <Link href={"/admin/products/new"}>
                               <Menu.Item value="create-product" cursor={"pointer"}>Crear</Menu.Item>
                             </Link>
                           </Menu.Content>

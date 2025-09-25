@@ -1,4 +1,4 @@
-import NewProduct from "@/_components/products/NewProduct";
+import NewProduct from "@/_components/admin/products/NewProduct";
 import { getCategories } from "@/lib/actions/category.actions";
 import { getSubcategories } from "@/lib/actions/subcategory.actions";
 

@@ -2,8 +2,10 @@ import { useState } from "react";
 import { imageUpload } from "@/utils/uploadCloudinary";
 import { createProduct } from "@/lib/actions/product.actions";
 import { toaster } from "@/components/ui/toaster";
+import { useRouter } from "next/navigation";
 
 export const useNewProductForm = () => {
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [form, setForm] = useState({
         name: "",
@@ -105,12 +107,13 @@ export const useNewProductForm = () => {
                 variants: [],
             });
             toaster.success({
-                title: "Producto actualizado",
+                title: "Producto creado exitósamente",
                 duration: 3000,
             });
+            router.push("/admin/products");
         } catch (err) {
             toaster.error({
-                title: "Error al actualizar el producto",
+                title: "Error al crear el producto",
                 duration: 3000,
             });
         } finally {
