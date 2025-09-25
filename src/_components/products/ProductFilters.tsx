@@ -10,7 +10,9 @@ import {
   Portal,
   Select,
   createListCollection,
+  InputGroup,
 } from "@chakra-ui/react";
+import { LuSearch } from "react-icons/lu";
 
 interface ProductFiltersProps {
   categories: Category[];
@@ -35,7 +37,6 @@ export default function ProductFilters({
   onSearchChange,
   onClearFilters,
 }: ProductFiltersProps) {
-  // collections para Chakra Select
   const categoriesCollection = createListCollection({
     items: categories.map((c) => ({
       label: c.name,
@@ -53,13 +54,15 @@ export default function ProductFilters({
   return (
     <Box mb={6}>
       <Stack direction={{ base: "column", md: "row" }} gap={4}>
-        <Input
-          placeholder="Buscar producto..."
-          value={search}
-          onChange={(e) => onSearchChange(e.target.value)}
-        />
+        <InputGroup flex="1" startElement={<LuSearch />}>
+          <Input
+            placeholder="Buscar producto..."
+            value={search}
+            onChange={(e) => onSearchChange(e.target.value)}
+            rounded={"full"}
+          />
+        </InputGroup>
 
-        {/* Categorías */}
         <Select.Root
           collection={categoriesCollection}
           value={selectedCategory ? [selectedCategory] : []}
@@ -89,7 +92,6 @@ export default function ProductFilters({
           </Portal>
         </Select.Root>
 
-        {/* Subcategorías */}
         <Select.Root
           collection={subcategoriesCollection}
           value={selectedSubcategory ? [selectedSubcategory] : []}

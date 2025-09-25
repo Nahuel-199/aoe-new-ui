@@ -57,7 +57,7 @@ export default function ProductsSection({
         onClearFilters={handleClearFilters}
       />
       <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} gap={6} mt={4}>
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <ProductCard key={product._id} product={product} />
         ))}
       </SimpleGrid>

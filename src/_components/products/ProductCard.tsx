@@ -27,6 +27,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           w="100%"
           h="250px"
           objectFit="cover"
+          cursor={"pointer"}
         />
       ) : (
         <Box w="100%" h="250px" bg="gray.200" />
@@ -39,10 +40,13 @@ export default function ProductCard({ product }: ProductCardProps) {
         <Text fontSize="sm" color="gray.500">
           {product.category?.name} - {product.type}
         </Text>
+         <Text fontSize="sm" color="gray.500">
+          {product.subcategories?.map((e => e.name))}
+        </Text>
         <Box display="flex" gap={2} alignItems="center">
           {product.is_offer ? (
             <>
-              <Badge as="s" colorScheme="red">
+              <Badge as="s" colorPalette="red">
                 ${product.price}
               </Badge>
               <Text fontWeight="bold">${product.price_offer}</Text>
