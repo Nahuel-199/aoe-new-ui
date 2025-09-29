@@ -1,8 +1,10 @@
 "use client";
 
-import { Box, Image, Text, Badge, Button, VStack } from "@chakra-ui/react";
+import { Box, Image, Text, Badge, Button, VStack, HStack } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { Product } from "@/types/product.types";
+import { Tooltip } from "@/components/ui/tooltip";
+import { colorMap } from "./utils/ColorMaps";
 
 interface ProductCardProps {
   product: Product;
@@ -10,6 +12,9 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const router = useRouter();
+  const uniqueTypes = Array.from(new Set(product.variants.map((v) => v.type)));
+  const uniqueColors = Array.from(new Set(product.variants.map((v) => v.color)));
+  console.log("UNIQUE COLOR", uniqueColors)
 
   return (
     <Box
@@ -38,11 +43,24 @@ export default function ProductCard({ product }: ProductCardProps) {
           {product.name}
         </Text>
         <Text fontSize="sm" color="gray.500" textAlign={"center"}>
-          {product.category?.name} - {product.subcategories?.map((e => e.name))}
+          Categorias: {product.category?.name} - {product.subcategories?.map((e => e.name))}
         </Text>
         <Text fontSize="sm" color="gray.500" textAlign={"center"}>
-          {product.variants.map(( e => e.type)).join(" - ")}
+          Tipo: {uniqueTypes.join(" - ")}
         </Text>
+        <HStack gap={2}>
+          {uniqueColors.map((color, i) => (
+            <Tooltip key={i} content={color}>
+              <Box
+                w="20px"
+                h="20px"
+                borderRadius="full"
+                border="1px solid #ccc"
+                bg={colorMap[color] || "gray.300"}
+              />
+            </Tooltip>
+          ))}
+        </HStack>
         <Box display="flex" gap={2} alignItems="center">
           {product.variants.map(( e => e.is_offer)) ? (
             <>

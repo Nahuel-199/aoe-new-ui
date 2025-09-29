@@ -199,7 +199,6 @@ export default function ListProducts({
                       aria-label="Editar producto"
                       size="sm"
                       colorPalette="blue"
-                      loading={isPending}
                       variant={"outline"}
                       onClick={() => handleEdit(product._id)}
                     >
@@ -210,6 +209,7 @@ export default function ListProducts({
                       size="sm"
                       colorPalette="red"
                       variant={"outline"}
+                      loading={isPending}
                       onClick={() => handleDelete(product._id)}
                     >
                       <FiTrash />

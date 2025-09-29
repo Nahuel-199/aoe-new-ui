@@ -21,6 +21,7 @@ interface VariantInput {
   color: string;
   images: ImageInput[];
   sizes: { size: string; stock: number }[];
+  size_chart?: string;
 }
 
 export async function createProduct(data: {

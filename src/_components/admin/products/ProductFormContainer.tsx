@@ -79,7 +79,7 @@ export default function ProductFormContainer({
                     <Box
                         w="full"
                         maxW={{ base: "90%", md: "100%"}}
-                        maxH={{ base: "300px", md: "430px" }}
+                        maxH={{ base: "300px", md: "530px" }}
                         overflowY="auto"
                         borderWidth="1px"
                         borderRadius="md"

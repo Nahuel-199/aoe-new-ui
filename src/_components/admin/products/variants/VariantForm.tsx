@@ -17,6 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { IoClose } from "react-icons/io5";
 import { FiPlus } from "react-icons/fi";
+import { sizeChartUrls } from "@/utils/sizeChartUrls";
 
 export const VariantForm = ({
   variant,
@@ -118,7 +119,12 @@ export const VariantForm = ({
         <Select.Root
           collection={typesCollection}
           value={variant.type ? [variant.type] : []}
-          onValueChange={(e) => updateVariant(index, "type", e.value[0])}
+          onValueChange={(e) => {
+            updateVariant(index, "type", e.value[0])
+            const sizeChart = sizeChartUrls[e.value[0]] || null;
+            console.log("SIZE", sizeChart)
+            updateVariant(index, "size_chart", sizeChart);
+          }}
           mb={4}
           w="full"
         >
@@ -217,53 +223,53 @@ export const VariantForm = ({
       </HStack>
 
       {/* <Box maxH={{ base: "100px", lg: "200px" }} overflowY="auto" pr={2}> */}
-        {variant.sizes.map((s: any, si: number) => (
-          <HStack key={si} gap={4} mb={2} align="end">
-            <Box w={{ base: "160px", lg: "200px" }}>
-              <Field.Root required>
-                <Field.Label>Talle</Field.Label>
-                <Input
-                  placeholder="Talle"
-                  value={s.size}
-                  w={"100%"}
-                  onChange={(e) => {
-                    updateVariant(index, "sizes", [
-                      ...variant.sizes.map((sz: any, i: number) =>
-                        i === si ? { ...sz, size: e.target.value } : sz
-                      ),
-                    ]);
-                  }}
-                />
-              </Field.Root>
-            </Box>
-            <Box w="100px">
-              <Field.Root required>
-                <Field.Label>Stock</Field.Label>
-                <NumberInput.Root
-                  min={0}
-                  w="100%"
-                  value={s.stock.toString()}
-                  onValueChange={(e) => {
-                    updateVariant(index, "sizes", [
-                      ...variant.sizes.map((sz: any, i: number) =>
-                        i === si ? { ...sz, stock: Number(e.value) } : sz
-                      ),
-                    ]);
-                  }}
-                >
-                  <NumberInput.Control />
-                  <NumberInput.Input placeholder="Stock" />
-                </NumberInput.Root>
-              </Field.Root>
-            </Box>
+      {variant.sizes.map((s: any, si: number) => (
+        <HStack key={si} gap={4} mb={2} align="end">
+          <Box w={{ base: "160px", lg: "200px" }}>
+            <Field.Root required>
+              <Field.Label>Talle</Field.Label>
+              <Input
+                placeholder="Talle"
+                value={s.size}
+                w={"100%"}
+                onChange={(e) => {
+                  updateVariant(index, "sizes", [
+                    ...variant.sizes.map((sz: any, i: number) =>
+                      i === si ? { ...sz, size: e.target.value } : sz
+                    ),
+                  ]);
+                }}
+              />
+            </Field.Root>
+          </Box>
+          <Box w="100px">
+            <Field.Root required>
+              <Field.Label>Stock</Field.Label>
+              <NumberInput.Root
+                min={0}
+                w="100%"
+                value={s.stock.toString()}
+                onValueChange={(e) => {
+                  updateVariant(index, "sizes", [
+                    ...variant.sizes.map((sz: any, i: number) =>
+                      i === si ? { ...sz, stock: Number(e.value) } : sz
+                    ),
+                  ]);
+                }}
+              >
+                <NumberInput.Control />
+                <NumberInput.Input placeholder="Stock" />
+              </NumberInput.Root>
+            </Field.Root>
+          </Box>
 
-            {si === variant.sizes.length - 1 && (
-              <Button size="sm" onClick={() => addSizeToVariant(index)}>
-                <FiPlus />
-              </Button>
-            )}
-          </HStack>
-        ))}
+          {si === variant.sizes.length - 1 && (
+            <Button size="sm" onClick={() => addSizeToVariant(index)}>
+              <FiPlus />
+            </Button>
+          )}
+        </HStack>
+      ))}
       {/* </Box> */}
     </Box>
   );

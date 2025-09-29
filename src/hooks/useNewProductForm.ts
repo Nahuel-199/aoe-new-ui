@@ -38,6 +38,7 @@ export const useNewProductForm = () => {
           color: "",
           images: [],
           sizes: [{ size: "S", stock: 0 }],
+          size_chart: "",
         },
       ],
     });

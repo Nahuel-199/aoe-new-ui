@@ -1,0 +1,16 @@
+export const colorMap: Record<string, string> = {
+  Blanco: "#FFFFFF",
+  Negro: "#000000",
+  Rojo: "#FF0000",
+  Azul: "#0000FF",
+  Verde: "#008000",
+  Vison: "#D2B48C",
+  Bordo: "#800020",
+  Gris: "#808080",
+  Natural: "#F5F5DC",
+  "Verde oliva": "#808000",
+  "Azul francia": "#0033A0",
+  Beige: "#F5F5DC",
+  "Gris topo": "#505050",
+  Rosa: "#FFC0CB",
+};

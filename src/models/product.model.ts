@@ -16,6 +16,7 @@ export interface Variant {
     size: string;
     stock: number;
   }[];
+  size_chart?: string;
 }
 
 export interface Product extends Document {
@@ -42,6 +43,7 @@ const VariantSchema = new Schema<Variant>(
     price_offer: { type: Number, default: null },
     color: { type: String, required: true },
     images: [ImageSchema],
+    size_chart: { type: String },
     sizes: [
       {
         size: { type: String, required: true },

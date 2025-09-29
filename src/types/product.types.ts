@@ -16,6 +16,7 @@ export interface Variant {
   color: string;
   images: { id: string; url: string }[];
   sizes: { size: string; stock: number }[];
+  size_chart?: string;
 }
 
 export interface Product {
