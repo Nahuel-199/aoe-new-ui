@@ -31,37 +31,19 @@ export default function DialogEditCategory({
 }: DialogEditCategoryProps) {
     const [name, setName] = useState("");
     const [loading, setLoading] = useState(false);
-    const [types, setTypes] = useState<string[]>([]);
     const router = useRouter();
 
     useEffect(() => {
         if (category) {
             setName(category.name);
-            setTypes(category.types || []);
         }
     }, [category]);
-
-    const handleAddType = () => {
-        setTypes([...types, ""]);
-    };
-
-    const handleChangeType = (index: number, value: string) => {
-        const updated = [...types];
-        updated[index] = value;
-        setTypes(updated);
-    };
-
-    const handleRemoveType = (index: number) => {
-        const updated = [...types];
-        updated.splice(index, 1);
-        setTypes(updated);
-    };
 
     const handleSave = async () => {
         if (!category) return;
         try {
             setLoading(true);
-            await updateCategory(category._id, { name, types });
+            await updateCategory(category._id, { name});
             toaster.success({
                 title: "Categoría actualizada",
                 description: `Se actualizó "${name}" correctamente.`,
@@ -100,40 +82,7 @@ export default function DialogEditCategory({
                                     mt={2}
                                 />
                             </Field.Root>
-                            <VStack align="stretch" gap={2}>
-                                <Field.Root>
-                                    <Field.Label>Tipos</Field.Label>
-                                    {types.map((t, i) => (
-                                        <HStack key={i} w={"full"}>
-                                            <Input
-                                                placeholder={`Tipo ${i + 1}`}
-                                                value={t}
-                                                onChange={(e) => handleChangeType(i, e.target.value)}
-                                                mt={2}
-                                            />
-                                            <IconButton
-                                                aria-label="Eliminar tipo"
-                                                size="sm"
-                                                colorPalette="red"
-                                                variant="outline"
-                                                onClick={() => handleRemoveType(i)}
-                                            >
-                                                <FiTrash />
-                                            </IconButton>
-                                        </HStack>
-                                    ))}
-                                </Field.Root>
-
-                                <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={handleAddType}
-                                >
-                                    <FiPlus />   Agregar tipo
-                                </Button>
-                            </VStack>
                         </Dialog.Body>
-
                         <Dialog.Footer>
                             <Dialog.ActionTrigger asChild>
                                 <Button variant="outline">Cancelar</Button>

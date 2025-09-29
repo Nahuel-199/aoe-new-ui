@@ -33,31 +33,33 @@ export default function ProductCard({ product }: ProductCardProps) {
         <Box w="100%" h="250px" bg="gray.200" />
       )}
 
-      <VStack p={4} gap={2} align="start">
+      <VStack p={4} gap={2} align="start" textAlign={"center"}>
         <Text fontWeight="bold" fontSize="lg">
           {product.name}
         </Text>
-        <Text fontSize="sm" color="gray.500">
-          {product.category?.name} - {product.type}
+        <Text fontSize="sm" color="gray.500" textAlign={"center"}>
+          {product.category?.name} - {product.subcategories?.map((e => e.name))}
         </Text>
-         <Text fontSize="sm" color="gray.500">
-          {product.subcategories?.map((e => e.name))}
+        <Text fontSize="sm" color="gray.500" textAlign={"center"}>
+          {product.variants.map(( e => e.type)).join(" - ")}
         </Text>
         <Box display="flex" gap={2} alignItems="center">
-          {product.is_offer ? (
+          {product.variants.map(( e => e.is_offer)) ? (
             <>
               <Badge as="s" colorPalette="red">
-                ${product.price}
+                ${product.variants.map((v) => v.price)[0]}
               </Badge>
-              <Text fontWeight="bold">${product.price_offer}</Text>
+              <Text fontWeight="bold">${product.variants.map((v) => v.price_offer)[0]}</Text>
             </>
           ) : (
-            <Text fontWeight="bold">${product.price}</Text>
+            <Text fontWeight="bold">${product.variants.map((v) => v.price)[0]}</Text>
           )}
         </Box>
         <Button
           colorScheme="blue"
           w="full"
+          mb={2}
+          mt={2}
           onClick={() => router.push(`/products/${product._id}`)}
         >
           Ver más

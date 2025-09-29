@@ -20,7 +20,6 @@ import ConfirmDeleteCategory from "./ConfirmDeleteCategory";
 interface Category {
     _id: string;
     name: string;
-    types: string[];
 }
 
 export default function ListCategories({ categories }: { categories: Category[] }) {
@@ -71,7 +70,6 @@ export default function ListCategories({ categories }: { categories: Category[] 
                         <Table.Header>
                             <Table.Row>
                                 <Table.ColumnHeader textAlign={"center"}>Nombre</Table.ColumnHeader>
-                                <Table.ColumnHeader textAlign={"center"}>Tipos</Table.ColumnHeader>
                                 <Table.ColumnHeader textAlign={"center"}>Acciones</Table.ColumnHeader>
                             </Table.Row>
                         </Table.Header>
@@ -80,21 +78,6 @@ export default function ListCategories({ categories }: { categories: Category[] 
                             {categories.map((cat) => (
                                 <Table.Row key={cat._id}>
                                     <Table.Cell fontWeight="medium" textAlign={"center"}>{cat.name}</Table.Cell>
-                                    <Table.Cell textAlign={"center"}>
-                                        <VStack justify={"center"} display={"flex"} flexDir={"row"}>
-                                            {cat.types.length > 0 ? (
-                                                cat.types.map((t, i) => (
-                                                    <Tag.Root key={i} colorScheme="blue" size="sm">
-                                                        <Tag.Label>{t}</Tag.Label>
-                                                    </Tag.Root>
-                                                ))
-                                            ) : (
-                                                <Tag.Root colorScheme="gray" size="sm">
-                                                    <Tag.Label>Sin tipos</Tag.Label>
-                                                </Tag.Root>
-                                            )}
-                                        </VStack>
-                                    </Table.Cell>
                                     <Table.Cell textAlign="center">
                                         <HStack justify="center" gap={2}>
                                             <IconButton

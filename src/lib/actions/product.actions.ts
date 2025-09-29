@@ -6,6 +6,7 @@ import "@/models/category.model";
 import "@/models/subcategory.model";
 import { deleteImage } from "@/utils/deleteCloudinary";
 import mongoose from "mongoose";
+import { revalidatePath } from "next/cache";
 
 interface ImageInput {
   id: string;
@@ -13,6 +14,10 @@ interface ImageInput {
 }
 
 interface VariantInput {
+  type: string;
+  price: number;
+  is_offer: boolean;
+  price_offer?: number;
   color: string;
   images: ImageInput[];
   sizes: { size: string; stock: number }[];
@@ -21,12 +26,8 @@ interface VariantInput {
 export async function createProduct(data: {
   name: string;
   description?: string;
-  price: number;
-  is_offer: boolean;
-  price_offer?: number;
   category: string;
   subcategories?: string[];
-  type: string;
   variants: VariantInput[];
 }) {
   await connectDB();
@@ -54,7 +55,9 @@ export async function getProducts() {
 export async function getOffers() {
   await connectDB();
 
-  const offers = await ProductModel.find({ is_offer: true })
+  const offers = await ProductModel.find({
+    "variants.is_offer": true,
+  })
     .populate("category")
     .populate("subcategories")
     .lean();
@@ -76,12 +79,8 @@ export async function updateProduct(
   data: {
     name?: string;
     description?: string;
-    price?: number;
-    is_offer: boolean;
-    price_offer?: number;
     category?: string;
     subcategories?: string[];
-    type?: string;
     variants?: VariantInput[];
   }
 ) {
@@ -127,6 +126,7 @@ export async function deleteProduct(id: string) {
   }
 
   await ProductModel.findByIdAndDelete(id);
+  revalidatePath("/admin/products");
 
   return { success: true };
 }

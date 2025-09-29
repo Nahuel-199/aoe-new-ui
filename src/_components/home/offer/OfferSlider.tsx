@@ -147,14 +147,14 @@ const OfferSlider = () => {
                           colorPalette="red"
                           fontSize={{ base: "lg" }}
                         >
-                          ${product.price}
+                          ${product.variants.map((v) => v.price)[0]}
                         </Badge>
                         <Text
                           fontWeight="medium"
                           letterSpacing="tight"
                           fontSize={{ base: "lg" }}
                         >
-                          ${product.price_offer}
+                          ${product.variants.map((v) => v.price_offer)[0]}
                         </Text>
                       </Box>
                     </Card.Body>

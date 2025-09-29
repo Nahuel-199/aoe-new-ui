@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, VStack, HStack, Text, Image, IconButton, Flex } from "@chakra-ui/react";
+import { Box, VStack, HStack, Text, IconButton, Flex } from "@chakra-ui/react";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import { VariantDialog } from "./variants/VariantDialog";
 import { Product } from "@/types/product.types";
@@ -19,12 +19,8 @@ export const CardProducts = ({ products, onEdit, onDelete }: ResponsiveProductCa
                     <HStack justify="space-between" align="start">
                         <VStack align="start" gap={4}>
                             <Text fontWeight="bold">{product.name}</Text>
-                            <Text>Precio: ${product.price}</Text>
-                            <Text>Oferta: {product.is_offer ? "Sí" : "No"}</Text>
-                            {product.price_offer && <Text>Precio oferta: ${product.price_offer}</Text>}
                             <Text>Categoría: {product.category?.name}</Text>
                             <Text>Subcategorías: {product.subcategories.map(s => s.name).join(", ")}</Text>
-                            <Text>Tipo: {product.type}</Text>
                             <VariantDialog variants={product.variants} />
                         </VStack>
                         <Flex gap={2} align="center">

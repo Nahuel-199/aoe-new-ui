@@ -3,11 +3,10 @@
 import { connectDB } from "../db";
 import { CategoryModel } from "@/models/category.model";
 
-export async function createCategory(data: { name: string; types?: string[] }) {
+export async function createCategory(data: { name: string; }) {
     await connectDB();
     const category = await CategoryModel.create({
         name: data.name,
-        types: data.types || [],
     });
     return JSON.parse(JSON.stringify(category));
 }
@@ -26,7 +25,7 @@ export async function deleteCategory(id: string) {
 
 export async function updateCategory(
     id: string,
-    data: { name?: string; types?: string[] }
+    data: { name?: string; }
 ) {
     await connectDB();
     const updated = await CategoryModel.findByIdAndUpdate(id, data, {

@@ -111,7 +111,6 @@ const Sidebar = () => {
 
     return (
         <Box
-            as="aside"
             w="240px"
             h="100vh"
             borderRightWidth="1px"

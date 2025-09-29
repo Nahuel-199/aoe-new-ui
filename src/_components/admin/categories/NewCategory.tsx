@@ -7,38 +7,25 @@ import {
     Input,
     VStack,
     Heading,
-    Text,
-    Tag,
-    HStack,
 } from "@chakra-ui/react";
 import { createCategory } from "@/lib/actions/category.actions";
 import { toaster } from "@/components/ui/toaster";
 
 export default function NewCategory() {
     const [name, setName] = useState("");
-    const [typeInput, setTypeInput] = useState("");
-    const [types, setTypes] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
-
-    const handleAddType = () => {
-        if (typeInput.trim() && !types.includes(typeInput)) {
-            setTypes([...types, typeInput.trim()]);
-            setTypeInput("");
-        }
-    };
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
         try {
-            await createCategory({ name, types });
+            await createCategory({ name });
             toaster.success({
                 title: 'Creado con exito',
                 description: 'Categoría creada con éxito'
             });
             setName("");
-            setTypes([]);
         } catch (error) {
             toaster.error({
                 title: 'Error',
@@ -64,25 +51,6 @@ export default function NewCategory() {
                         onChange={(e) => setName(e.target.value)}
                         required
                     />
-
-                    <HStack>
-                        <Input
-                            placeholder="Tipo (ej: oversize, niños...)"
-                            value={typeInput}
-                            onChange={(e) => setTypeInput(e.target.value)}
-                        />
-                        <Button onClick={handleAddType} colorScheme="teal">
-                            Agregar
-                        </Button>
-                    </HStack>
-
-                    <HStack wrap="wrap">
-                        {types.map((t, i) => (
-                            <Tag.Root key={i} colorScheme="blue">
-                                <Tag.Label>{t}</Tag.Label>
-                            </Tag.Root>
-                        ))}
-                    </HStack>
 
                     <Button type="submit" colorScheme="teal" loading={loading}>
                         Guardar Categoría

@@ -28,9 +28,6 @@ export default function ProductFormContainer({
         handleChange,
         handleCategory,
         handleSubcategories,
-        handleType,
-        handlePriceChange,
-        handleOfferChange,
         addVariant,
         updateVariant,
         addSizeToVariant,
@@ -60,22 +57,16 @@ export default function ProductFormContainer({
                         categories={categories}
                         subcategories={subcategories}
                         onChange={handleChange}
-                        onPriceChange={handlePriceChange}
-                        onOfferChange={handleOfferChange}
                         onCategoryChange={handleCategory}
                         onSubcategoriesChange={handleSubcategories}
-                        onTypeChange={handleType}
                     />
                     <Box display={"flex"} flexDir={"row"}>
                         <Button colorScheme="teal" onClick={handleSubmit} loading={isLoading} loadingText={mode === "edit" ? "Actualizando..." : "Creando..."} display={{ base: "none", md: "inherit" }}>
                             {mode === "create" ? "Crear Producto" : "Actualizar Producto"}
                         </Button>
-
-
                         <Button
                             colorPalette="red"
                             onClick={addVariant}
-
                             mb={4}
                             ml={4}
                         >
@@ -88,7 +79,7 @@ export default function ProductFormContainer({
                     <Box
                         w="full"
                         maxW={{ base: "90%", md: "100%"}}
-                        maxH={{ base: "300px", md: "570px" }}
+                        maxH={{ base: "300px", md: "430px" }}
                         overflowY="auto"
                         borderWidth="1px"
                         borderRadius="md"
