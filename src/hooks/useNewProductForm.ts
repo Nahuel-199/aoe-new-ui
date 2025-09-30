@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { imageUpload } from "@/utils/uploadCloudinary";
 import { createProduct } from "@/lib/actions/product.actions";
-import { toaster } from "@/components/ui/toaster";
 import { useRouter } from "next/navigation";
+import { showToast } from "nextjs-toast-notify";
 
 export const useNewProductForm = () => {
   const router = useRouter();
@@ -45,10 +45,10 @@ export const useNewProductForm = () => {
   };
 
   const updateVariant = (index: number, field: string, value: any) => {
-  const newVariants = [...form.variants];
-  (newVariants[index] as any)[field] = value;
-  setForm({ ...form, variants: newVariants });
-};
+    const newVariants = [...form.variants];
+    (newVariants[index] as any)[field] = value;
+    setForm({ ...form, variants: newVariants });
+  };
 
   const addSizeToVariant = (index: number) => {
     const newVariants = [...form.variants];
@@ -98,15 +98,23 @@ export const useNewProductForm = () => {
         subcategories: [],
         variants: [],
       });
-      toaster.success({
-        title: "Producto creado exitósamente",
-        duration: 3000,
+      showToast.success("¡Producto creado exitósamente!", {
+        duration: 4000,
+        progress: true,
+        position: "top-center",
+        transition: "bounceIn",
+        icon: '',
+        sound: true,
       });
       router.push("/admin/products");
     } catch (err) {
-      toaster.error({
-        title: "Error al crear el producto",
-        duration: 3000,
+      showToast.error("Error al crear el producto", {
+        duration: 4000,
+        progress: true,
+        position: "top-center",
+        transition: "bounceIn",
+        icon: '',
+        sound: true,
       });
     } finally {
       setIsLoading(false);

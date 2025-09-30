@@ -78,7 +78,7 @@ export default function ProductFormContainer({
                 <GridItem w="full" maxW="100%">
                     <Box
                         w="full"
-                        maxW={{ base: "90%", md: "100%"}}
+                        maxW={{ base: "90%", md: "100%" }}
                         maxH={{ base: "300px", md: "530px" }}
                         overflowY="auto"
                         borderWidth="1px"

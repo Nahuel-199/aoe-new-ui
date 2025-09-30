@@ -2,8 +2,8 @@ import { useState } from "react";
 import { imageUpload } from "@/utils/uploadCloudinary";
 import { updateProduct } from "@/lib/actions/product.actions";
 import { Product } from "@/types/product.types";
-import { toaster } from "@/components/ui/toaster";
 import { useRouter } from "next/navigation";
+import { showToast } from "nextjs-toast-notify";
 
 export const useEditProductForm = (product: Product) => {
   const router = useRouter();
@@ -42,6 +42,7 @@ export const useEditProductForm = (product: Product) => {
           color: "",
           images: [],
           sizes: [{ size: "S", stock: 0 }],
+          size_chart: "",
         },
       ],
     });
@@ -92,15 +93,23 @@ export const useEditProductForm = (product: Product) => {
         subcategories: form.subcategories,
         variants: form.variants,
       });
-      toaster.success({
-        title: "Producto actualizado",
-        duration: 3000,
+      showToast.success("¡Producto actualizado exitósamente!", {
+        duration: 4000,
+        progress: true,
+        position: "top-center",
+        transition: "bounceIn",
+        icon: '',
+        sound: true,
       });
       router.push("/admin/products");
     } catch (err) {
-      toaster.error({
-        title: "Error al actualizar el producto",
-        duration: 3000,
+      showToast.error("Error al actualizar el producto", {
+        duration: 4000,
+        progress: true,
+        position: "top-center",
+        transition: "bounceIn",
+        icon: '',
+        sound: true,
       });
     } finally {
       setIsLoading(false);

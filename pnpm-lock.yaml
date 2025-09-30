@@ -41,6 +41,9 @@ importers:
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      nextjs-toast-notify:
+        specifier: ^1.50.0
+        version: 1.50.0
       react:
         specifier: 19.1.0
         version: 19.1.0
@@ -906,6 +909,9 @@ packages:
         optional: true
       sass:
         optional: true
+
+  nextjs-toast-notify@1.50.0:
+    resolution: {integrity: sha512-i/M0YDrn7+MsfUdD7rN5q2lDDxiDgDxQGlobPB2gxgH3a+iN5gz+gcttPIrr4cUbODUOoH1KIhOaYXrWjVxvdQ==}
 
   oauth4webapi@3.8.1:
     resolution: {integrity: sha512-olkZDELNycOWQf9LrsELFq8n05LwJgV8UkrS0cburk6FOwf8GvLam+YB+Uj5Qvryee+vwWOfQVeI5Vm0MVg7SA==}
@@ -2191,6 +2197,8 @@ snapshots:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
+
+  nextjs-toast-notify@1.50.0: {}
 
   oauth4webapi@3.8.1: {}
 
