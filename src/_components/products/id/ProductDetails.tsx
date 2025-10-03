@@ -9,9 +9,7 @@ import {
   VStack,
   HStack,
   Badge,
-  SimpleGrid,
   Image,
-  Separator,
   Tabs,
   Grid,
   GridItem,
@@ -23,6 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { colorMap } from "../utils/ColorMaps";
 import { Tooltip } from "@/components/ui/tooltip";
+import { useCart } from "@/context/CartContext";
 
 interface ProductByIdProps {
   product: Product;
@@ -32,6 +31,7 @@ export default function ProductDetails({ product }: ProductByIdProps) {
   const types = Array.from(new Set(product.variants.map((v) => v.type)));
   const [tabValue, setTabValue] = useState<string>(types[0] || "");
   const [selectedSize, setSelectedSize] = useState<string[]>([]);
+  const { addToCart } = useCart();
 
   return (
     <Container maxW="7xl" py={10}>
@@ -61,6 +61,28 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                     const [mainImage, setMainImage] = useState(
                       variant.images[0]?.url
                     );
+
+                    const handleAddToCart = () => {
+                      if (selectedSize.length === 0) return;
+
+                      const size = selectedSize[0].split("-")[1];
+                      addToCart({
+                        productId: product._id.toString(),
+                        name: product.name,
+                        category: (product.category as any)?.name,
+                        subcategories: (product.subcategories as any)?.map((s: any) => s.name),
+                        variant: {
+                          type: variant.type,
+                          color: variant.color,
+                          size,
+                          price: variant.is_offer && variant.price_offer
+                            ? variant.price_offer
+                            : variant.price,
+                          imageUrl: variant.images[0]?.url
+                        },
+                        quantity: 1,
+                      });
+                    };
                     return (
                       <Grid
                         key={idx}
@@ -212,6 +234,7 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                               size="sm"
                               w={{ base: "full", md: "auto" }}
                               disabled={selectedSize.length === 0}
+                              onClick={handleAddToCart}
                             >
                               Agregar al carrito
                             </Button>

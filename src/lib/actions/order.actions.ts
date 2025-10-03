@@ -1,111 +1,141 @@
 "use server";
 
-import { auth } from "@/auth";
 import { connectDB } from "@/lib/db";
-import { OrderModel, OrderItem } from "@/models/order.model";
-import { ProductModel } from "@/models/product.model";
-import { User } from "@/models/user.model";
+import { OrderModel } from "@/models/order.model";
+import mongoose from "mongoose";
+import { getCurrentUserId } from "./auth-wrapper";
 
 interface CartItem {
     productId: string;
-    variantColor: string;
-    variantSize: string;
+    name: string;
+    variant: {
+        type: string;
+        color: string;
+        size: string;
+        price: number;
+        imageUrl: string;
+    };
     quantity: number;
 }
 
-interface CreateOrderData {
+export async function createOrder({
+    items,
+}: {
     items: CartItem[];
-    paymentMethod: "card" | "paypal" | "cash";
-}
-
-export async function createOrder(data: CreateOrderData) {
-    const session = await auth();
-    if (!session?.user?.email) throw new Error("Usuario no logeado");
+}) {
 
     await connectDB();
-    const user = await User.findOne({ email: session.user.email });
-    if (!user) throw new Error("Usuario no encontrado");
 
-    const orderItems: OrderItem[] = [];
+    const userId = await getCurrentUserId();
 
-    for (const item of data.items) {
-        const product = await ProductModel.findById(item.productId);
-        if (!product) throw new Error(`Producto ${item.productId} no encontrado`);
+    if (!userId) throw new Error("Usuario no autenticado");
 
-        const variant = product.variants.find(
-            (v: { color: string }) => v.color === item.variantColor
-        );
-        if (!variant) throw new Error(`Variante ${item.variantColor} no encontrada`);
+    const total = items.reduce(
+        (acc, i) => acc + i.variant.price * i.quantity,
+        0
+    );
 
-        const sizeObj = variant.sizes.find((s: { size: string; stock: number }) => s.size === item.variantSize);
-        if (!sizeObj) throw new Error(`Tamaño ${item.variantSize} no encontrado`);
-        if (sizeObj.stock < item.quantity)
-            throw new Error(`Stock insuficiente para ${product.name}`);
+    const orderItems = items.map((i) => ({
+        product: i.productId,
+        variant: {
+            ...i.variant,
+            quantity: i.quantity,
+        },
+    }));
 
-        orderItems.push({
-            product: product._id,
-            variant: { color: variant.color, size: item.variantSize },
-            quantity: item.quantity,
-            price: product.is_offer ? product.price_offer : product.price,
-        });
-
-        sizeObj.stock -= item.quantity;
-        await product.save();
-    }
-
-    const total = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    console.log("ORDER ITEM SERVER", orderItems)
 
     const order = await OrderModel.create({
-        user: user._id,
+        user: userId,
         items: orderItems,
         total,
-        paymentMethod: data.paymentMethod,
         status: "pending",
     });
 
-    return order;
+    return JSON.parse(JSON.stringify(order));
 }
 
-export async function getUserOrders() {
-    const session = await auth();
-    if (!session?.user?.email) throw new Error("Usuario no logeado");
-
-    await connectDB();
-    const user = await User.findOne({ email: session.user.email });
-    if (!user) throw new Error("Usuario no encontrado");
-
-    const orders = await OrderModel.find({ user: user._id }).sort({ createdAt: -1 });
-    return orders;
-}
 
 export async function getAllOrders() {
     await connectDB();
-    const orders = await OrderModel.find().sort({ createdAt: -1 });
-    return orders;
+    const orders = await OrderModel.find()
+        .populate("user", "name email")
+        .populate("items.product", "name");
+    return JSON.parse(JSON.stringify(orders));
 }
 
-export async function updateOrderStatus(orderId: string, status: string) {
-    await connectDB();
 
-    const updatedOrder = await OrderModel.findByIdAndUpdate(
+export async function getOrdersByUser(userId: string) {
+    await connectDB();
+    const orders = await OrderModel.find({ user: userId })
+        .populate("items.product", "name");
+    return JSON.parse(JSON.stringify(orders));
+}
+
+
+export async function getOrderById(orderId: string) {
+    await connectDB();
+    const order = await OrderModel.findById(orderId)
+        .populate("user", "name email")
+        .populate("items.product", "name");
+    return JSON.parse(JSON.stringify(order));
+}
+
+export async function updateOrderStatus(
+    orderId: string,
+    status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled"
+) {
+    await connectDB();
+    const order = await OrderModel.findByIdAndUpdate(
         orderId,
         { status },
         { new: true }
     );
-
-    if (!updatedOrder) throw new Error("Orden no encontrada");
-    return updatedOrder;
+    return JSON.parse(JSON.stringify(order));
 }
 
-export async function cancelOrder(orderId: string) {
+export async function updateOrderItems(
+    orderId: string,
+    items: {
+        productId: string;
+        variant: {
+            type: string;
+            color: string;
+            size: string;
+            price: number;
+        };
+        quantity: number;
+    }[]
+) {
     await connectDB();
 
-    const cancelledOrder = await OrderModel.findByIdAndUpdate(
+    const total = items.reduce(
+        (acc, i) => acc + i.variant.price * i.quantity,
+        0
+    );
+
+    const orderItems = items.map((i) => ({
+        product: new mongoose.Types.ObjectId(i.productId),
+        variant: {
+            type: i.variant.type,
+            color: i.variant.color,
+            size: i.variant.size,
+            price: i.variant.price,
+            quantity: i.quantity,
+        },
+    }));
+
+    const order = await OrderModel.findByIdAndUpdate(
         orderId,
-        { status: "cancelled" },
+        { items: orderItems, total },
         { new: true }
     );
 
-    if (!cancelledOrder) throw new Error("Orden no encontrada");
-    return cancelledOrder;
+    return JSON.parse(JSON.stringify(order));
+}
+
+export async function deleteOrder(orderId: string) {
+    await connectDB();
+    await OrderModel.findByIdAndDelete(orderId);
+    return { success: true };
 }

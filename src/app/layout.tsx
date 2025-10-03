@@ -3,9 +3,8 @@ import { Provider } from "@/components/ui/provider";
 import { ProviderSesion } from "./providers";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/_components/home/navbar/Navbar";
-import FooterSection from "@/_components/home/footer/FooterSection";
 import LayoutWrapper from "./layout-wrapper";
+import { CartProvider } from "@/context/CartContext";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -29,7 +28,11 @@ export default function RootLayout({
       <body className={`${poppins.className}`}>
         <Provider>
           <ProviderSesion>
-            <LayoutWrapper>{children}</LayoutWrapper>
+            <CartProvider>
+              <LayoutWrapper>
+                {children}
+              </LayoutWrapper>
+            </CartProvider>
           </ProviderSesion>
         </Provider>
       </body>

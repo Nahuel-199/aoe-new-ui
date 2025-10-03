@@ -22,16 +22,16 @@ import {
 import { ColorModeButton } from "@/components/ui/color-mode";
 import { FaBars } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
-// import { useCart } from "@/context/CartContext";
-import { LuChevronDown, LuChevronRight } from "react-icons/lu";
+import { LuChevronRight } from "react-icons/lu";
 import { useSession } from "next-auth/react";
 import SkeletonNav from "./SkeletonNav";
+import { useCart } from "@/context/CartContext";
 
 const Navbar =() => {
   const navbarRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const { data: session, status } = useSession();
-//   const { cart } = useCart();cd
+  const { cart } = useCart();
 
   const ringCss = defineStyle({
     outlineWidth: "2px",
@@ -135,7 +135,7 @@ const Navbar =() => {
                 <FiShoppingCart />
               </IconButton>
             </Link>
-            {/* {cart.length > 0 && ( */}
+            {cart.length > 0 && (
               <Badge
                 colorPalette="red"
                 borderRadius="full"
@@ -145,9 +145,9 @@ const Navbar =() => {
                 fontSize="0.7em"
                 px={2}
               >
-                {/* {cart.length} */}
+                {cart.length}
               </Badge>
-            {/* )} */}
+            )}
           </Box>
           <ColorModeButton
             _dark={{ color: "black", _hover: { bg: "gray.300" } }}
