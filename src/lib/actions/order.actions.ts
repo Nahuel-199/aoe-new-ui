@@ -4,19 +4,7 @@ import { connectDB } from "@/lib/db";
 import { OrderModel } from "@/models/order.model";
 import mongoose from "mongoose";
 import { getCurrentUserId } from "./auth-wrapper";
-
-interface CartItem {
-    productId: string;
-    name: string;
-    variant: {
-        type: string;
-        color: string;
-        size: string;
-        price: number;
-        imageUrl: string;
-    };
-    quantity: number;
-}
+import { CartItem } from "@/types/cart.types";
 
 export async function createOrder({
     items,
@@ -42,8 +30,6 @@ export async function createOrder({
             quantity: i.quantity,
         },
     }));
-
-    console.log("ORDER ITEM SERVER", orderItems)
 
     const order = await OrderModel.create({
         user: userId,
@@ -90,7 +76,8 @@ export async function updateOrderStatus(
         orderId,
         { status },
         { new: true }
-    );
+    ).populate("user", "name email")
+        .populate("items.product", "name");
     return JSON.parse(JSON.stringify(order));
 }
 
@@ -130,6 +117,34 @@ export async function updateOrderItems(
         { items: orderItems, total },
         { new: true }
     );
+
+    return JSON.parse(JSON.stringify(order));
+}
+
+export async function updateOrderAdmin(
+    orderId: string,
+    data: {
+        comments?: string;
+        paymentMethod?: string;
+        paidAmount?: number;
+        remainingAmount?: number;
+        phoneNumber?: string;
+        deliveryMethod?: "correo" | "punto_encuentro";
+        meetingAddress?: string;
+        status?: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
+    }
+) {
+    await connectDB();
+
+    const order = await OrderModel.findByIdAndUpdate(
+        orderId,
+        { $set: data },
+        { new: true }
+    );
+
+    if (!order) {
+        throw new Error("Orden no encontrada");
+    }
 
     return JSON.parse(JSON.stringify(order));
 }

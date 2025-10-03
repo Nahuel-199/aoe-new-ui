@@ -16,6 +16,13 @@ export interface Order extends Document {
   items: OrderItem[];
   status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
   total: number;
+  comments?: string;
+  paymentMethod?: string; // efectivo, transferencia, etc.
+  paidAmount: number; // cuánto pagó hasta ahora
+  remainingAmount: number; // cuánto falta del total
+  phoneNumber?: string; // teléfono de contacto
+  deliveryMethod: "correo" | "punto_encuentro";
+  meetingAddress?: string; // si es punto de encuentro
 }
 
 const OrderItemSchema = new Schema<OrderItem>(
@@ -43,6 +50,18 @@ const OrderSchema = new Schema<Order>(
       default: "pending",
     },
     total: { type: Number, required: true },
+    comments: { type: String, default: "Ningun comentario" },
+    paymentMethod: { type: String, default: "Transferencia" },
+    paidAmount: { type: Number, default: 0 },
+    remainingAmount: { type: Number, default: 0 },
+    phoneNumber: { type: String, default: "Sin celular" },
+    deliveryMethod: {
+      type: String,
+      default: "correo",
+      enum: ["correo", "punto_encuentro"],
+      required: false
+    },
+    meetingAddress: { type: String, default: "Sin numeración" },
   },
   { timestamps: true }
 );

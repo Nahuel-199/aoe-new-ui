@@ -17,14 +17,12 @@ import { FiTrash2 } from "react-icons/fi";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createOrder } from "@/lib/actions/order.actions";
-import { useSession } from "next-auth/react";
 import { showToast } from "nextjs-toast-notify";
 
 export default function CartSection() {
     const { cart, removeFromCart, clearCart, increaseQuantity, decreaseQuantity } = useCart();
     const [loading, setLoading] = useState(false);
     const router = useRouter();
-    console.log("CARRITO", cart)
 
     const total = cart.reduce(
         (acc, item) => acc + item.variant.price * item.quantity,
@@ -47,13 +45,10 @@ export default function CartSection() {
                     imageUrl: item.variant.imageUrl,
                 },
             }));
-            console.log("ITEMS", items)
 
             const order = await createOrder({
                 items,
             });
-
-            console.log("CREATED ORDER", order);
 
             showToast.success("¡Orden de compra creada exitósamente!", {
                 duration: 4000,
@@ -64,7 +59,7 @@ export default function CartSection() {
                 sound: true,
             });
             clearCart();
-            // router.push(`/mis-pedidos/${order._id}`);
+            router.push(`/mis-pedidos`);
         } catch (error) {
             showToast.error("Error creando la orden de compra", {
                 duration: 4000,
