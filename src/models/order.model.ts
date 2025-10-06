@@ -17,12 +17,12 @@ export interface Order extends Document {
   status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
   total: number;
   comments?: string;
-  paymentMethod?: string; // efectivo, transferencia, etc.
-  paidAmount: number; // cuánto pagó hasta ahora
-  remainingAmount: number; // cuánto falta del total
-  phoneNumber?: string; // teléfono de contacto
+  paymentMethod?: string;
+  paidAmount: number;
+  remainingAmount: number;
+  phoneNumber?: string;
   deliveryMethod: "correo" | "punto_encuentro";
-  meetingAddress?: string; // si es punto de encuentro
+  meetingAddress?: string;
 }
 
 const OrderItemSchema = new Schema<OrderItem>(
@@ -59,7 +59,7 @@ const OrderSchema = new Schema<Order>(
       type: String,
       default: "correo",
       enum: ["correo", "punto_encuentro"],
-      required: false
+      required: false,
     },
     meetingAddress: { type: String, default: "Sin numeración" },
   },

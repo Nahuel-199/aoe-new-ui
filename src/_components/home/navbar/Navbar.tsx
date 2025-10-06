@@ -18,6 +18,7 @@ import {
   Menu,
   Portal,
   Drawer,
+  CloseButton,
 } from "@chakra-ui/react";
 import { ColorModeButton } from "@/components/ui/color-mode";
 import { FaBars } from "react-icons/fa";
@@ -27,7 +28,7 @@ import { useSession } from "next-auth/react";
 import SkeletonNav from "./SkeletonNav";
 import { useCart } from "@/context/CartContext";
 
-const Navbar =() => {
+const Navbar = () => {
   const navbarRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const { data: session, status } = useSession();
@@ -67,7 +68,7 @@ const Navbar =() => {
       px={4}
       py={2}
       mx="auto"
-      width="100%"
+      width={{ base: "95%", md: "100%" }}
       maxW={{ base: "container.xl", md: "fit-content" }}
       overflowX="hidden"
     >
@@ -171,10 +172,13 @@ const Navbar =() => {
                 <Menu.Positioner>
                   <Menu.Content>
                     <Menu.Item value={"session.email"} disabled>
-                      {session?.user?.email || 'Usuario'}
+                      {session?.user?.email || "Usuario"}
                     </Menu.Item>
-                    {session?.user?.email === process.env.USER_ADMIN_EMAIL || process.env.USER_ADMIN_EMAIL2}
-                    <Menu.Root positioning={{ placement: "right-start", gutter: 2 }}>
+                    {session?.user?.email === process.env.USER_ADMIN_EMAIL ||
+                      process.env.USER_ADMIN_EMAIL2}
+                    <Menu.Root
+                      positioning={{ placement: "right-start", gutter: 2 }}
+                    >
                       <Menu.TriggerItem cursor={"pointer"}>
                         Productos <LuChevronRight />
                       </Menu.TriggerItem>
@@ -182,18 +186,30 @@ const Navbar =() => {
                         <Menu.Positioner>
                           <Menu.Content>
                             <Link href={"/admin/products"}>
-                              <Menu.Item value="list-product" cursor={"pointer"}>Lista</Menu.Item>
+                              <Menu.Item
+                                value="list-product"
+                                cursor={"pointer"}
+                              >
+                                Lista
+                              </Menu.Item>
                             </Link>
                           </Menu.Content>
                           <Menu.Content>
                             <Link href={"/admin/products/new"}>
-                              <Menu.Item value="create-product" cursor={"pointer"}>Crear</Menu.Item>
+                              <Menu.Item
+                                value="create-product"
+                                cursor={"pointer"}
+                              >
+                                Crear
+                              </Menu.Item>
                             </Link>
                           </Menu.Content>
                         </Menu.Positioner>
                       </Portal>
                     </Menu.Root>
-                    <Menu.Root positioning={{ placement: "right-start", gutter: 2 }}>
+                    <Menu.Root
+                      positioning={{ placement: "right-start", gutter: 2 }}
+                    >
                       <Menu.TriggerItem cursor={"pointer"}>
                         Categorias <LuChevronRight />
                       </Menu.TriggerItem>
@@ -201,18 +217,30 @@ const Navbar =() => {
                         <Menu.Positioner>
                           <Menu.Content>
                             <Link href={"/admin/categories"}>
-                              <Menu.Item value="list-categories" cursor={"pointer"}>Lista</Menu.Item>
+                              <Menu.Item
+                                value="list-categories"
+                                cursor={"pointer"}
+                              >
+                                Lista
+                              </Menu.Item>
                             </Link>
                           </Menu.Content>
                           <Menu.Content>
                             <Link href={"/admin/categories/create"}>
-                              <Menu.Item value="create-categories" cursor={"pointer"}>Crear</Menu.Item>
+                              <Menu.Item
+                                value="create-categories"
+                                cursor={"pointer"}
+                              >
+                                Crear
+                              </Menu.Item>
                             </Link>
                           </Menu.Content>
                         </Menu.Positioner>
                       </Portal>
                     </Menu.Root>
-                    <Menu.Root positioning={{ placement: "right-start", gutter: 2 }}>
+                    <Menu.Root
+                      positioning={{ placement: "right-start", gutter: 2 }}
+                    >
                       <Menu.TriggerItem cursor={"pointer"}>
                         Sub-Categorias <LuChevronRight />
                       </Menu.TriggerItem>
@@ -220,12 +248,22 @@ const Navbar =() => {
                         <Menu.Positioner>
                           <Menu.Content>
                             <Link href={"/admin/subcategories"}>
-                              <Menu.Item value="list-subcategories" cursor={"pointer"}>Lista</Menu.Item>
+                              <Menu.Item
+                                value="list-subcategories"
+                                cursor={"pointer"}
+                              >
+                                Lista
+                              </Menu.Item>
                             </Link>
                           </Menu.Content>
                           <Menu.Content>
                             <Link href={"/admin/subcategories/create"}>
-                              <Menu.Item value="create-subcategories" cursor={"pointer"}>Crear</Menu.Item>
+                              <Menu.Item
+                                value="create-subcategories"
+                                cursor={"pointer"}
+                              >
+                                Crear
+                              </Menu.Item>
                             </Link>
                           </Menu.Content>
                         </Menu.Positioner>
@@ -237,7 +275,12 @@ const Navbar =() => {
                       </Menu.Item>
                     </Link>
                     <Menu.Item value="logout" cursor={"pointer"}>
-                      <Box as="button" onClick={() => (window.location.href = '/api/auth/logout')}>
+                      <Box
+                        as="button"
+                        onClick={() =>
+                          (window.location.href = "/api/auth/logout")
+                        }
+                      >
                         Cerrar sesión
                       </Box>
                     </Menu.Item>
@@ -276,47 +319,55 @@ const Navbar =() => {
         </Flex>
       </Flex>
 
-      <Drawer.Root open={open} onOpenChange={(e) => setOpen(e.open)}>
+      <Drawer.Root
+        open={open}
+        onOpenChange={(e) => setOpen(e.open)}
+        size={"full"}
+      >
         <Drawer.Backdrop />
-
-        <Drawer.Content>
-          <Drawer.Header>
-            <Text fontSize="lg">Menu</Text>
-          </Drawer.Header>
-          <Drawer.Body>
-            <VStack width={"100%"}>
-              <Link href="/products" style={{ width: "100%" }}>
-                <Button
-                  variant="ghost"
-                  width="full"
-                  _dark={{
-                    color: "black",
-                    bg: "white",
-                    _hover: { bg: "gray.300" },
-                  }}
-                >
-                  Productos
-                </Button>
-              </Link>
-              <Link href="/mis-pedidos" style={{ width: "100%" }}>
-                <Button
-                  variant="ghost"
-                  width="full"
-                  _dark={{
-                    color: "black",
-                    bg: "white",
-                    _hover: { bg: "gray.300" },
-                  }}
-                >
-                  Mis pedidos
-                </Button>
-              </Link>
-            </VStack>
-          </Drawer.Body>
-          <Drawer.Footer>
-            <Text fontSize="sm">&copy; 2025 AOE INDUMENTARIA</Text>
-          </Drawer.Footer>
-        </Drawer.Content>
+        <Drawer.Positioner>
+          <Drawer.Content>
+            <Drawer.Header>
+              <Text fontSize="lg">Menu</Text>
+            </Drawer.Header>
+            <Drawer.Body>
+              <VStack width={"100%"}>
+                <Link href="/products" style={{ width: "100%" }}>
+                  <Button
+                    variant="ghost"
+                    width="full"
+                    _dark={{
+                      color: "black",
+                      bg: "white",
+                      _hover: { bg: "gray.300" },
+                    }}
+                  >
+                    Productos
+                  </Button>
+                </Link>
+                <Link href="/mis-pedidos" style={{ width: "100%" }}>
+                  <Button
+                    variant="ghost"
+                    width="full"
+                    _dark={{
+                      color: "black",
+                      bg: "white",
+                      _hover: { bg: "gray.300" },
+                    }}
+                  >
+                    Mis pedidos
+                  </Button>
+                </Link>
+              </VStack>
+            </Drawer.Body>
+            <Drawer.Footer>
+              <Text fontSize="sm">&copy; 2025 AOE INDUMENTARIA</Text>
+            </Drawer.Footer>
+            <Drawer.CloseTrigger asChild>
+              <CloseButton size="sm" />
+            </Drawer.CloseTrigger>
+          </Drawer.Content>
+        </Drawer.Positioner>
       </Drawer.Root>
     </Box>
   );

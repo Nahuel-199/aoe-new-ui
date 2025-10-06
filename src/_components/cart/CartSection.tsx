@@ -3,7 +3,6 @@
 import { useCart } from "@/context/CartContext";
 import {
     Box,
-    Heading,
     VStack,
     HStack,
     Text,
@@ -136,19 +135,19 @@ export default function CartSection() {
                                     }}
                                 />
                                 <VStack align="start" gap={1}>
-                                    <Text fontWeight="bold">{item.name}</Text>
+                                    <Text fontWeight="bold">Producto: {item.name}</Text>
                                     <HStack gap={2}>
-                                        <Badge>{item.variant.type}</Badge>
-                                        <Badge>{item.variant.color}</Badge>
-                                        <Badge>{item.variant.size}</Badge>
+                                        <Badge>Tipo: {item.variant.type}</Badge>
+                                        <Badge>Color: {item.variant.color}</Badge>
+                                        <Badge>Talle: {item.variant.size}</Badge>
                                     </HStack>
                                     {item.category && (
                                         <Text fontSize="sm" color="gray.500">
-                                            {item.category}
+                                            Categoria: {item.category}
                                         </Text>
                                     )}
                                     <Text>
-                                        ${item.variant.price} x {item.quantity} = $
+                                        Cantidad: ${item.variant.price} x {item.quantity} = $
                                         {item.variant.price * item.quantity}
                                     </Text>
 

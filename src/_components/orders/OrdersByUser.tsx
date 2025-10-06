@@ -67,7 +67,7 @@ export default function OrdersByUser({ orders }: { orders: Order[] }) {
 
                 return (
                     <Box
-                        w="100%"
+                        w="90%"
                         mx="auto"
                         key={order._id}
                         borderWidth="1px"
@@ -146,7 +146,7 @@ export default function OrdersByUser({ orders }: { orders: Order[] }) {
                                         <Text fontWeight="medium" fontSize={{ base: "md", md: "md" }}>
                                             {item.product.name}
                                         </Text>
-                                        <Text fontSize={{ base: "md", md: "md" }} color="gray.600">
+                                        <Text fontSize={{ base: "md", md: "md" }} color="gray">
                                             {item.variant.type}, {item.variant.color}, {item.variant.size} ×{" "}
                                             {item.variant.quantity}
                                         </Text>

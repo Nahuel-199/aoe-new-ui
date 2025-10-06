@@ -5,6 +5,7 @@ import { OrderModel } from "@/models/order.model";
 import mongoose from "mongoose";
 import { getCurrentUserId } from "./auth-wrapper";
 import { CartItem } from "@/types/cart.types";
+import { redirect } from "next/navigation";
 
 export async function createOrder({
     items,
@@ -121,32 +122,27 @@ export async function updateOrderItems(
     return JSON.parse(JSON.stringify(order));
 }
 
-export async function updateOrderAdmin(
-    orderId: string,
-    data: {
-        comments?: string;
-        paymentMethod?: string;
-        paidAmount?: number;
-        remainingAmount?: number;
-        phoneNumber?: string;
-        deliveryMethod?: "correo" | "punto_encuentro";
-        meetingAddress?: string;
-        status?: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
-    }
-) {
-    await connectDB();
+export async function updateOrderAdmin(formData: FormData) {
+  await connectDB();
 
-    const order = await OrderModel.findByIdAndUpdate(
-        orderId,
-        { $set: data },
-        { new: true }
-    );
+  const orderId = formData.get("orderId") as string;
+  const data = {
+    comments: formData.get("comments") as string,
+    paymentMethod: formData.get("paymentMethod") as string,
+    paidAmount: Number(formData.get("paidAmount") || 0),
+    remainingAmount: Number(formData.get("remainingAmount") || 0),
+    phoneNumber: formData.get("phoneNumber") as string,
+    deliveryMethod: formData.get("deliveryMethod") as "correo" | "punto_encuentro",
+    meetingAddress: formData.get("meetingAddress") as string,
+  };
 
-    if (!order) {
-        throw new Error("Orden no encontrada");
-    }
+  const order = await OrderModel.findByIdAndUpdate(orderId, { $set: data }, { new: true });
 
-    return JSON.parse(JSON.stringify(order));
+   redirect("/admin/orders");
+
+   if (!order) throw new Error("Orden no encontrada");
+   
+   return JSON.parse(JSON.stringify(order));
 }
 
 export async function deleteOrder(orderId: string) {
