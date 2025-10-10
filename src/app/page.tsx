@@ -1,6 +1,5 @@
 "use client";
 
-import OfferBanner from "@/_components/home/banner/OfferBanner";
 import CategoriesSection from "@/_components/home/categories/CategoriesSection";
 import HeaderSection from "@/_components/home/header/HeaderSection";
 import OfferSlider from "@/_components/home/offer/OfferSlider";
@@ -13,7 +12,6 @@ export default function Home() {
       <CategoriesSection />
       <ShipmentsSection />
       <OfferSlider />
-      <OfferBanner />
     </>
   );
 }
