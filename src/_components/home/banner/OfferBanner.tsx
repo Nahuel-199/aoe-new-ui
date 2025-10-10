@@ -58,6 +58,8 @@ const OfferBanner: React.FC = () => {
             ref={textRefBanner}
             fontSize={{ base: "12px", md: "lg", lg: "lg" }}
             fontWeight="bold"
+            color={"white"}
+            _dark={{ color: "black" }}
             textTransform="uppercase"
         />
     </Box>

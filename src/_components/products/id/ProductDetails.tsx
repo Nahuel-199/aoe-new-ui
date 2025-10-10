@@ -103,7 +103,7 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                               objectFit="cover"
                               w="100%"
                               maxW={{ base: "300px", md: "400px" }}
-                              h="auto"
+                              h="500px"
                             />
                             <HStack gap={2} flexWrap="wrap" justify="center">
                               {variant.images.map((img) => (

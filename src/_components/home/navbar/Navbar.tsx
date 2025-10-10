@@ -68,7 +68,7 @@ const Navbar = () => {
       px={4}
       py={2}
       mx="auto"
-      width={{ base: "95%", md: "100%" }}
+      width={{ base: "85%", md: "100%" }}
       maxW={{ base: "container.xl", md: "fit-content" }}
       overflowX="hidden"
     >
@@ -322,7 +322,7 @@ const Navbar = () => {
       <Drawer.Root
         open={open}
         onOpenChange={(e) => setOpen(e.open)}
-        size={"full"}
+        placement={"end"}
       >
         <Drawer.Backdrop />
         <Drawer.Positioner>
@@ -331,8 +331,8 @@ const Navbar = () => {
               <Text fontSize="lg">Menu</Text>
             </Drawer.Header>
             <Drawer.Body>
-              <VStack width={"100%"}>
-                <Link href="/products" style={{ width: "100%" }}>
+              <VStack>
+                <Link href="/products" style={{ width: "100%" }} onClick={() => setOpen(false)}>
                   <Button
                     variant="ghost"
                     width="full"
@@ -345,7 +345,7 @@ const Navbar = () => {
                     Productos
                   </Button>
                 </Link>
-                <Link href="/mis-pedidos" style={{ width: "100%" }}>
+                <Link href="/mis-pedidos" style={{ width: "100%" }} onClick={() => setOpen(false)}>
                   <Button
                     variant="ghost"
                     width="full"

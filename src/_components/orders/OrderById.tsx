@@ -193,7 +193,7 @@ export default function OrderById({ orders }: OrderProps) {
               <Input
                 type="number"
                 name="remainingAmount"
-                defaultValue={orders.remainingAmount || orders.total}
+                defaultValue={orders.total - orders.paidAmount || orders.total}
                 readOnly
               />
             </Box>

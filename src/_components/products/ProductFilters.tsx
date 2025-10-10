@@ -60,6 +60,8 @@ export default function ProductFilters({
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             rounded={"full"}
+            borderColor={"gray.200"}
+            _dark={{ borderColor: "gray.500" }}
           />
         </InputGroup>
 
@@ -67,7 +69,7 @@ export default function ProductFilters({
           collection={categoriesCollection}
           value={selectedCategory ? [selectedCategory] : []}
           onValueChange={(e) => onCategoryChange(e.value[0] ?? "")}
-          width="220px"
+          width={{ base: "full", md: "220px" }}
         >
           <Select.HiddenSelect />
           <Select.Control>
@@ -96,7 +98,7 @@ export default function ProductFilters({
           collection={subcategoriesCollection}
           value={selectedSubcategory ? [selectedSubcategory] : []}
           onValueChange={(e) => onSubcategoryChange(e.value[0] ?? "")}
-          width="220px"
+          width={{ base: "full", md: "220px" }}
         >
           <Select.HiddenSelect />
           <Select.Control>
@@ -121,7 +123,12 @@ export default function ProductFilters({
           </Portal>
         </Select.Root>
 
-        <Button variant="outline" onClick={onClearFilters}>
+        <Button
+          variant="outline"
+          onClick={onClearFilters}
+          borderColor={"gray.200"}
+          _dark={{ borderColor: "gray.500" }}
+        >
           Limpiar
         </Button>
       </Stack>
