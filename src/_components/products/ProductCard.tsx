@@ -14,7 +14,6 @@ export default function ProductCard({ product }: ProductCardProps) {
   const router = useRouter();
   const uniqueTypes = Array.from(new Set(product.variants.map((v) => v.type)));
   const uniqueColors = Array.from(new Set(product.variants.map((v) => v.color)));
-  console.log("UNIQUE COLOR", uniqueColors)
 
   return (
     <Box

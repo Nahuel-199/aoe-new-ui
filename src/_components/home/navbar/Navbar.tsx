@@ -92,7 +92,7 @@ const Navbar = () => {
               AOE
               <Text
                 as="span"
-                display={{ base: "inline", md: "inline" }}
+                display={{ base: "none", md: "inline" }}
                 fontSize={{ base: "15px", md: "xl" }}
                 color={"black"}
                 _dark={{ color: "black" }}
