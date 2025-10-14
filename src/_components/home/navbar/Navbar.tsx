@@ -27,6 +27,7 @@ import { LuChevronRight } from "react-icons/lu";
 import { useSession } from "next-auth/react";
 import SkeletonNav from "./SkeletonNav";
 import { useCart } from "@/context/CartContext";
+import { signOut } from "@/auth";
 
 const Navbar = () => {
   const navbarRef = useRef<HTMLDivElement>(null);
@@ -277,9 +278,7 @@ const Navbar = () => {
                     <Menu.Item value="logout" cursor={"pointer"}>
                       <Box
                         as="button"
-                        onClick={() =>
-                          (window.location.href = "/api/auth/logout")
-                        }
+                        onClick={() => signOut({ redirectTo: "/" })}
                       >
                         Cerrar sesión
                       </Box>
@@ -332,7 +331,11 @@ const Navbar = () => {
             </Drawer.Header>
             <Drawer.Body>
               <VStack>
-                <Link href="/products" style={{ width: "100%" }} onClick={() => setOpen(false)}>
+                <Link
+                  href="/products"
+                  style={{ width: "100%" }}
+                  onClick={() => setOpen(false)}
+                >
                   <Button
                     variant="ghost"
                     width="full"
@@ -345,7 +348,11 @@ const Navbar = () => {
                     Productos
                   </Button>
                 </Link>
-                <Link href="/mis-pedidos" style={{ width: "100%" }} onClick={() => setOpen(false)}>
+                <Link
+                  href="/mis-pedidos"
+                  style={{ width: "100%" }}
+                  onClick={() => setOpen(false)}
+                >
                   <Button
                     variant="ghost"
                     width="full"

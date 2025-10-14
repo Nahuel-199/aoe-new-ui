@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import { getCurrentUserId } from "./auth-wrapper";
 import { CartItem } from "@/types/cart.types";
 import { redirect } from "next/navigation";
+import "@/models/product.model";
 
 export async function createOrder({
     items,
