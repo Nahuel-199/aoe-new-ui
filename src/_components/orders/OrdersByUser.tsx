@@ -9,6 +9,7 @@ import {
     Image,
     Badge,
     SimpleGrid,
+    Flex,
 } from "@chakra-ui/react";
 import gsap from "gsap";
 import { useEffect, useRef } from "react";
@@ -99,31 +100,44 @@ export default function OrdersByUser({ orders }: { orders: Order[] }) {
                             </Badge>
                         </HStack>
 
-                        <HStack gap={6} justify="center" mb={4}>
+                        <Box
+                            display={{ base: "flex", md: "flex" }}
+                            flexDir={{ base: "column", md: "row" }}
+                            alignItems={{ base: "stretch", md: "center" }}
+                            justifyContent={{ base: "flex-start", md: "center" }}
+                            gap={{ base: 4, md: 6 }}
+                            mb={6}
+                        >
                             {ORDER_STATUSES.map((status, idx) => {
                                 const Icon = STATUS_ICONS[status];
                                 const active = idx <= currentIndex;
-
                                 return (
-                                    <VStack key={status} gap={1} ref={(el) => {
-                                        if (el) timelineRef.current[idx] = el;
-                                    }}>
+                                    <Flex
+                                        key={status}
+                                        ref={(el) => {
+                                            if (el) timelineRef.current[idx] = el;
+                                        }}
+                                        align="center"
+                                        gap={2}
+                                        flexDir={{ base: "row", md: "column" }}
+                                        textAlign={{ base: "left", md: "center" }}
+                                    >
                                         <Box
                                             as={Icon}
-                                            boxSize={6}
+                                            boxSize={{ base: 5, md: 6 }}
                                             color={active ? "teal.500" : "gray.400"}
                                         />
                                         <Text
                                             fontSize={{ base: "sm", md: "sm" }}
                                             color={active ? "teal.600" : "gray.400"}
-                                            textAlign="center"
+                                            whiteSpace="nowrap"
                                         >
                                             {STATUS_LABELS[status]}
                                         </Text>
-                                    </VStack>
+                                    </Flex>
                                 );
                             })}
-                        </HStack>
+                        </Box>
                         <VStack align="stretch" gap={3}>
                             {order.items.map((item, idx) => (
                                 <HStack

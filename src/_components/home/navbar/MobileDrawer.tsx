@@ -19,13 +19,13 @@ const MobileDrawer = ({ open, onClose, session }: Props) => (
   <Drawer.Root
     open={open}
     onOpenChange={(e) => !e.open && onClose()}
-    placement="end" // 👈 abre desde la izquierda
+    placement="end"
   >
     <Drawer.Backdrop />
     <Drawer.Positioner>
       <Drawer.Content
         h="100dvh"
-        w={{ base: "80%", sm: "70%", md: "50%" }} // 👈 ancho adaptativo
+        w={{ base: "80%", sm: "70%", md: "50%" }}
         borderRightRadius="xl"
         overflowY="auto"
       >
@@ -54,8 +54,9 @@ const MobileDrawer = ({ open, onClose, session }: Props) => (
                 <Button
                   variant="ghost"
                   justifyContent="flex-start"
+                  textAlign={"center"}
                   w="full"
-                  _dark={{ color: "black", _hover: { bg: "gray.300" } }}
+                  _dark={{ color: "black", bg: "white", _hover: { bg: "gray.300" } }}
                 >
                   Mis pedidos
                 </Button>

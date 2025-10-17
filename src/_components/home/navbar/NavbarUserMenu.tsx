@@ -88,7 +88,7 @@ const NavbarUserMenu = ({ session }: { session: any }) => {
               </>
             )}
 
-            <Menu.Item value="logout" onClick={() => signOut({ redirectTo: "/" })}>
+            <Menu.Item value="logout" onClick={() => window.location.href = "/api/auth/signout?callbackUrl=/"}>
               Cerrar sesión
             </Menu.Item>
           </Menu.Content>

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getAllOrders } from "@/lib/actions/order.actions";
 import ListOrders from "@/_components/admin/orders/ListOrders";
 

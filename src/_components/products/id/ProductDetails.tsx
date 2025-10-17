@@ -22,6 +22,7 @@ import {
 import { colorMap } from "../utils/ColorMaps";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useCart } from "@/context/CartContext";
+import { FaCartPlus } from "react-icons/fa";
 
 interface ProductByIdProps {
   product: Product;
@@ -236,7 +237,7 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                               disabled={selectedSize.length === 0}
                               onClick={handleAddToCart}
                             >
-                              Agregar al carrito
+                             <FaCartPlus /> Agregar al carrito
                             </Button>
                           </VStack>
                         </GridItem>

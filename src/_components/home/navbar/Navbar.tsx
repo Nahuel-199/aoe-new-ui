@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
-import { Box, Flex, HStack, IconButton, Badge } from "@chakra-ui/react";
+import { Box, Flex, HStack, IconButton, Badge, SkeletonCircle } from "@chakra-ui/react";
 import { FaBars } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { useSession } from "next-auth/react";
@@ -14,7 +14,6 @@ import NavbarBrand from "./NavbarBrand";
 import NavbarLinks from "./NavbarLinks";
 import NavbarUserMenu from "./NavbarUserMenu";
 import MobileDrawer from "./MobileDrawer";
-import SkeletonNav from "./SkeletonNav";
 
 const Navbar = () => {
   const navbarRef = useRef<HTMLDivElement>(null);
@@ -29,8 +28,6 @@ const Navbar = () => {
       { y: 0, opacity: 1, duration: 1 }
     );
   }, []);
-
-  if (status === "loading") return <SkeletonNav />;
 
   return (
     <Box
@@ -99,7 +96,11 @@ const Navbar = () => {
             _dark={{ color: "black", _hover: { bg: "gray.300" } }}
           />
 
-          <NavbarUserMenu session={session} />
+         {status === "loading" ? (
+            <SkeletonCircle size="10" />
+          ) : (
+            <NavbarUserMenu session={session} />
+          )}
         </Flex>
       </Flex>
 

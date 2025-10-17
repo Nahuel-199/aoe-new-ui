@@ -138,7 +138,7 @@ export default function CartSection() {
               justify="space-between"
               gap={{ base: 3, md: 6 }}
             >
-              {/* Imagen + info */}
+
               <Stack direction={{ base: "column", sm: "row" }} align="center" gap={4}>
                 <Image
                   src={item.variant.imageUrl}
@@ -163,7 +163,6 @@ export default function CartSection() {
                 </VStack>
               </Stack>
 
-              {/* Controles */}
               <HStack
                 justify={{ base: "space-between", sm: "flex-end" }}
                 align="center"
@@ -199,7 +198,7 @@ export default function CartSection() {
                     removeFromCart(item.productId, `${item.productId}-${item.variant.size}`)
                   }
                 >
-                    <FiTrash2 />
+                  <FiTrash2 />
                 </IconButton>
               </HStack>
             </Flex>
