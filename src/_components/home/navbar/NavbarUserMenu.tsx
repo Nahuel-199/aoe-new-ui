@@ -20,9 +20,6 @@ const ringCss = defineStyle({
 });
 
 const NavbarUserMenu = ({ session }: { session: any }) => {
-  const isAdmin =
-    session?.user?.email === process.env.USER_ADMIN_EMAIL ||
-    session?.user?.email === process.env.USER_ADMIN_EMAIL2;
 
   if (!session?.user?.email) {
     return (
@@ -62,31 +59,94 @@ const NavbarUserMenu = ({ session }: { session: any }) => {
           <Menu.Content>
             <Menu.Item value="User email" disabled>{session.user.email}</Menu.Item>
 
-            {isAdmin && (
-              <>
-                <Menu.Root positioning={{ placement: "right-start", gutter: 2 }}>
-                  <Menu.TriggerItem cursor="pointer">
-                    Productos <LuChevronRight />
-                  </Menu.TriggerItem>
-                  <Portal>
-                    <Menu.Positioner>
-                      <Menu.Content>
-                        <Link href="/admin/products">
-                          <Menu.Item value="lista de products">Lista</Menu.Item>
-                        </Link>
-                        <Link href="/admin/products/new">
-                          <Menu.Item value="create product">Crear</Menu.Item>
-                        </Link>
-                      </Menu.Content>
-                    </Menu.Positioner>
-                  </Portal>
-                </Menu.Root>
-
-                <Link href="/admin/orders">
-                  <Menu.Item value="pedidos">Pedidos</Menu.Item>
-                </Link>
-              </>
-            )}
+            {session?.user?.email === process.env.USER_ADMIN_EMAIL ||
+              process.env.USER_ADMIN_EMAIL2}
+            <>
+              <Menu.Root positioning={{ placement: "left", gutter: 2 }}>
+                <Menu.TriggerItem cursor="pointer">
+                  Productos <LuChevronRight />
+                </Menu.TriggerItem>
+                <Portal>
+                  <Menu.Positioner>
+                    <Menu.Content>
+                      <Link href="/admin/products">
+                        <Menu.Item value="lista de products">Lista</Menu.Item>
+                      </Link>
+                      <Link href="/admin/products/new">
+                        <Menu.Item value="create product">Crear</Menu.Item>
+                      </Link>
+                    </Menu.Content>
+                  </Menu.Positioner>
+                </Portal>
+              </Menu.Root>
+              <Menu.Root
+                positioning={{ placement: "right-start", gutter: 2 }}
+              >
+                <Menu.TriggerItem cursor={"pointer"}>
+                  Categorias <LuChevronRight />
+                </Menu.TriggerItem>
+                <Portal>
+                  <Menu.Positioner>
+                    <Menu.Content>
+                      <Link href={"/admin/categories"}>
+                        <Menu.Item
+                          value="list-categories"
+                          cursor={"pointer"}
+                        >
+                          Lista
+                        </Menu.Item>
+                      </Link>
+                    </Menu.Content>
+                    <Menu.Content>
+                      <Link href={"/admin/categories/create"}>
+                        <Menu.Item
+                          value="create-categories"
+                          cursor={"pointer"}
+                        >
+                          Crear
+                        </Menu.Item>
+                      </Link>
+                    </Menu.Content>
+                  </Menu.Positioner>
+                </Portal>
+              </Menu.Root>
+              <Menu.Root
+                positioning={{ placement: "right-start", gutter: 2 }}
+              >
+                <Menu.TriggerItem cursor={"pointer"}>
+                  Sub-Categorias <LuChevronRight />
+                </Menu.TriggerItem>
+                <Portal>
+                  <Menu.Positioner>
+                    <Menu.Content>
+                      <Link href={"/admin/subcategories"}>
+                        <Menu.Item
+                          value="list-subcategories"
+                          cursor={"pointer"}
+                        >
+                          Lista
+                        </Menu.Item>
+                      </Link>
+                    </Menu.Content>
+                    <Menu.Content>
+                      <Link href={"/admin/subcategories/create"}>
+                        <Menu.Item
+                          value="create-subcategories"
+                          cursor={"pointer"}
+                        >
+                          Crear
+                        </Menu.Item>
+                      </Link>
+                    </Menu.Content>
+                  </Menu.Positioner>
+                </Portal>
+              </Menu.Root>
+              <Link href="/admin/orders">
+                <Menu.Item value="pedidos" cursor={"pointer"}>
+                  Pedidos
+                  </Menu.Item>
+              </Link>
+            </>
 
             <Menu.Item value="logout" onClick={() => window.location.href = "/api/auth/signout?callbackUrl=/"}>
               Cerrar sesión
