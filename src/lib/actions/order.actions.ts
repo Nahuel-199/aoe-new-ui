@@ -127,6 +127,7 @@ export async function updateOrderAdmin(formData: FormData) {
   await connectDB();
 
   const orderId = formData.get("orderId") as string;
+  const deliveryCost = Number(formData.get("deliveryCost") || 0);
   const data = {
     comments: formData.get("comments") as string,
     paymentMethod: formData.get("paymentMethod") as string,
@@ -134,6 +135,7 @@ export async function updateOrderAdmin(formData: FormData) {
     remainingAmount: Number(formData.get("remainingAmount") || 0),
     phoneNumber: formData.get("phoneNumber") as string,
     deliveryMethod: formData.get("deliveryMethod") as "correo" | "punto_encuentro",
+    deliveryCost,
     meetingAddress: formData.get("meetingAddress") as string,
   };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Order } from "@/types/order.types";
 import {
   Box,
@@ -33,7 +33,27 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function OrderById({ orders }: OrderProps) {
-    const { pending } = useFormStatus();
+  const { pending } = useFormStatus();
+  const [deliveryMethod, setDeliveryMethod] = useState<string[]>(
+    orders.deliveryMethod ? [orders.deliveryMethod] : []
+  );
+  const [deliveryCost, setDeliveryCost] = useState(orders.deliveryCost || 0);
+  const [paidAmount, setPaidAmount] = useState(orders.paidAmount || 0);
+  const [total, setTotal] = useState(orders.total || 0);
+
+  useEffect(() => {
+    const itemsTotal = orders.items.reduce(
+      (sum, item) => sum + item.variant.price * item.variant.quantity,
+      0
+    );
+
+    const newTotal =
+      deliveryMethod[0] === "correo"
+        ? itemsTotal + Number(deliveryCost)
+        : itemsTotal;
+
+    setTotal(newTotal);
+  }, [deliveryMethod, deliveryCost, orders.items]);
 
   const deliveryCollection = createListCollection({
     items: [
@@ -96,11 +116,27 @@ export default function OrderById({ orders }: OrderProps) {
       <Separator my={4} />
 
       <HStack justify="space-between">
-        <Text fontWeight="bold">Total:</Text>
+        <Text fontWeight="bold">Total productos:</Text>
         <Text fontWeight="bold" color="red.500">
-          ${orders.total}
+          $
+          {orders.items.reduce(
+            (sum, item) => sum + item.variant.price * item.variant.quantity,
+            0
+          )}
         </Text>
       </HStack>
+
+
+      {deliveryMethod[0] === "correo" && (
+        <>
+          <HStack justify="space-between" mt={3}>
+            <Text fontWeight="bold">Total (productos + envío):</Text>
+            <Text fontWeight="bold" color="red.500">
+              ${total}
+            </Text>
+          </HStack>
+        </>
+      )}
 
       <Separator my={4} />
 
@@ -122,8 +158,9 @@ export default function OrderById({ orders }: OrderProps) {
           <Select.Root
             name="deliveryMethod"
             collection={deliveryCollection}
-            defaultValue={orders.deliveryMethod ? [orders.deliveryMethod] : []}
+            defaultValue={deliveryMethod}
             width="200px"
+            onValueChange={(e) => setDeliveryMethod(e.value)}
           >
             <Select.HiddenSelect />
             <Select.Control>
@@ -147,6 +184,22 @@ export default function OrderById({ orders }: OrderProps) {
               </Select.Positioner>
             </Portal>
           </Select.Root>
+
+          <HStack mt={4} align="center" gap={4}>
+            <Box>
+              <Text fontWeight="bold" mb={1}>
+                Costo de envío:
+              </Text>
+              <Input
+                type="number"
+                name="deliveryCost"
+                width="120px"
+                value={deliveryCost}
+                onChange={(e) => setDeliveryCost(Number(e.target.value))}
+              />
+              <input type="hidden" name="total" value={orders.total} />
+            </Box>
+          </HStack>
 
           <Text fontWeight="bold">Método de pago:</Text>
           <Select.Root
@@ -184,7 +237,8 @@ export default function OrderById({ orders }: OrderProps) {
               <Input
                 type="number"
                 name="paidAmount"
-                defaultValue={orders.paidAmount || 0}
+                value={paidAmount}
+                onChange={(e) => setPaidAmount(Number(e.target.value))}
               />
             </Box>
 
@@ -193,7 +247,7 @@ export default function OrderById({ orders }: OrderProps) {
               <Input
                 type="number"
                 name="remainingAmount"
-                defaultValue={orders.total - orders.paidAmount || orders.total}
+                value={Math.max(total - paidAmount, 0)}
                 readOnly
               />
             </Box>

@@ -29,6 +29,7 @@ export interface Order {
     remainingAmount: number;
     phoneNumber?: string;
     deliveryMethod: "correo" | "punto_encuentro";
+    deliveryCost: number;
     meetingAddress?: string;
     status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
 }

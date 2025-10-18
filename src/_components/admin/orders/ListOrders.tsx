@@ -187,8 +187,10 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
                 Método de pago: {order.paymentMethod || "No especificado"}
               </Text>
               <Text fontSize={{ base: "xs", md: "sm" }} color="gray.500" mb={1}>
-                Pagado: ${order.paidAmount} / Restante: $
-                {order.total - order.paidAmount}
+                Pagado: ${order.paidAmount}
+              </Text>
+              <Text fontSize={{ base: "xs", md: "sm" }} color="gray.500">
+                Restante: ${Math.max(order.total + (order.deliveryCost || 0) - order.paidAmount, 0)}
               </Text>
               <Text fontSize={{ base: "xs", md: "sm" }} color="gray.500" mb={1}>
                 Teléfono: {order.phoneNumber || "No informado"}
@@ -199,6 +201,12 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
                   ? "Correo"
                   : "Punto de encuentro"}
               </Text>
+
+              {order.deliveryMethod === "correo" && (
+                <Text fontSize={{ base: "xs", md: "sm" }} color="gray.500" mb={1}>
+                  Costo de envío: ${order.deliveryCost || 0}
+                </Text>
+              )}
 
               {order.meetingAddress && (
                 <Text
@@ -222,10 +230,12 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
 
             <HStack justify="space-between" mb={3}>
               <Text fontWeight="bold" fontSize={{ base: "sm", md: "md" }}>
-                Total: ${order.total}
+                Total: $
+                {order.deliveryCost && order.deliveryCost > 0
+                  ? order.total + order.deliveryCost
+                  : order.total}
               </Text>
             </HStack>
-
             <Wrap gap={2}>
               {[
                 "pending",

@@ -174,9 +174,20 @@ export default function OrdersByUser({ orders }: { orders: Order[] }) {
                                 Total:
                             </Text>
                             <Text fontWeight="bold" fontSize="lg" color="red.500">
-                                ${order.total}
+                                ${order.total + (order.deliveryCost || 0)}
                             </Text>
                         </HStack>
+
+                        {order.paidAmount !== undefined && (
+                            <HStack justify="flex-end" mt={1} gap={3}>
+                                <Text fontWeight="bold" fontSize="md" color="gray.500">
+                                    Restante:
+                                </Text>
+                                <Text fontWeight="bold" fontSize="md" color="gray.700">
+                                    ${Math.max(order.total + (order.deliveryCost || 0) - order.paidAmount, 0)}
+                                </Text>
+                            </HStack>
+                        )}
                     </Box>
                 );
             })}

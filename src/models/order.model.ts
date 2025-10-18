@@ -22,6 +22,7 @@ export interface Order extends Document {
   remainingAmount: number;
   phoneNumber?: string;
   deliveryMethod: "correo" | "punto_encuentro";
+  deliveryCost: number;
   meetingAddress?: string;
 }
 
@@ -61,6 +62,7 @@ const OrderSchema = new Schema<Order>(
       enum: ["correo", "punto_encuentro"],
       required: false,
     },
+    deliveryCost: { type: Number, default: 0 },
     meetingAddress: { type: String, default: "Sin numeración" },
   },
   { timestamps: true }
