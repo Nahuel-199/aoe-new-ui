@@ -41,6 +41,9 @@ export async function createProduct(data: {
     ),
   });
 
+  revalidatePath("/products");
+  revalidatePath("/");
+
   return JSON.parse(JSON.stringify(product));
 }
 

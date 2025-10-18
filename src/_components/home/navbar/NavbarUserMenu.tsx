@@ -8,7 +8,6 @@ import {
   Portal,
   defineStyle,
 } from "@chakra-ui/react";
-import { signOut } from "@/auth";
 import Link from "next/link";
 import { LuChevronRight } from "react-icons/lu";
 
@@ -19,7 +18,7 @@ const ringCss = defineStyle({
   outlineStyle: "solid",
 });
 
-const NavbarUserMenu = ({ session }: { session: any }) => {
+const NavbarUserMenu = ({ session, isAdmin }: { session: any, isAdmin: boolean }) => {
 
   if (!session?.user?.email) {
     return (
@@ -59,8 +58,7 @@ const NavbarUserMenu = ({ session }: { session: any }) => {
           <Menu.Content>
             <Menu.Item value="User email" disabled>{session.user.email}</Menu.Item>
 
-            {session?.user?.email === process.env.USER_ADMIN_EMAIL ||
-              process.env.USER_ADMIN_EMAIL2}
+            {isAdmin && (
             <>
               <Menu.Root positioning={{ placement: "left", gutter: 2 }}>
                 <Menu.TriggerItem cursor="pointer">
@@ -148,6 +146,7 @@ const NavbarUserMenu = ({ session }: { session: any }) => {
               </Link>
             </>
 
+            )}
             <Menu.Item value="logout" onClick={() => window.location.href = "/api/auth/signout?callbackUrl=/"}>
               Cerrar sesión
             </Menu.Item>

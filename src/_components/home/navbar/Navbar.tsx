@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { Box, Flex, HStack, IconButton, Badge, SkeletonCircle } from "@chakra-ui/react";
@@ -10,16 +10,26 @@ import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import { ColorModeButton } from "@/components/ui/color-mode";
 
+import NavbarUserMenu from "./NavbarUserMenu";
 import NavbarBrand from "./NavbarBrand";
 import NavbarLinks from "./NavbarLinks";
-import NavbarUserMenu from "./NavbarUserMenu";
 import MobileDrawer from "./MobileDrawer";
+import { isAdminAction } from "@/lib/actions/is-admin";
 
 const Navbar = () => {
   const navbarRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const { data: session, status } = useSession();
   const { cart } = useCart();
+  const [isPending, startTransition] = useTransition();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    startTransition(async () => {
+      const { isAdmin } = await isAdminAction();
+      setIsAdmin(isAdmin);
+    });
+  }, []);
 
   useEffect(() => {
     gsap.fromTo(
@@ -99,7 +109,7 @@ const Navbar = () => {
          {status === "loading" ? (
             <SkeletonCircle size="10" />
           ) : (
-            <NavbarUserMenu session={session} />
+            <NavbarUserMenu session={session} isAdmin={isAdmin}/>
           )}
         </Flex>
       </Flex>
