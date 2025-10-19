@@ -7,6 +7,8 @@ import { showToast } from "nextjs-toast-notify";
 export const useNewProductForm = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -26,10 +28,10 @@ export const useNewProductForm = () => {
     setForm({ ...form, subcategories: value });
 
   const addVariant = () => {
-    setForm({
-      ...form,
+    setForm((prev) => ({
+      ...prev,
       variants: [
-        ...form.variants,
+        ...prev.variants,
         {
           type: "",
           price: "",
@@ -37,16 +39,38 @@ export const useNewProductForm = () => {
           price_offer: "",
           color: "",
           images: [],
-          sizes: [{ size: "S", stock: 0 }],
+          sizes: [],
           size_chart: "",
         },
       ],
-    });
+    }));
   };
 
   const updateVariant = (index: number, field: string, value: any) => {
     const newVariants = [...form.variants];
-    (newVariants[index] as any)[field] = value;
+    newVariants[index][field] = value;
+
+    if (field === "type") {
+      if (value.toLowerCase() === "básica" || value.toLowerCase() === "basica") {
+        newVariants[index].sizes = [
+          { size: "S", stock: 0 },
+          { size: "M", stock: 0 },
+          { size: "L", stock: 0 },
+          { size: "XL", stock: 0 },
+          { size: "XXL", stock: 0 },
+        ];
+      } else if (value.toLowerCase() === "oversize" || value.toLowerCase() === "overzice") {
+        newVariants[index].sizes = [
+          { size: "S", stock: 0 },
+          { size: "M", stock: 0 },
+          { size: "L", stock: 0 },
+          { size: "XL", stock: 0 },
+        ];
+      } else if (newVariants[index].sizes.length === 0) {
+        newVariants[index].sizes = [{ size: "S", stock: 0 }];
+      }
+    }
+
     setForm({ ...form, variants: newVariants });
   };
 
@@ -58,20 +82,37 @@ export const useNewProductForm = () => {
 
   const handleUploadImage = async (index: number, files: File[]) => {
     if (files.length === 0) return;
+    try {
+      setIsUploadingImage(true);
 
-    const uploaded = await imageUpload(files);
+      const uploaded = await imageUpload(files);
 
-    const formattedImages = uploaded.map((img) => ({
-      id: img.public_id,
-      url: img.url,
-    }));
+      const formattedImages = uploaded.map((img) => ({
+        id: img.public_id,
+        url: img.url,
+      }));
 
-    const newVariants = [...form.variants];
-    newVariants[index].images = [
-      ...newVariants[index].images,
-      ...formattedImages,
-    ];
-    setForm({ ...form, variants: newVariants });
+      const newVariants = [...form.variants];
+      newVariants[index].images = [
+        ...newVariants[index].images,
+        ...formattedImages,
+      ];
+      setForm({ ...form, variants: newVariants });
+
+      showToast.success("Imagen cargada correctamente", {
+        duration: 2500,
+        progress: true,
+        position: "top-center",
+      });
+    } catch (err) {
+      showToast.error("Error al subir imagen", {
+        duration: 2500,
+        progress: true,
+        position: "top-center",
+      });
+    } finally {
+      setIsUploadingImage(false);
+    }
   };
 
   const handleRemoveImage = (variantIndex: number, imgIndex: number) => {
@@ -83,6 +124,7 @@ export const useNewProductForm = () => {
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
+
       await createProduct({
         name: form.name,
         description: form.description,
@@ -98,23 +140,20 @@ export const useNewProductForm = () => {
         subcategories: [],
         variants: [],
       });
-      showToast.success("¡Producto creado exitósamente!", {
+
+      showToast.success("¡Producto creado exitosamente!", {
         duration: 4000,
         progress: true,
         position: "top-center",
         transition: "bounceIn",
-        icon: '',
-        sound: true,
       });
+
       router.push("/admin/products");
     } catch (err) {
       showToast.error("Error al crear el producto", {
         duration: 4000,
         progress: true,
         position: "top-center",
-        transition: "bounceIn",
-        icon: '',
-        sound: true,
       });
     } finally {
       setIsLoading(false);
@@ -134,5 +173,6 @@ export const useNewProductForm = () => {
     handleRemoveImage,
     handleSubmit,
     isLoading,
+    isUploadingImage,
   };
 };

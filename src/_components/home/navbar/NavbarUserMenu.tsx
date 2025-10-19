@@ -96,7 +96,7 @@ const NavbarUserMenu = ({ session, isAdmin }: { session: any, isAdmin: boolean }
                       </Link>
                     </Menu.Content>
                     <Menu.Content>
-                      <Link href={"/admin/categories/create"}>
+                      <Link href={"/admin/categories/new"}>
                         <Menu.Item
                           value="create-categories"
                           cursor={"pointer"}
@@ -127,7 +127,7 @@ const NavbarUserMenu = ({ session, isAdmin }: { session: any, isAdmin: boolean }
                       </Link>
                     </Menu.Content>
                     <Menu.Content>
-                      <Link href={"/admin/subcategories/create"}>
+                      <Link href={"/admin/subcategories/new"}>
                         <Menu.Item
                           value="create-subcategories"
                           cursor={"pointer"}

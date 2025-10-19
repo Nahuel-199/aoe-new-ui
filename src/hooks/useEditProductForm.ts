@@ -8,6 +8,7 @@ import { showToast } from "nextjs-toast-notify";
 export const useEditProductForm = (product: Product) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [form, setForm] = useState({
     _id: product._id,
     name: product.name || "",
@@ -129,5 +130,6 @@ export const useEditProductForm = (product: Product) => {
     handleRemoveImage,
     handleSubmit,
     isLoading,
+    isUploadingImage,
   };
 };

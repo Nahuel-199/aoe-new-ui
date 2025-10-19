@@ -5,7 +5,6 @@ import {
   HStack,
   Input,
   IconButton,
-  Text,
   NumberInput,
   Image,
   Field,
@@ -14,6 +13,8 @@ import {
   Select,
   Portal,
   RadioGroup,
+  Flex,
+  Spinner,
 } from "@chakra-ui/react";
 import { IoClose } from "react-icons/io5";
 import { FiPlus } from "react-icons/fi";
@@ -26,6 +27,7 @@ export const VariantForm = ({
   addSizeToVariant,
   handleUploadImage,
   handleRemoveImage,
+  isUploadingImage,
 }: any) => {
   const colors = createListCollection({
     items: [
@@ -59,7 +61,7 @@ export const VariantForm = ({
   });
 
   return (
-    <Box p={4} h={"auto"} w="full" maxW={{ base: "95%", md: "100%" }}>
+    <Box p={4} h={"auto"} w="full" maxW={{ base: "100%", md: "100%" }}>
       <Field.Root required>
         <Field.Label>Precio</Field.Label>
         <NumberInput.Root
@@ -187,16 +189,30 @@ export const VariantForm = ({
 
       <Field.Root required>
         <Field.Label>Imagenes</Field.Label>
-        <Input
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={(e) => {
-            const files = e.target.files ? Array.from(e.target.files) : [];
-            handleUploadImage(index, files);
-          }}
-          mb={4}
-        />
+        {isUploadingImage ? (
+          <Flex
+            align="center"
+            justify="center"
+            h="120px"
+            border="2px dashed"
+            borderColor="gray.300"
+            borderRadius="md"
+            mb={4}
+          >
+            <Spinner size="xl" colorPalette={"red"} />
+          </Flex>
+        ) : (
+          <Input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={(e) => {
+              const files = e.target.files ? Array.from(e.target.files) : [];
+              handleUploadImage(index, files);
+            }}
+            mb={4}
+          />
+        )}
       </Field.Root>
       <HStack gap={2} wrap="wrap" mb={2}>
         {variant.images?.map((img: any, imgIndex: number) => (

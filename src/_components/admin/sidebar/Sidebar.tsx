@@ -139,7 +139,7 @@ const Sidebar = () => {
   return (
     <Box
       w="240px"
-      h="100vh"
+      h="97vh"
       borderRightWidth="1px"
       position="sticky"
       top={0}

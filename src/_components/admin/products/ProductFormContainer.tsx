@@ -1,6 +1,14 @@
-'use client';
+"use client";
 
-import { Box, Button, Grid, GridItem } from "@chakra-ui/react";
+import {
+    Box,
+    Button,
+    ButtonGroup,
+    Steps,
+    Grid,
+    GridItem,
+} from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import ProductFormFields from "./ProductFormFields";
 import { VariantForm } from "./variants/VariantForm";
 import { useNewProductForm } from "@/hooks/useNewProductForm";
@@ -35,7 +43,19 @@ export default function ProductFormContainer({
         handleRemoveImage,
         handleSubmit,
         isLoading,
+        isUploadingImage,
     } = formHook;
+
+    const [step, setStep] = useState(0);
+
+    useEffect(() => {
+        if (form.variants.length === 0) addVariant();
+    }, [form.variants.length, addVariant]);
+
+    const steps = [
+        { title: "Datos del producto" },
+        { title: "Variantes" },
+    ];
 
     return (
         <Box
@@ -46,43 +66,45 @@ export default function ProductFormContainer({
             rounded="lg"
             shadow="md"
         >
-            <Grid
-                templateColumns={{ base: "1fr", md: "1fr 1fr" }}
-                gap={8}
-                alignItems="start"
+            <Steps.Root
+                step={step}
+                onStepChange={(e) => setStep(e.step)}
+                count={steps.length}
             >
-                <GridItem w="full" maxW="100%">
-                    <ProductFormFields
-                        form={form}
-                        categories={categories}
-                        subcategories={subcategories}
-                        onChange={handleChange}
-                        onCategoryChange={handleCategory}
-                        onSubcategoriesChange={handleSubcategories}
-                    />
-                    <Box display={"flex"} flexDir={"row"}>
-                        <Button colorScheme="teal" onClick={handleSubmit} loading={isLoading} loadingText={mode === "edit" ? "Actualizando..." : "Creando..."} display={{ base: "none", md: "inherit" }}>
-                            {mode === "create" ? "Crear Producto" : "Actualizar Producto"}
-                        </Button>
-                        <Button
-                            colorPalette="red"
-                            onClick={addVariant}
-                            mb={4}
-                            ml={4}
-                        >
-                            + Agregar Variante
-                        </Button>
-                    </Box>
-                </GridItem>
+                <Steps.List mb={6}>
+                    {steps.map((s, index) => (
+                        <Steps.Item key={index} index={index} title={s.title}>
+                            <Steps.Indicator />
+                            <Steps.Title>{s.title}</Steps.Title>
+                            <Steps.Separator />
+                        </Steps.Item>
+                    ))}
+                </Steps.List>
 
-                <GridItem w="full" maxW="100%">
+                <Steps.Content index={0}>
+                    <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={8}>
+                        <GridItem colSpan={2}>
+                            <ProductFormFields
+                                form={form}
+                                categories={categories}
+                                subcategories={subcategories}
+                                onChange={handleChange}
+                                onCategoryChange={handleCategory}
+                                onSubcategoriesChange={handleSubcategories}
+                            />
+                        </GridItem>
+                    </Grid>
+                </Steps.Content>
+
+                <Steps.Content index={1}>
                     <Box
                         w="full"
                         maxW={{ base: "90%", md: "100%" }}
-                        maxH={{ base: "300px", md: "530px" }}
+                        maxH={{ base: "400px", md: "350px" }}
                         overflowY="auto"
                         borderWidth="1px"
                         borderRadius="md"
+                        p={4}
                     >
                         {form.variants.map((variant, index) => (
                             <VariantForm
@@ -93,14 +115,45 @@ export default function ProductFormContainer({
                                 addSizeToVariant={addSizeToVariant}
                                 handleUploadImage={handleUploadImage}
                                 handleRemoveImage={handleRemoveImage}
+                                isUploadingImage={isUploadingImage}
                             />
                         ))}
+
+                        <Button
+                            mt={4}
+                            colorScheme="teal"
+                            variant="outline"
+                            onClick={addVariant}
+                        >
+                            + Agregar otra variante
+                        </Button>
                     </Box>
-                </GridItem>
-            </Grid>
-            <Button colorPalette="red" variant={"outline"} onClick={handleSubmit} loading={isLoading} loadingText={mode === "edit" ? "Actualizando..." : "Creando..."} display={{ base: "block", md: "none" }} mt={4} w="full">
-                {mode === "create" ? "Crear Producto" : "Actualizar Producto"}
-            </Button>
+
+                    <Button
+                        mt={6}
+                        colorPalette="red"
+                        onClick={handleSubmit}
+                        loading={isLoading}
+                        loadingText={mode === "edit" ? "Actualizando..." : "Creando..."}
+                        w={{ base: "full", md: "30%" }}
+                    >
+                        {mode === "create" ? "Crear Producto" : "Actualizar Producto"}
+                    </Button>
+                </Steps.Content>
+
+                <Steps.CompletedContent>
+                    ¡Producto completado!
+                </Steps.CompletedContent>
+
+                <ButtonGroup size="sm" variant="outline" mt={8}>
+                    <Steps.PrevTrigger asChild>
+                        <Button disabled={step === 0}>Anterior</Button>
+                    </Steps.PrevTrigger>
+                    <Steps.NextTrigger asChild>
+                        <Button disabled={step === steps.length}>Siguiente</Button>
+                    </Steps.NextTrigger>
+                </ButtonGroup>
+            </Steps.Root>
         </Box>
     );
 }
