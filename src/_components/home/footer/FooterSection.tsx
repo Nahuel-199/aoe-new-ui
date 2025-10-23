@@ -48,7 +48,7 @@ const FooterSection: React.FC = () => {
         <Link href="https://www.instagram.com/aoe_indumentaria">
           <FaInstagram size={32} color="#E4405F"/>
         </Link>
-        <Link href="https://wa.me/1234567890">
+        <Link href="https://wa.me/5491124969558">
           <FaWhatsapp size={32} color="#25D366" />
         </Link>
       </Box>

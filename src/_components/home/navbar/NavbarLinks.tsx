@@ -11,6 +11,11 @@ const NavbarLinks = ({ session }: { session: any }) => (
         Productos
       </Button>
     </Link>
+    <Link href="/personalizados">
+      <Button variant="ghost" ml={4} _dark={{ color: "black", _hover: { bg: "gray.300" } }}>
+        Personalizados
+      </Button>
+    </Link>
     {session?.user?.email && (
       <Link href="/mis-pedidos">
         <Button variant="ghost" _dark={{ color: "black", _hover: { bg: "gray.300" } }}>

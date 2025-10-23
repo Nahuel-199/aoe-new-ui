@@ -19,6 +19,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createOrder } from "@/lib/actions/order.actions";
 import { showToast } from "nextjs-toast-notify";
+import { useSession } from "next-auth/react";
 
 export default function CartSection() {
   const {
@@ -29,6 +30,7 @@ export default function CartSection() {
     decreaseQuantity,
   } = useCart();
   const [loading, setLoading] = useState(false);
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   const total = cart.reduce(
@@ -37,6 +39,20 @@ export default function CartSection() {
   );
 
   const handleCreateOrder = async () => {
+    if (!session) {
+      showToast.warning("Debes iniciar sesión para continuar con la compra.", {
+        duration: 4000,
+        progress: true,
+        position: "top-center",
+        transition: "bounceIn",
+        icon: "",
+        sound: true,
+      });
+
+      router.push("/login");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -65,8 +81,33 @@ export default function CartSection() {
         icon: "",
         sound: true,
       });
-      clearCart();
-      router.push(`/mis-pedidos`);
+
+      setTimeout(() => {
+        const phoneNumber = "5491124969558";
+        let message = `¡Hola! 👋 Vengo desde la página y quiero confirmar este pedido:\n\n`;
+
+        cart.forEach((item, index) => {
+          message += `*${index + 1}. ${item.name}*\n`;
+          message += `   🧥 Tipo: _${item.variant.type}_\n`;
+          message += `   🎨 Color: _${item.variant.color}_\n`;
+          message += `   📏 Talle: _${item.variant.size}_\n`;
+          message += `   🔢 Cantidad: *${item.quantity}*\n`;
+          message += `   💰 Precio: $${item.variant.price} c/u\n`;
+          message += `   ➕ Subtotal: *$${item.variant.price * item.quantity}*\n\n`;
+        });
+
+        message += `━━━━━━━━━━━━━━━\n`;
+        message += `💵 *Total a pagar:* $${total}\n`;
+        message += `━━━━━━━━━━━━━━━\n\n`;
+        message += `🙌 ¡Desde ya muchas gracias! Espero tu confirmación para coordinar el envío 🚚✨`;
+
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+        clearCart();
+        window.open(whatsappLink, "_blank");
+        router.push("/mis-pedidos");
+      }, 2000);
     } catch (error) {
       showToast.error("Error creando la orden de compra", {
         duration: 4000,
@@ -220,12 +261,16 @@ export default function CartSection() {
             <Button
               colorScheme="red"
               onClick={handleCreateOrder}
-              loading={loading}
+              loading={loading || status === "loading"}
               w={{ base: "full", sm: "auto" }}
             >
               Finalizar compra
             </Button>
-            <Button variant="outline" onClick={clearCart} w={{ base: "full", sm: "auto" }}>
+            <Button
+              variant="outline"
+              onClick={clearCart}
+              w={{ base: "full", sm: "auto" }}
+            >
               Vaciar carrito
             </Button>
           </HStack>

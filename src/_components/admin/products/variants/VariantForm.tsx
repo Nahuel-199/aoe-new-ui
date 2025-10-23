@@ -15,6 +15,8 @@ import {
   RadioGroup,
   Flex,
   Spinner,
+  Text,
+  Progress,
 } from "@chakra-ui/react";
 import { IoClose } from "react-icons/io5";
 import { FiPlus } from "react-icons/fi";
@@ -61,7 +63,11 @@ export const VariantForm = ({
   });
 
   return (
-    <Box p={4} h={"auto"} w="full" maxW={{ base: "100%", md: "100%" }}>
+    <Box
+      p={{ base: 3, md: 4 }}
+      w="100%"
+      maxW="100%"
+    >
       <Field.Root required>
         <Field.Label>Precio</Field.Label>
         <NumberInput.Root
@@ -73,8 +79,8 @@ export const VariantForm = ({
         >
           <NumberInput.Control />
           <NumberInput.Input placeholder="Precio" />
-        </NumberInput.Root>
-      </Field.Root>
+        </NumberInput.Root >
+      </Field.Root >
 
       <Field.Root>
         <Field.Label>¿Está en oferta?</Field.Label>
@@ -100,21 +106,23 @@ export const VariantForm = ({
         </RadioGroup.Root>
       </Field.Root>
 
-      {variant.is_offer && (
-        <Field.Root>
-          <Field.Label>Precio de oferta</Field.Label>
-          <NumberInput.Root
-            min={0}
-            value={variant.price_offer || ""}
-            onValueChange={(e) => updateVariant(index, "price_offer", e.value)}
-            w="full"
-            mb={4}
-          >
-            <NumberInput.Control />
-            <NumberInput.Input placeholder="Precio de oferta" />
-          </NumberInput.Root>
-        </Field.Root>
-      )}
+      {
+        variant.is_offer && (
+          <Field.Root>
+            <Field.Label>Precio de oferta</Field.Label>
+            <NumberInput.Root
+              min={0}
+              value={variant.price_offer || ""}
+              onValueChange={(e) => updateVariant(index, "price_offer", e.value)}
+              w="full"
+              mb={4}
+            >
+              <NumberInput.Control />
+              <NumberInput.Input placeholder="Precio de oferta" />
+            </NumberInput.Root>
+          </Field.Root>
+        )
+      }
 
       <Field.Root required>
         <Field.Label>Tipo</Field.Label>
@@ -190,17 +198,23 @@ export const VariantForm = ({
       <Field.Root required>
         <Field.Label>Imagenes</Field.Label>
         {isUploadingImage ? (
-          <Flex
-            align="center"
-            justify="center"
-            h="120px"
+          <Box
             border="2px dashed"
             borderColor="gray.300"
             borderRadius="md"
+            p={4}
             mb={4}
+            bg="gray.50"
           >
-            <Spinner size="xl" colorPalette={"red"} />
-          </Flex>
+            <Text mb={2} fontSize="sm" color="gray.600">
+              Subiendo imágenes...
+            </Text>
+            <Progress.Root value={60} colorPalette="red" variant="subtle" width="100%">
+              <Progress.Track>
+                <Progress.Range />
+              </Progress.Track>
+            </Progress.Root>
+          </Box>
         ) : (
           <Input
             type="file"
@@ -214,7 +228,7 @@ export const VariantForm = ({
           />
         )}
       </Field.Root>
-      <HStack gap={2} wrap="wrap" mb={2}>
+      <HStack gap={{ base: 2, md: 4 }} wrap="wrap" mb={2}>
         {variant.images?.map((img: any, imgIndex: number) => (
           <Box key={`${img.id}-${imgIndex}`} position="relative">
             <Image
@@ -237,56 +251,61 @@ export const VariantForm = ({
           </Box>
         ))}
       </HStack>
+      {
+        variant.sizes.map((s: any, si: number) => (
+          <HStack
+            key={si}
+            gap={{ base: 2, md: 4 }}
+            mb={3}
+            align="end"
+            flexWrap="wrap"
+          >
+            <Box w={{ base: "45%", md: "200px" }}>
+              <Field.Root required>
+                <Field.Label>Talle</Field.Label>
+                <Input
+                  placeholder="Talle"
+                  value={s.size}
+                  w={"100%"}
+                  onChange={(e) => {
+                    updateVariant(index, "sizes", [
+                      ...variant.sizes.map((sz: any, i: number) =>
+                        i === si ? { ...sz, size: e.target.value } : sz
+                      ),
+                    ]);
+                  }}
+                />
+              </Field.Root>
+            </Box>
+            <Box w={{ base: "45%", md: "100px" }}>
+              <Field.Root required>
+                <Field.Label>Stock</Field.Label>
+                <NumberInput.Root
+                  min={0}
+                  w="100%"
+                  value={s.stock.toString()}
+                  onValueChange={(e) => {
+                    updateVariant(index, "sizes", [
+                      ...variant.sizes.map((sz: any, i: number) =>
+                        i === si ? { ...sz, stock: Number(e.value) } : sz
+                      ),
+                    ]);
+                  }}
+                >
+                  <NumberInput.Control />
+                  <NumberInput.Input placeholder="Stock" />
+                </NumberInput.Root>
+              </Field.Root>
+            </Box>
 
-      {/* <Box maxH={{ base: "100px", lg: "200px" }} overflowY="auto" pr={2}> */}
-      {variant.sizes.map((s: any, si: number) => (
-        <HStack key={si} gap={4} mb={2} align="end">
-          <Box w={{ base: "160px", lg: "200px" }}>
-            <Field.Root required>
-              <Field.Label>Talle</Field.Label>
-              <Input
-                placeholder="Talle"
-                value={s.size}
-                w={"100%"}
-                onChange={(e) => {
-                  updateVariant(index, "sizes", [
-                    ...variant.sizes.map((sz: any, i: number) =>
-                      i === si ? { ...sz, size: e.target.value } : sz
-                    ),
-                  ]);
-                }}
-              />
-            </Field.Root>
-          </Box>
-          <Box w="100px">
-            <Field.Root required>
-              <Field.Label>Stock</Field.Label>
-              <NumberInput.Root
-                min={0}
-                w="100%"
-                value={s.stock.toString()}
-                onValueChange={(e) => {
-                  updateVariant(index, "sizes", [
-                    ...variant.sizes.map((sz: any, i: number) =>
-                      i === si ? { ...sz, stock: Number(e.value) } : sz
-                    ),
-                  ]);
-                }}
-              >
-                <NumberInput.Control />
-                <NumberInput.Input placeholder="Stock" />
-              </NumberInput.Root>
-            </Field.Root>
-          </Box>
-
-          {si === variant.sizes.length - 1 && (
-            <Button size="sm" onClick={() => addSizeToVariant(index)}>
-              <FiPlus />
-            </Button>
-          )}
-        </HStack>
-      ))}
-      {/* </Box> */}
-    </Box>
+            {si === variant.sizes.length - 1 && (
+              <Button size="sm" onClick={() => addSizeToVariant(index)}>
+                <FiPlus />
+              </Button>
+            )}
+          </HStack>
+        ))
+      }
+    </Box >
   );
 };

@@ -59,8 +59,9 @@ export default function ProductFormContainer({
 
     return (
         <Box
-            p={6}
-            maxW="1200px"
+            p={{ base: 3, md: 6 }}
+            w="100%"
+            maxW={{ base: "100%", md: "1200px" }}
             mx="auto"
             borderWidth="1px"
             rounded="lg"
@@ -99,12 +100,9 @@ export default function ProductFormContainer({
                 <Steps.Content index={1}>
                     <Box
                         w="full"
-                        maxW={{ base: "90%", md: "100%" }}
-                        maxH={{ base: "400px", md: "350px" }}
-                        overflowY="auto"
-                        borderWidth="1px"
-                        borderRadius="md"
-                        p={4}
+                        maxW={{ base: "100%", md: "100%" }}
+                        maxH={{ base: "none", md: "auto" }}
+                        p={{ base: 3, md: 4 }}
                     >
                         {form.variants.map((variant, index) => (
                             <VariantForm
@@ -136,6 +134,7 @@ export default function ProductFormContainer({
                         loading={isLoading}
                         loadingText={mode === "edit" ? "Actualizando..." : "Creando..."}
                         w={{ base: "full", md: "30%" }}
+                        size={{ base: "lg", md: "md" }}
                     >
                         {mode === "create" ? "Crear Producto" : "Actualizar Producto"}
                     </Button>
