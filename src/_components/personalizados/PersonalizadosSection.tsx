@@ -106,7 +106,7 @@ export default function PersonalizadosSection() {
                 >
                     Personalizá tu prenda con nosotros
                 </Heading>
-                <Text maxW="600px" color="gray.600" fontSize={{ base: "md", md: "lg" }}>
+                <Text maxW="600px" color="gray.600" _dark={{ color: "gray.300" }} fontSize={{ base: "md", md: "lg" }}>
                     Transformamos tus ideas en prendas únicas. Desde frases, logos o ilustraciones,
                     hacemos realidad tu diseño con la mejor calidad.
                 </Text>
@@ -222,7 +222,7 @@ export default function PersonalizadosSection() {
                                         <Avatar.Fallback name={t.nombre} />
                                         <Avatar.Image src={t.avatar} />
                                     </Avatar.Root>
-                                    <Text fontStyle="italic" color="gray.600">
+                                    <Text fontStyle="italic" color="gray.600" _dark={{ color: "gray.300" }}>
                                         “{t.texto}”
                                     </Text>
                                     <Text fontWeight="bold">{t.nombre}</Text>

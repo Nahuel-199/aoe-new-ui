@@ -49,6 +49,18 @@ const MobileDrawer = ({ open, onClose, session }: Props) => (
               </Button>
             </Link>
 
+             <Link href="/personalizados" onClick={onClose}>
+              <Button
+                variant="ghost"
+                justifyContent="flex-start"
+                textAlign={"center"}
+                w="full"
+                _dark={{ color: "black", bg: "white", _hover: { bg: "gray.300" } }}
+              >
+                Personalizados
+              </Button>
+            </Link>
+
             {session?.user?.email && (
               <Link href="/mis-pedidos" onClick={onClose}>
                 <Button
