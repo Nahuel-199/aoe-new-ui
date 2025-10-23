@@ -32,7 +32,7 @@ const FooterSection: React.FC = () => {
   }, []);
 
   return (
-    <Box bg="white" _dark={{ bg: "black" }} color="white" p={4} textAlign="center" h={{ base:"20vh", lg: "25vh"}}>
+    <Box bg="white" _dark={{ bg: "black" }} color="white" p={4} textAlign="center" h={{ base:"20vh", sm: "20vh", lg: "25vh"}}>
       <Image
           position={"absolute"}
           opacity={0.2}

@@ -195,7 +195,7 @@ export default function CartSection() {
                     <Badge>Color: {item.variant.color}</Badge>
                     <Badge>Talle: {item.variant.size}</Badge>
                   </HStack>
-                  <Text fontSize="sm" color="gray.600">
+                  <Text fontSize="sm" color="gray.600" _dark={{ color: "gray.400"}}>
                     ${item.variant.price} x {item.quantity} ={" "}
                     <Text as="span" fontWeight="bold">
                       ${item.variant.price * item.quantity}
@@ -257,7 +257,11 @@ export default function CartSection() {
             </Text>
           </Text>
 
-          <HStack w={{ base: "full", sm: "auto" }} gap={3}>
+          <HStack
+            w="full"
+            gap={3}
+            flexWrap={{ base: "wrap", sm: "nowrap" }}
+          >
             <Button
               colorScheme="red"
               onClick={handleCreateOrder}
