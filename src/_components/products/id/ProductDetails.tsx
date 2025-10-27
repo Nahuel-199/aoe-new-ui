@@ -54,8 +54,9 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                   .map((variant, idx) => {
                     const sizesCollection = createListCollection({
                       items: variant.sizes.map((s) => ({
-                        label: `${s.size} (${s.stock} disponibles)`,
+                        label: s.stock > 0 ? `${s.size} (${s.stock} disponibles)` : `${s.size} (Sin stock)`,
                         value: `${variant.type}-${s.size}`,
+                        disabled: s.stock === 0,
                       })),
                     });
 
@@ -94,7 +95,7 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                         borderRadius="lg"
                         p={{ base: 4, md: 6 }}
                       >
-                        {/* Columna izquierda - galería */}
+
                         <GridItem>
                           <VStack gap={4} align={"center"}>
                             <Image
@@ -146,7 +147,6 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                           </VStack>
                         </GridItem>
 
-                        {/* Columna derecha - detalles */}
                         <GridItem>
                           <VStack align="start" gap={5}>
                             <Heading size={{ base: "lg", md: "2xl" }}>{product.name}</Heading>
@@ -237,7 +237,7 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                               disabled={selectedSize.length === 0}
                               onClick={handleAddToCart}
                             >
-                             <FaCartPlus /> Agregar al carrito
+                              <FaCartPlus /> Agregar al carrito
                             </Button>
                           </VStack>
                         </GridItem>

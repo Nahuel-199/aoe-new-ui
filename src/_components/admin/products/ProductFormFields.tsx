@@ -51,7 +51,12 @@ export default function ProductFormFields({
     });
 
     return (
-        <Box p={4} w="full" maxW={{base: "95%", md: "100%"}}>
+        <Box
+            p={{ base: 2, md: 4 }}
+            w="100%"
+            maxW={{ base: "100%", md: "90%" }}
+            mx="auto"
+        >
             <Field.Root required>
                 <Field.Label>
                     Nombre
