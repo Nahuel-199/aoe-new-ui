@@ -13,11 +13,14 @@ import {
   IconButton,
   Wrap,
   Stack,
+  Flex,
+  Heading,
 } from "@chakra-ui/react";
 import { deleteOrder, updateOrderStatus } from "@/lib/actions/order.actions";
 import { useRouter } from "next/navigation";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import OrderFilters from "./OrderFilters";
+import { FiPlus } from "react-icons/fi";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "yellow",
@@ -76,6 +79,21 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
 
   return (
     <>
+      <Flex mb={4}>
+        <IconButton
+          aria-label="Agregar orden de compra"
+          variant="outline"
+          colorPalette="red"
+          onClick={() => router.push("/admin/orders/new")}
+          size={"sm"}
+          rounded={"full"}
+        >
+          <FiPlus />
+        </IconButton>
+        <Heading size="2xl" ml={2}>
+          Ordenes de compra
+        </Heading>
+      </Flex>
       <OrderFilters onFilterChange={handleFilterChange} />
       <VStack
         align="stretch"

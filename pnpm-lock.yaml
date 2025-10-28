@@ -56,6 +56,9 @@ importers:
       swiper:
         specifier: ^12.0.2
         version: 12.0.2
+      zod:
+        specifier: ^4.1.12
+        version: 4.1.12
     devDependencies:
       '@types/node':
         specifier: ^20
@@ -1075,6 +1078,9 @@ packages:
   yaml@1.10.2:
     resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
     engines: {node: '>= 6'}
+
+  zod@4.1.12:
+    resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
 
 snapshots:
 
@@ -2345,3 +2351,5 @@ snapshots:
       webidl-conversions: 7.0.0
 
   yaml@1.10.2: {}
+
+  zod@4.1.12: {}
