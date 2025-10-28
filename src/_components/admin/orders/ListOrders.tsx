@@ -13,11 +13,14 @@ import {
   IconButton,
   Wrap,
   Stack,
+  Flex,
+  Heading,
 } from "@chakra-ui/react";
 import { deleteOrder, updateOrderStatus } from "@/lib/actions/order.actions";
 import { useRouter } from "next/navigation";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import OrderFilters from "./OrderFilters";
+import { FiPlus } from "react-icons/fi";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "yellow",
@@ -76,6 +79,21 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
 
   return (
     <>
+      <Flex mb={6}>
+        <IconButton
+          aria-label="Agregar producto"
+          variant="outline"
+          colorPalette="red"
+          onClick={() => router.push("/admin/orders/new")}
+          size={"sm"}
+          rounded={"full"}
+        >
+          <FiPlus />
+        </IconButton>
+        <Heading size="2xl" ml={2}>
+          Ordenes de compra
+        </Heading>
+      </Flex>
       <OrderFilters onFilterChange={handleFilterChange} />
       <VStack
         align="stretch"
@@ -190,7 +208,11 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
                 Pagado: ${order.paidAmount}
               </Text>
               <Text fontSize={{ base: "xs", md: "sm" }} color="gray.500">
-                Restante: ${Math.max(order.total + (order.deliveryCost || 0) - order.paidAmount, 0)}
+                Restante: $
+                {Math.max(
+                  order.total + (order.deliveryCost || 0) - order.paidAmount,
+                  0
+                )}
               </Text>
               <Text fontSize={{ base: "xs", md: "sm" }} color="gray.500" mb={1}>
                 Teléfono: {order.phoneNumber || "No informado"}
@@ -203,7 +225,11 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
               </Text>
 
               {order.deliveryMethod === "correo" && (
-                <Text fontSize={{ base: "xs", md: "sm" }} color="gray.500" mb={1}>
+                <Text
+                  fontSize={{ base: "xs", md: "sm" }}
+                  color="gray.500"
+                  mb={1}
+                >
                   Costo de envío: ${order.deliveryCost || 0}
                 </Text>
               )}
