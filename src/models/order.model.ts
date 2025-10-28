@@ -28,7 +28,7 @@ export interface Order extends Document {
 
 const OrderItemSchema = new Schema<OrderItem>(
   {
-    product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+    product: { type: Schema.Types.ObjectId, ref: "Product", required: false },
     variant: {
       type: { type: String, required: true },
       color: { type: String, required: true },

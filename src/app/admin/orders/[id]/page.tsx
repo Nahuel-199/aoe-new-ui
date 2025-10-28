@@ -1,4 +1,4 @@
-import OrderById from "@/_components/orders/OrderById";
+import OrderById from "@/_components/admin/orders/OrderById";
 import { getOrderById } from "@/lib/actions/order.actions";
 
 
@@ -12,7 +12,6 @@ const Page = async ({ params }: OrdersPageProps) => {
   const { id } = resolvedParams;
 
   const order = await getOrderById(id);
-  console.log("ORDER ID SERVER", order)
 
   if (!order) {
     return <p>Error al cargar la orden.</p>;

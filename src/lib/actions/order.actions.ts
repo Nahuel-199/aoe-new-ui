@@ -84,7 +84,6 @@ export async function createOrder({ items }: { items: CartItem[] }) {
     }
 }
 
-
 export async function getAllOrders() {
     await connectDB();
     const orders = await OrderModel.find()
