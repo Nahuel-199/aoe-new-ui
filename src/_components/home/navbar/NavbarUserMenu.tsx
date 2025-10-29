@@ -139,6 +139,37 @@ const NavbarUserMenu = ({ session, isAdmin }: { session: any, isAdmin: boolean }
                   </Menu.Positioner>
                 </Portal>
               </Menu.Root>
+               <Menu.Root
+                positioning={{ placement: "right-start", gutter: 2 }}
+              >
+                <Menu.TriggerItem cursor={"pointer"}>
+                  Personalizados <LuChevronRight />
+                </Menu.TriggerItem>
+                <Portal>
+                  <Menu.Positioner>
+                    <Menu.Content>
+                      <Link href={"/admin/custom-orders"}>
+                        <Menu.Item
+                          value="list-custom-orders"
+                          cursor={"pointer"}
+                        >
+                          Lista
+                        </Menu.Item>
+                      </Link>
+                    </Menu.Content>
+                    <Menu.Content>
+                      <Link href={"/admin/custom-orders/new"}>
+                        <Menu.Item
+                          value="create-custom-orders"
+                          cursor={"pointer"}
+                        >
+                          Crear
+                        </Menu.Item>
+                      </Link>
+                    </Menu.Content>
+                  </Menu.Positioner>
+                </Portal>
+              </Menu.Root>
               <Link href="/admin/orders">
                 <Menu.Item value="pedidos" cursor={"pointer"}>
                   Pedidos

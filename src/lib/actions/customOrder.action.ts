@@ -2,6 +2,7 @@
 
 import { connectDB } from "@/lib/db";
 import customOrderModel from "@/models/customOrder.model";
+import { CustomOrder } from "@/types/customOrder.types";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -24,7 +25,9 @@ const customOrderModelSchema = z.object({
   clientName: z.string().min(1, "Nombre del cliente requerido"),
   phoneNumber: z.string().optional(),
   email: z.string().email("Email inválido").optional().or(z.literal("")),
-  items: z.array(customOrderModelItemSchema).min(1, "Debe agregar al menos un producto"),
+  items: z
+    .array(customOrderModelItemSchema)
+    .min(1, "Debe agregar al menos un producto"),
   total: z.coerce.number().min(0),
   remainingAmount: z.coerce.number().min(0).optional(),
   paidAmount: z.coerce.number().min(0).optional(),
@@ -32,7 +35,9 @@ const customOrderModelSchema = z.object({
   deliveryMethod: z.string().optional(),
   shippingAddress: z.string().optional(),
   meetingAddress: z.string().optional(),
-  status: z.enum(["pending", "in_progress", "completed", "cancelled"]).default("pending"),
+  status: z
+    .enum(["pending", "in_progress", "completed", "cancelled"])
+    .default("pending"),
   paymentStatus: z.enum(["pending", "paid", "refunded"]).default("pending"),
   comments: z.string().optional(),
   designNotes: z.string().optional(),
@@ -45,7 +50,6 @@ export async function createCustomOrder(prevState: any, formData: FormData) {
   try {
     console.log("📩 Recibiendo formData...");
 
-    // 🔍 1. Reconstruir los items dinámicamente
     const items: any[] = [];
     const itemMap: Record<number, any> = {};
 
@@ -59,7 +63,6 @@ export async function createCustomOrder(prevState: any, formData: FormData) {
       }
     }
 
-    // Convertir a array final de items
     for (const index in itemMap) {
       const item = itemMap[index];
       items.push({
@@ -73,7 +76,6 @@ export async function createCustomOrder(prevState: any, formData: FormData) {
       });
     }
 
-    // 🔧 2. Construir objeto final
     const data = {
       clientName: formData.get("clientName"),
       phoneNumber: formData.get("phoneNumber"),
@@ -93,17 +95,10 @@ export async function createCustomOrder(prevState: any, formData: FormData) {
       designReferences: [],
     };
 
-    console.log("📦 Datos antes de validar:", data);
-
-    // 🔒 3. Validar datos
     const validatedData = customOrderModelSchema.parse(data);
-    console.log("✅ Datos validados:", validatedData);
 
-    // 💾 4. Guardar en DB
     await connectDB();
     const order = await customOrderModel.create(validatedData);
-
-    console.log("💾 Orden creada:", order);
     revalidatePath("/dashboard/orders");
 
     return { success: true, message: "Orden creada exitosamente" };
@@ -112,11 +107,68 @@ export async function createCustomOrder(prevState: any, formData: FormData) {
       console.error("❌ Error de validación:", error.issues);
       return {
         success: false,
-        message: "Datos inválidos: " + error.issues.map(i => i.message).join(", "),
+        message:
+          "Datos inválidos: " + error.issues.map((i) => i.message).join(", "),
       };
     }
 
     console.error("💥 Error al crear la orden:", error);
     return { success: false, message: "Error interno del servidor" };
+  }
+}
+
+export async function getCustomOrders(): Promise<{
+  success: boolean;
+  data?: CustomOrder[];
+  message?: string;
+}> {
+  try {
+    await connectDB();
+
+    const orders = await customOrderModel.find().sort({ createdAt: -1 }).lean();
+
+    const serializedOrders: CustomOrder[] = orders.map((order: any) => ({
+      ...order,
+      _id: order._id.toString(),
+      createdAt: order.createdAt?.toISOString() ?? "",
+    }));
+
+    return { success: true, data: serializedOrders };
+  } catch (error) {
+    console.error("💥 Error al obtener las órdenes personalizadas:", error);
+    return {
+      success: false,
+      message: "Error al obtener las órdenes personalizadas",
+    };
+  }
+}
+
+export async function getCustomOrderById(id: string) {
+  try {
+    await connectDB();
+    const order = await customOrderModel.findById(id).lean();
+
+    if (!order) {
+      return { success: false, message: "Orden no encontrada" };
+    }
+
+    return { success: true, data: order };
+  } catch (error) {
+    console.error("💥 Error al obtener la orden:", error);
+    return { success: false, message: "Error al obtener la orden" };
+  }
+}
+
+export async function getCustomOrdersByStatus(status: string) {
+  try {
+    await connectDB();
+    const orders = await customOrderModel
+      .find({ status })
+      .sort({ createdAt: -1 })
+      .lean();
+    return { success: true, data: orders };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Error al filtrar las órdenes" };
   }
 }

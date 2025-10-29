@@ -80,6 +80,13 @@ const SidebarContent = () => {
       >
         Ordenes de compra
       </Button>
+      <Button
+        onClick={() => router.push("/admin/custom-orders")}
+        variant="ghost"
+        justifyContent="flex-start"
+      >
+        Personalizados
+      </Button>
       <HStack>
         <ColorModeButton
           _dark={{ color: "white", _hover: { bg: "gray.300" } }}
