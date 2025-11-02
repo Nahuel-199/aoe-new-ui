@@ -54,7 +54,10 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                   .map((variant, idx) => {
                     const sizesCollection = createListCollection({
                       items: variant.sizes.map((s) => ({
-                        label: s.stock > 0 ? `${s.size} (${s.stock} disponibles)` : `${s.size} (Sin stock)`,
+                        label:
+                          s.stock > 0
+                            ? `${s.size} (${s.stock} disponibles)`
+                            : `${s.size} (Sin stock)`,
                         value: `${variant.type}-${s.size}`,
                         disabled: s.stock === 0,
                       })),
@@ -72,15 +75,18 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                         productId: product._id.toString(),
                         name: product.name,
                         category: (product.category as any)?.name,
-                        subcategories: (product.subcategories as any)?.map((s: any) => s.name),
+                        subcategories: (product.subcategories as any)?.map(
+                          (s: any) => s.name
+                        ),
                         variant: {
                           type: variant.type,
                           color: variant.color,
                           size,
-                          price: variant.is_offer && variant.price_offer
-                            ? variant.price_offer
-                            : variant.price,
-                          imageUrl: variant.images[0]?.url
+                          price:
+                            variant.is_offer && variant.price_offer
+                              ? variant.price_offer
+                              : variant.price,
+                          imageUrl: variant.images[0]?.url,
                         },
                         quantity: 1,
                       });
@@ -95,7 +101,6 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                         borderRadius="lg"
                         p={{ base: 4, md: 6 }}
                       >
-
                         <GridItem>
                           <VStack gap={4} align={"center"}>
                             <Image
@@ -140,7 +145,9 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                                       ? "2px solid #3182CE"
                                       : "1px solid #E2E8F0"
                                   }
-                                  onClick={() => setMainImage(variant.size_chart!)}
+                                  onClick={() =>
+                                    setMainImage(variant.size_chart!)
+                                  }
                                 />
                               )}
                             </HStack>
@@ -149,8 +156,12 @@ export default function ProductDetails({ product }: ProductByIdProps) {
 
                         <GridItem>
                           <VStack align="start" gap={5}>
-                            <Heading size={{ base: "lg", md: "2xl" }}>{product.name}</Heading>
-                            <Text fontSize={{ base: "md", md: "lg" }}>{product.description}</Text>
+                            <Heading size={{ base: "lg", md: "2xl" }}>
+                              {product.name}
+                            </Heading>
+                            <Text fontSize={{ base: "md", md: "lg" }}>
+                              {product.description}
+                            </Text>
 
                             <HStack gap={3} flexWrap={"wrap"}>
                               <Badge colorScheme="green">
@@ -184,20 +195,29 @@ export default function ProductDetails({ product }: ProductByIdProps) {
 
                             <HStack gap={4}>
                               <Text fontWeight="bold">Precio:</Text>
-                              <Badge as="s" colorPalette="red">
-                                ${variant.price}
-                              </Badge>
-                              {variant.is_offer && variant.price_offer && (
+                              {variant.is_offer && variant.price_offer ? (
+                                <>
+                                  <Badge as="s" colorPalette="red">
+                                    ${variant.price}
+                                  </Badge>
+                                  <Text
+                                    fontSize="2xl"
+                                    color="white"
+                                    fontWeight="bold"
+                                  >
+                                    ${variant.price_offer}
+                                  </Text>
+                                </>
+                              ) : (
                                 <Text
                                   fontSize="2xl"
                                   color="white"
                                   fontWeight="bold"
                                 >
-                                  ${variant.price_offer}
+                                  ${variant.price}
                                 </Text>
                               )}
                             </HStack>
-
                             <Box w="full">
                               <Select.Root
                                 collection={sizesCollection}

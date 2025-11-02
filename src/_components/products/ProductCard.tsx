@@ -1,6 +1,14 @@
 "use client";
 
-import { Box, Image, Text, Badge, Button, VStack, HStack } from "@chakra-ui/react";
+import {
+  Box,
+  Image,
+  Text,
+  Badge,
+  Button,
+  VStack,
+  HStack,
+} from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { Product } from "@/types/product.types";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -13,7 +21,9 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const router = useRouter();
   const uniqueTypes = Array.from(new Set(product.variants.map((v) => v.type)));
-  const uniqueColors = Array.from(new Set(product.variants.map((v) => v.color)));
+  const uniqueColors = Array.from(
+    new Set(product.variants.map((v) => v.color))
+  );
 
   return (
     <Box
@@ -42,7 +52,8 @@ export default function ProductCard({ product }: ProductCardProps) {
           {product.name}
         </Text>
         <Text fontSize="sm" color="gray.500" textAlign={"center"}>
-          Categorias: {product.category?.name} - {product.subcategories?.map((e => e.name))}
+          Categorias: {product.category?.name} -{" "}
+          {product.subcategories?.map((e) => e.name)}
         </Text>
         <Text fontSize="sm" color="gray.500" textAlign={"center"}>
           Tipo: {uniqueTypes.join(" - ")}
@@ -61,15 +72,17 @@ export default function ProductCard({ product }: ProductCardProps) {
           ))}
         </HStack>
         <Box display="flex" gap={2} alignItems="center">
-          {product.variants.map(( e => e.is_offer)) ? (
+          {product.variants.some((v) => v.is_offer) ? (
             <>
               <Badge as="s" colorPalette="red">
-                ${product.variants.map((v) => v.price)[0]}
+                ${product.variants.find((v) => v.is_offer)?.price}
               </Badge>
-              <Text fontWeight="bold">${product.variants.map((v) => v.price_offer)[0]}</Text>
+              <Text fontWeight="bold">
+                ${product.variants.find((v) => v.is_offer)?.price_offer}
+              </Text>
             </>
           ) : (
-            <Text fontWeight="bold">${product.variants.map((v) => v.price)[0]}</Text>
+            <Text fontWeight="bold">${product.variants[0]?.price}</Text>
           )}
         </Box>
         <Button
