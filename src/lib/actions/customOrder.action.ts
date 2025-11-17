@@ -1,8 +1,7 @@
 "use server";
 
-import { connectDB } from "@/lib/db";
-import customOrderModel from "@/models/customOrder.model";
-import { CustomOrder } from "@/types/customOrder.types";
+import clientPromise from "@/lib/db";
+import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -11,7 +10,7 @@ const ImageSchema = z.object({
   url: z.string().url("URL inválida"),
 });
 
-const customOrderModelItemSchema = z.object({
+const customOrderItemSchema = z.object({
   name: z.string().min(1, "Nombre del producto requerido"),
   description: z.string().optional(),
   images: z.array(ImageSchema).default([]),
@@ -21,12 +20,12 @@ const customOrderModelItemSchema = z.object({
   price: z.coerce.number().min(0, "Precio mínimo 0"),
 });
 
-const customOrderModelSchema = z.object({
+const customOrderSchema = z.object({
   clientName: z.string().min(1, "Nombre del cliente requerido"),
   phoneNumber: z.string().optional(),
   email: z.string().email("Email inválido").optional().or(z.literal("")),
   items: z
-    .array(customOrderModelItemSchema)
+    .array(customOrderItemSchema)
     .min(1, "Debe agregar al menos un producto"),
   total: z.coerce.number().min(0),
   remainingAmount: z.coerce.number().min(0).optional(),
@@ -44,7 +43,8 @@ const customOrderModelSchema = z.object({
   designReferences: z.array(ImageSchema).default([]),
 });
 
-export type customOrderModelInput = z.infer<typeof customOrderModelSchema>;
+export type CustomOrderInput = z.infer<typeof customOrderSchema>;
+export type CustomOrder = CustomOrderInput & { _id: string; createdAt: string };
 
 export async function createCustomOrder(prevState: any, formData: FormData) {
   try {
@@ -95,10 +95,20 @@ export async function createCustomOrder(prevState: any, formData: FormData) {
       designReferences: [],
     };
 
-    const validatedData = customOrderModelSchema.parse(data);
+    const validated = customOrderSchema.parse(data);
 
-    await connectDB();
-    const order = await customOrderModel.create(validatedData);
+    const client = await clientPromise;
+    const db = client.db("test");
+    const col = db.collection("customOrders");
+
+    const now = new Date();
+
+    const res = await col.insertOne({
+      ...validated,
+      createdAt: now,
+      updatedAt: now,
+    });
+
     revalidatePath("/dashboard/orders");
 
     return { success: true, message: "Orden creada exitosamente" };
@@ -112,7 +122,7 @@ export async function createCustomOrder(prevState: any, formData: FormData) {
       };
     }
 
-    console.error("💥 Error al crear la orden:", error);
+    console.error("💥 Error al crear orden:", error);
     return { success: false, message: "Error interno del servidor" };
   }
 }
@@ -123,19 +133,24 @@ export async function getCustomOrders(): Promise<{
   message?: string;
 }> {
   try {
-    await connectDB();
+    const client = await clientPromise;
+    const db = client.db("test");
 
-    const orders = await customOrderModel.find().sort({ createdAt: -1 }).lean();
+    const orders = await db
+      .collection("customOrders")
+      .find()
+      .sort({ createdAt: -1 })
+      .toArray();
 
-    const serializedOrders: CustomOrder[] = orders.map((order: any) => ({
+    const serialized = orders.map((order: any) => ({
       ...order,
       _id: order._id.toString(),
       createdAt: order.createdAt?.toISOString() ?? "",
     }));
 
-    return { success: true, data: serializedOrders };
+    return { success: true, data: serialized };
   } catch (error) {
-    console.error("💥 Error al obtener las órdenes personalizadas:", error);
+    console.error("💥 Error al obtener órdenes:", error);
     return {
       success: false,
       message: "Error al obtener las órdenes personalizadas",
@@ -145,28 +160,34 @@ export async function getCustomOrders(): Promise<{
 
 export async function getCustomOrderById(id: string) {
   try {
-    await connectDB();
-    const order = await customOrderModel.findById(id).lean();
+    const client = await clientPromise;
+    const db = client.db("test");
 
-    if (!order) {
-      return { success: false, message: "Orden no encontrada" };
-    }
+    const order = await db
+      .collection("customOrders")
+      .findOne({ _id: new ObjectId(id) });
 
-    return { success: true, data: order };
+    if (!order) return { success: false, message: "Orden no encontrada" };
+
+    return { success: true, data: JSON.parse(JSON.stringify(order)) };
   } catch (error) {
-    console.error("💥 Error al obtener la orden:", error);
+    console.error("💥 Error al obtener orden:", error);
     return { success: false, message: "Error al obtener la orden" };
   }
 }
 
 export async function getCustomOrdersByStatus(status: string) {
   try {
-    await connectDB();
-    const orders = await customOrderModel
+    const client = await clientPromise;
+    const db = client.db("test");
+
+    const orders = await db
+      .collection("customOrders")
       .find({ status })
       .sort({ createdAt: -1 })
-      .lean();
-    return { success: true, data: orders };
+      .toArray();
+
+    return { success: true, data: JSON.parse(JSON.stringify(orders)) };
   } catch (error) {
     console.error(error);
     return { success: false, message: "Error al filtrar las órdenes" };

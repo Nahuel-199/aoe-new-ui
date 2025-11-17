@@ -1,9 +1,16 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useTransition } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
-import { Box, Flex, HStack, IconButton, Badge, SkeletonCircle } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  HStack,
+  IconButton,
+  Badge,
+  SkeletonCircle,
+} from "@chakra-ui/react";
 import { FaBars } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { useSession } from "next-auth/react";
@@ -14,22 +21,13 @@ import NavbarUserMenu from "./NavbarUserMenu";
 import NavbarBrand from "./NavbarBrand";
 import NavbarLinks from "./NavbarLinks";
 import MobileDrawer from "./MobileDrawer";
-import { isAdminAction } from "@/lib/actions/is-admin";
 
 const Navbar = () => {
   const navbarRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const { data: session, status } = useSession();
   const { cart } = useCart();
-  const [isPending, startTransition] = useTransition();
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    startTransition(async () => {
-      const { isAdmin } = await isAdminAction();
-      setIsAdmin(isAdmin);
-    });
-  }, []);
+  const isAdmin = session?.user?.role === "admin";
 
   useEffect(() => {
     gsap.fromTo(
@@ -106,20 +104,19 @@ const Navbar = () => {
             _dark={{ color: "black", _hover: { bg: "gray.300" } }}
           />
 
-         {status === "loading" ? (
+          {status === "loading" ? (
             <SkeletonCircle size="10" />
           ) : (
-            <NavbarUserMenu session={session} isAdmin={isAdmin}/>
+            <NavbarUserMenu session={session} isAdmin={isAdmin} />
           )}
         </Flex>
       </Flex>
 
-        <MobileDrawer
-          open={open}
-          onClose={() => setOpen(false)}
-          session={session}
-        />
-
+      <MobileDrawer
+        open={open}
+        onClose={() => setOpen(false)}
+        session={session}
+      />
     </Box>
   );
 };

@@ -1,11 +1,8 @@
 "use server";
 
-import { connectDB } from "../db";
-import { ProductModel } from "@/models/product.model";
-import "@/models/category.model";
-import "@/models/subcategory.model";
+import clientPromise from "@/lib/db";
 import { deleteImage } from "@/utils/deleteCloudinary";
-import mongoose from "mongoose";
+import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 
 interface ImageInput {
@@ -31,51 +28,113 @@ export async function createProduct(data: {
   subcategories?: string[];
   variants: VariantInput[];
 }) {
-  await connectDB();
+  const client = await clientPromise;
+  const db = client.db("test");
 
-  const product = await ProductModel.create({
+  const product = await db.collection("products").insertOne({
     ...data,
-    category: new mongoose.Types.ObjectId(data.category),
-    subcategories: data.subcategories?.map(
-      (id) => new mongoose.Types.ObjectId(id)
-    ),
+    category: new ObjectId(data.category),
+    subcategories: data.subcategories?.map((id) => new ObjectId(id)) ?? [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
   });
 
   revalidatePath("/products");
   revalidatePath("/");
 
-  return JSON.parse(JSON.stringify(product));
+  return { _id: product.insertedId };
 }
 
 export async function getProducts() {
-  await connectDB();
-  const products = await ProductModel.find()
-    .populate("category")
-    .populate("subcategories")
-    .lean();
+  const client = await clientPromise;
+  const db = client.db("test");
+
+  const products = await db
+    .collection("products")
+    .aggregate([
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      { $unwind: "$category" },
+      {
+        $lookup: {
+          from: "subcategories",
+          localField: "subcategories",
+          foreignField: "_id",
+          as: "subcategories",
+        },
+      },
+    ])
+    .toArray();
+
   return JSON.parse(JSON.stringify(products));
 }
 
 export async function getOffers() {
-  await connectDB();
+  const client = await clientPromise;
+  const db = client.db("test");
 
-  const offers = await ProductModel.find({
-    "variants.is_offer": true,
-  })
-    .populate("category")
-    .populate("subcategories")
-    .lean();
+  const offers = await db
+    .collection("products")
+    .aggregate([
+      { $match: { "variants.is_offer": true } },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      { $unwind: "$category" },
+      {
+        $lookup: {
+          from: "subcategories",
+          localField: "subcategories",
+          foreignField: "_id",
+          as: "subcategories",
+        },
+      },
+    ])
+    .toArray();
 
   return JSON.parse(JSON.stringify(offers));
 }
 
 export async function getProductById(id: string) {
-  await connectDB();
-  const product = await ProductModel.findById(id)
-    .populate("category")
-    .populate("subcategories")
-    .lean();
-  return JSON.parse(JSON.stringify(product));
+  const client = await clientPromise;
+  const db = client.db("test");
+
+  const product = await db
+    .collection("products")
+    .aggregate([
+      { $match: { _id: new ObjectId(id) } },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      { $unwind: "$category" },
+      {
+        $lookup: {
+          from: "subcategories",
+          localField: "subcategories",
+          foreignField: "_id",
+          as: "subcategories",
+        },
+      },
+    ])
+    .toArray();
+
+  return product[0] ?? null;
 }
 
 export async function updateProduct(
@@ -88,48 +147,44 @@ export async function updateProduct(
     variants?: VariantInput[];
   }
 ) {
-  await connectDB();
+  const client = await clientPromise;
+  const db = client.db("test");
 
-  const updateData = { ...data } as any;
+  const updateData: any = { ...data, updatedAt: new Date() };
 
   if (data.category) {
-    updateData.category = new mongoose.Types.ObjectId(data.category);
+    updateData.category = new ObjectId(data.category);
   }
 
   if (data.subcategories) {
-    updateData.subcategories = data.subcategories.map(
-      (id) => new mongoose.Types.ObjectId(id)
-    );
+    updateData.subcategories = data.subcategories.map((id) => new ObjectId(id));
   }
 
-  const updated = await ProductModel.findByIdAndUpdate(id, updateData, {
-    new: true,
-  })
-    .populate("category")
-    .populate("subcategories")
-    .lean();
+  await db
+    .collection("products")
+    .updateOne({ _id: new ObjectId(id) }, { $set: updateData });
 
-  return JSON.parse(JSON.stringify(updated));
+  return getProductById(id);
 }
 
 export async function deleteProduct(id: string) {
-  await connectDB();
+  const client = await clientPromise;
+  const db = client.db("test");
 
-  const product = await ProductModel.findById(id);
+  const product = await db
+    .collection("products")
+    .findOne({ _id: new ObjectId(id) });
 
-  if (!product) {
-    throw new Error("Producto no encontrado");
-  }
+  if (!product) throw new Error("Producto no encontrado");
 
   for (const variant of product.variants) {
     for (const image of variant.images) {
-      if (image.id) {
-        await deleteImage(image.id);
-      }
+      if (image.id) await deleteImage(image.id);
     }
   }
 
-  await ProductModel.findByIdAndDelete(id);
+  await db.collection("products").deleteOne({ _id: new ObjectId(id) });
+
   revalidatePath("/admin/products");
 
   return { success: true };
@@ -140,18 +195,27 @@ export async function deleteProductImage(
   variantIndex: number,
   imageId: string
 ) {
-  await connectDB();
+  const client = await clientPromise;
+  const db = client.db("test");
 
   await deleteImage(imageId);
 
-  const product = await ProductModel.findById(productId);
+  const product = await db
+    .collection("products")
+    .findOne({ _id: new ObjectId(productId) });
+
   if (!product) throw new Error("Producto no encontrado");
 
   product.variants[variantIndex].images = product.variants[
     variantIndex
   ].images.filter((img: any) => img.id !== imageId);
 
-  await product.save();
+  await db
+    .collection("products")
+    .updateOne(
+      { _id: new ObjectId(productId) },
+      { $set: { variants: product.variants } }
+    );
 
   return JSON.parse(JSON.stringify(product));
 }

@@ -1,16 +1,13 @@
-import mongoose, { Schema, Document, models } from "mongoose";
+import clientPromise from "@/lib/db";
 
-export interface Category extends Document {
+export interface Category {
+  _id?: string;
   name: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-const CategorySchema = new Schema<Category>(
-  {
-    name: { type: String, required: true, unique: true },
-  },
-  { timestamps: true }
-);
-
-export const CategoryModel =
-  models.Category || mongoose.model<Category>("Category", CategorySchema);
-  
+export const CategoryCollection = async () => {
+  const client = await clientPromise;
+  return client.db("test").collection<Category>("categories");
+}

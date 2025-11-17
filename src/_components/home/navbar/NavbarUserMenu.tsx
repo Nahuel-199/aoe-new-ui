@@ -49,6 +49,7 @@ const NavbarUserMenu = ({ session, isAdmin }: { session: any, isAdmin: boolean }
         <Box cursor="pointer">
           <Avatar.Root css={ringCss} colorPalette="red" boxSize="35px">
             <Avatar.Fallback name={session.user.email} />
+            <Avatar.Image src={session.user.image} />
           </Avatar.Root>
         </Box>
       </Menu.Trigger>

@@ -1,16 +1,13 @@
-import mongoose, { Schema, Document, models } from "mongoose";
+import clientPromise from "@/lib/db";
 
-export interface Subcategory extends Document {
+export interface Subcategory {
+  _id?: string;
   name: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-const SubcategorySchema = new Schema<Subcategory>(
-  {
-    name: { type: String, required: true, unique: true },
-  },
-  { timestamps: true }
-);
-
-export const SubcategoryModel =
-  models.Subcategory ||
-  mongoose.model<Subcategory>("Subcategory", SubcategorySchema);
+export const SubcategoryCollection = async () => {
+  const client = await clientPromise;
+  return client.db("test").collection<Subcategory>("subcategories");
+};

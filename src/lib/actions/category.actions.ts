@@ -1,35 +1,58 @@
 "use server";
 
-import { connectDB } from "../db";
-import { CategoryModel } from "@/models/category.model";
+import clientPromise from "@/lib/db";
+import { ObjectId } from "mongodb";
 
-export async function createCategory(data: { name: string; }) {
-    await connectDB();
-    const category = await CategoryModel.create({
-        name: data.name,
-    });
-    return JSON.parse(JSON.stringify(category));
+export async function createCategory(data: { name: string }) {
+  const client = await clientPromise;
+  const db = client.db("test");
+
+  const res = await db.collection("categories").insertOne({
+    name: data.name,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+
+  const category = await db
+    .collection("categories")
+    .findOne({ _id: res.insertedId });
+
+  return JSON.parse(JSON.stringify(category));
 }
 
 export async function getCategories() {
-    await connectDB();
-    const categories = await CategoryModel.find().lean();
-    return JSON.parse(JSON.stringify(categories));
+  const client = await clientPromise;
+  const db = client.db("test");
+
+  const categories = await db.collection("categories").find().toArray();
+
+  return JSON.parse(JSON.stringify(categories));
 }
 
 export async function deleteCategory(id: string) {
-    await connectDB();
-    await CategoryModel.findByIdAndDelete(id);
-    return { success: true };
+  const client = await clientPromise;
+  const db = client.db("test");
+
+  const res = await db
+    .collection("categories")
+    .deleteOne({ _id: new ObjectId(id) });
+
+  return { success: res.deletedCount === 1 };
 }
 
-export async function updateCategory(
-    id: string,
-    data: { name?: string; }
-) {
-    await connectDB();
-    const updated = await CategoryModel.findByIdAndUpdate(id, data, {
-        new: true,
-    }).lean();
-    return JSON.parse(JSON.stringify(updated));
+export async function updateCategory(id: string, data: { name?: string }) {
+  const client = await clientPromise;
+  const db = client.db("test");
+
+  const updateData: any = { ...data, updatedAt: new Date() };
+
+  await db
+    .collection("categories")
+    .updateOne({ _id: new ObjectId(id) }, { $set: updateData });
+
+  const updated = await db
+    .collection("categories")
+    .findOne({ _id: new ObjectId(id) });
+
+  return JSON.parse(JSON.stringify(updated));
 }

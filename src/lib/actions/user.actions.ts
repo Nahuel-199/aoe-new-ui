@@ -1,25 +1,39 @@
 "use server";
 
-import { connectDB } from "../db";
-import { User } from "@/models/user.model";
+import clientPromise from "@/lib/db";
 
 export async function findOrCreateUser(userData: {
-    name?: string;
-    email: string;
-    image?: string;
+  name?: string;
+  email: string;
+  image?: string;
 }) {
-    await connectDB();
+  const client = await clientPromise;
+  const db = client.db("test");
+  const usersCol = db.collection("users");
 
-    let user = await User.findOne({ email: userData.email });
+  const now = new Date();
 
-    if (!user) {
-        user = await User.create({
-            name: userData.name || "Sin nombre",
-            email: userData.email,
-            image: userData.image,
-            role: "user",
-        });
+  const result = await usersCol.findOneAndUpdate(
+    { email: userData.email },
+    {
+      $setOnInsert: {
+        name: userData.name || "Sin nombre",
+        email: userData.email,
+        image: userData.image || null,
+        role: "user",
+        createdAt: now,
+      },
+      $set: {
+        updatedAt: now,
+      },
+    },
+    {
+      returnDocument: "after",
+      upsert: true,
     }
+  );
 
-    return user;
+  const user = result?.value ?? null;
+
+  return JSON.parse(JSON.stringify(user));
 }
