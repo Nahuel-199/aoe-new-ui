@@ -6,6 +6,7 @@ import { getCurrentUserId } from "./auth-wrapper";
 import { CartItem } from "@/types/cart.types";
 import { redirect } from "next/navigation";
 import { Variant } from "@/types/product.types";
+import { Order } from "@/types/order.types";
 
 export async function createOrder({ items }: { items: CartItem[] }) {
   const client = await clientPromise;
@@ -174,12 +175,12 @@ export async function getOrdersByUser(userId: string) {
   return JSON.parse(JSON.stringify(orders));
 }
 
-export async function getOrderById(orderId: string) {
+export async function getOrderById(orderId: string): Promise<Order | null> {
   const client = await clientPromise;
   const db = client.db("test");
-  const ordersCol = db.collection("orders");
 
-  const orders = await ordersCol
+  const orders = await db
+    .collection("orders")
     .aggregate([
       { $match: { _id: new ObjectId(orderId) } },
       {
@@ -202,7 +203,34 @@ export async function getOrderById(orderId: string) {
     ])
     .toArray();
 
-  return orders[0] ?? null;
+  const raw = orders[0];
+  if (!raw) return null;
+
+  const mappedOrder: Order = {
+    _id: raw._id.toString(),
+    user: {
+      _id: raw.user._id.toString(),
+      name: raw.user.name,
+      email: raw.user.email,
+    },
+    items: raw.items.map((item: any) => ({
+      productId: item.productId.toString(),
+      quantity: item.quantity,
+      price: item.price,
+    })),
+    total: raw.total,
+    comments: raw.comments,
+    paymentMethod: raw.paymentMethod,
+    paidAmount: raw.paidAmount,
+    remainingAmount: raw.remainingAmount,
+    phoneNumber: raw.phoneNumber,
+    deliveryMethod: raw.deliveryMethod,
+    deliveryCost: raw.deliveryCost,
+    meetingAddress: raw.meetingAddress,
+    status: raw.status,
+  };
+
+  return mappedOrder;
 }
 
 export async function updateOrderStatus(

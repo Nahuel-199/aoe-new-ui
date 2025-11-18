@@ -1,6 +1,7 @@
 "use server";
 
 import clientPromise from "@/lib/db";
+import { Category, Product, Subcategory, Variant } from "@/types/product.types";
 import { deleteImage } from "@/utils/deleteCloudinary";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
@@ -106,11 +107,11 @@ export async function getOffers() {
   return JSON.parse(JSON.stringify(offers));
 }
 
-export async function getProductById(id: string) {
+export async function getProductById(id: string): Promise<Product | null> {
   const client = await clientPromise;
   const db = client.db("test");
 
-  const product = await db
+  const products = await db
     .collection("products")
     .aggregate([
       { $match: { _id: new ObjectId(id) } },
@@ -134,7 +135,46 @@ export async function getProductById(id: string) {
     ])
     .toArray();
 
-  return product[0] ?? null;
+  const raw = products[0];
+  if (!raw) return null;
+
+  const product: Product = {
+    _id: raw._id.toString(),
+    name: raw.name,
+    description: raw.description,
+
+    category: {
+      _id: raw.category._id.toString(),
+      name: raw.category.name,
+    } satisfies Category,
+
+    subcategories: raw.subcategories.map((sub: any) => ({
+      _id: sub._id.toString(),
+      name: sub.name,
+    })) satisfies Subcategory[],
+
+    variants: (raw.variants ?? []).map((v: any) => ({
+      type: v.type,
+      price: v.price,
+      is_offer: v.is_offer,
+      price_offer: v.price_offer,
+      color: v.color,
+
+      images: (v.images ?? []).map((img: any) => ({
+        id: img.id,
+        url: img.url,
+      })),
+
+      sizes: (v.sizes ?? []).map((s: any) => ({
+        size: s.size,
+        stock: s.stock,
+      })),
+
+      size_chart: v.size_chart,
+    })) satisfies Variant[],
+  };
+
+  return product;
 }
 
 export async function updateProduct(

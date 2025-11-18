@@ -65,12 +65,17 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
     return searchMatch && paymentMatch && statusMatch;
   });
 
-  const handleChangeStatus = async (orderId: string, newStatus: string) => {
+  const handleChangeStatus = async (
+    orderId: string,
+    newStatus: Order["status"]
+  ) => {
     try {
-      const updatedOrder = await updateOrderStatus(orderId, newStatus as any);
+      const success = await updateOrderStatus(orderId, newStatus);
+
+      if (!success) return;
 
       setLocalOrders((prev) =>
-        prev.map((o) => (o._id === orderId ? updatedOrder : o))
+        prev.map((o) => (o._id === orderId ? { ...o, status: newStatus } : o))
       );
     } catch (err) {
       console.error("Error al actualizar estado:", err);
@@ -208,7 +213,11 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
                 Pagado: ${order.paidAmount}
               </Text>
               <Text fontSize={{ base: "xs", md: "sm" }} color="gray.500">
-                Restante: ${Math.max(order.total + (order.deliveryCost || 0) - order.paidAmount, 0)}
+                Restante: $
+                {Math.max(
+                  order.total + (order.deliveryCost || 0) - order.paidAmount,
+                  0
+                )}
               </Text>
               <Text fontSize={{ base: "xs", md: "sm" }} color="gray.500" mb={1}>
                 Teléfono: {order.phoneNumber || "No informado"}
@@ -221,7 +230,11 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
               </Text>
 
               {order.deliveryMethod === "correo" && (
-                <Text fontSize={{ base: "xs", md: "sm" }} color="gray.500" mb={1}>
+                <Text
+                  fontSize={{ base: "xs", md: "sm" }}
+                  color="gray.500"
+                  mb={1}
+                >
                   Costo de envío: ${order.deliveryCost || 0}
                 </Text>
               )}
@@ -255,19 +268,23 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
               </Text>
             </HStack>
             <Wrap gap={2}>
-              {[
-                "pending",
-                "confirmed",
-                "shipped",
-                "delivered",
-                "cancelled",
-              ].map((status) => (
+              {(
+                [
+                  "pending",
+                  "confirmed",
+                  "shipped",
+                  "delivered",
+                  "cancelled",
+                ] as const
+              ).map((status) => (
                 <Button
                   key={status}
                   size={{ base: "xs", md: "sm" }}
                   colorPalette={STATUS_COLORS[status]}
                   variant={order.status === status ? "solid" : "outline"}
-                  onClick={() => handleChangeStatus(order._id, status)}
+                  onClick={() =>
+                    handleChangeStatus(order._id, status as Order["status"])
+                  }
                 >
                   {STATUS_LABELS[status].toLowerCase().trim()}
                 </Button>
