@@ -93,14 +93,14 @@ export default function OrderById({ orders }: OrderProps) {
             {item.variant.imageUrl && (
               <Image
                 src={item.variant.imageUrl}
-                alt={item.product.name}
+                alt={item.productName}
                 boxSize="80px"
                 objectFit="cover"
                 borderRadius="md"
               />
             )}
             <VStack align="start">
-              <Text fontWeight="medium">{item.product.name}</Text>
+              <Text fontWeight="medium">{item.productName}</Text>
               <Text fontSize="sm" color="gray">
                 {item.variant.type}, {item.variant.color}, {item.variant.size} ×{" "}
                 {item.variant.quantity}
@@ -125,7 +125,6 @@ export default function OrderById({ orders }: OrderProps) {
           )}
         </Text>
       </HStack>
-
 
       {deliveryMethod[0] === "correo" && (
         <>
@@ -266,7 +265,13 @@ export default function OrderById({ orders }: OrderProps) {
             </>
           )}
 
-          <Button colorScheme="blue" type="submit" mb={4} mt={4} loading={pending}>
+          <Button
+            colorScheme="blue"
+            type="submit"
+            mb={4}
+            mt={4}
+            loading={pending}
+          >
             Guardar cambios
           </Button>
         </VStack>

@@ -166,29 +166,7 @@ export async function getAllOrders() {
   return JSON.parse(JSON.stringify(orders));
 }
 
-export async function getOrdersByUser(userId: string) {
-  const client = await clientPromise;
-  const db = client.db("test");
-  const ordersCol = db.collection("orders");
-
-  const orders = await ordersCol
-    .aggregate([
-      { $match: { userId: new ObjectId(userId) } },
-      {
-        $lookup: {
-          from: "products",
-          localField: "items.productId",
-          foreignField: "_id",
-          as: "products",
-        },
-      },
-    ])
-    .toArray();
-
-  return JSON.parse(JSON.stringify(orders));
-}
-
-export async function getOrderById(orderId: string): Promise<Order | null> {
+export async function getOrderById(orderId: string): Promise<any | null> {
   const client = await clientPromise;
   const db = client.db("test");
 
@@ -216,34 +194,60 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
     ])
     .toArray();
 
-  const raw = orders[0];
-  if (!raw) return null;
+  if (!orders[0]) return null;
 
-  const mappedOrder: Order = {
+  const raw = JSON.parse(JSON.stringify(orders[0]));
+
+  return {
+    ...raw,
     _id: raw._id.toString(),
     user: {
       _id: raw.user._id.toString(),
       name: raw.user.name,
       email: raw.user.email,
     },
-    items: raw.items.map((item: any) => ({
-      productId: item.productId.toString(),
-      quantity: item.quantity,
-      price: item.price,
-    })),
-    total: raw.total,
-    comments: raw.comments,
-    paymentMethod: raw.paymentMethod,
-    paidAmount: raw.paidAmount,
-    remainingAmount: raw.remainingAmount,
-    phoneNumber: raw.phoneNumber,
-    deliveryMethod: raw.deliveryMethod,
-    deliveryCost: raw.deliveryCost,
-    meetingAddress: raw.meetingAddress,
-    status: raw.status,
-  };
+    items: raw.items.map((item: any) => {
+      const product = raw.products.find(
+        (p: any) => p._id.toString() === item.productId.toString()
+      );
 
-  return mappedOrder;
+      return {
+        ...item,
+        product: product
+          ? {
+              ...product,
+              _id: product._id.toString(),
+            }
+          : null,
+      };
+    }),
+
+    total: Number(raw.total),
+    paidAmount: Number(raw.paidAmount),
+    remainingAmount: Number(raw.total) - Number(raw.paidAmount),
+  };
+}
+
+export async function getOrdersByUser(userId: string) {
+  const client = await clientPromise;
+  const db = client.db("test");
+  const ordersCol = db.collection("orders");
+
+  const orders = await ordersCol
+    .aggregate([
+      { $match: { userId: new ObjectId(userId) } },
+      {
+        $lookup: {
+          from: "products",
+          localField: "items.productId",
+          foreignField: "_id",
+          as: "products",
+        },
+      },
+    ])
+    .toArray();
+
+  return JSON.parse(JSON.stringify(orders));
 }
 
 export async function updateOrderStatus(
