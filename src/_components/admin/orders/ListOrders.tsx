@@ -169,7 +169,7 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
             <VStack align="stretch" mt={3} gap={2}>
               {order.items.map((item, idx) => (
                 <Stack
-                  key={`${item.product._id}-${idx}`}
+                  key={`${item.productId}-${idx}`}
                   direction={{ base: "column", sm: "row" }}
                   align="center"
                   gap={3}
@@ -177,7 +177,7 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
                   {item.variant.imageUrl && (
                     <Image
                       src={item.variant.imageUrl}
-                      alt={item.product.name}
+                      alt={item.productName}
                       boxSize={{ base: "50px", md: "60px" }}
                       objectFit="cover"
                       borderRadius="md"
@@ -188,7 +188,7 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
                       fontWeight="medium"
                       fontSize={{ base: "sm", md: "md" }}
                     >
-                      {item.product.name}
+                      {item.productName}
                     </Text>
                     <Text fontSize={{ base: "xs", md: "sm" }} color="gray.500">
                       {item.variant.type}, {item.variant.color},{" "}

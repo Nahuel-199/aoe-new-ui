@@ -40,6 +40,7 @@ const STATUS_ICONS: Record<string, any> = {
 };
 
 export default function OrdersByUser({ orders }: { orders: Order[] }) {
+
     if (!orders || orders.length === 0) {
         return <Text mt={10}>Todavía no tenés pedidos.</Text>;
     }
@@ -150,7 +151,7 @@ export default function OrdersByUser({ orders }: { orders: Order[] }) {
                                     {item.variant.imageUrl && (
                                         <Image
                                             src={item.variant.imageUrl}
-                                            alt={item.product.name}
+                                            alt={item.productName}
                                             boxSize="120px"
                                             objectFit="cover"
                                             borderRadius="md"
@@ -158,7 +159,7 @@ export default function OrdersByUser({ orders }: { orders: Order[] }) {
                                     )}
                                     <Box>
                                         <Text fontWeight="medium" fontSize={{ base: "md", md: "md" }}>
-                                            {item.product.name}
+                                            {item.productName}
                                         </Text>
                                         <Text fontSize={{ base: "md", md: "md" }} color="gray">
                                             {item.variant.type}, {item.variant.color}, {item.variant.size} ×{" "}

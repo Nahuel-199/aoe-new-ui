@@ -92,13 +92,26 @@ export async function createOrder({ items }: { items: CartItem[] }) {
         );
       }
 
-      const orderItems = items.map((i) => ({
-        productId: new ObjectId(i.productId),
-        variant: {
-          ...i.variant,
-          quantity: i.quantity,
-        },
-      }));
+      const orderItems = await Promise.all(
+        items.map(async (i) => {
+          const product = await productsCol.findOne(
+            { _id: new ObjectId(i.productId) },
+            { session }
+          );
+
+          return {
+            productId: new ObjectId(i.productId),
+            productName: product?.name ?? "Producto eliminado",
+            productImage: product?.images?.[0]?.url ?? null,
+            variant: {
+              ...i.variant,
+              quantity: i.quantity,
+            },
+            unitPrice: i.variant.price,
+            subtotal: i.variant.price * i.quantity,
+          };
+        })
+      );
 
       const insertRes = await ordersCol.insertOne(
         {

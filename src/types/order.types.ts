@@ -4,11 +4,14 @@ interface VariantOrder {
     size: string;
     price: number;
     imageUrl?: string;
+    productName?: string;
     quantity: number;
 }
 
 interface OrderItem {
     product: { _id: string; name: string };
+    productId?: string;
+    productName?: string;
     variant: VariantOrder;
 }
 

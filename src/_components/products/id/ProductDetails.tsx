@@ -31,7 +31,9 @@ interface ProductByIdProps {
 export default function ProductDetails({ product }: ProductByIdProps) {
   const types = Array.from(new Set(product.variants.map((v) => v.type)));
   const [tabValue, setTabValue] = useState<string>(types[0] || "");
-  const [selectedSize, setSelectedSize] = useState<string[]>([]);
+  const [selectedSizes, setSelectedSizes] = useState<Record<string, string[]>>(
+    {}
+  );
   const { addToCart } = useCart();
 
   return (
@@ -52,6 +54,16 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                 {product.variants
                   .filter((v) => v.type === type)
                   .map((variant, idx) => {
+                    const key = `${variant.type}-${variant.color}`;
+                    const selectedSize = selectedSizes[key] || [];
+
+                    const handleSizeChange = (value: string[]) => {
+                      setSelectedSizes((prev) => ({
+                        ...prev,
+                        [key]: value,
+                      }));
+                    };
+
                     const sizesCollection = createListCollection({
                       items: variant.sizes.map((s) => ({
                         label:
@@ -222,7 +234,7 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                               <Select.Root
                                 collection={sizesCollection}
                                 value={selectedSize}
-                                onValueChange={(e) => setSelectedSize(e.value)}
+                                onValueChange={(e) => handleSizeChange(e.value)}
                                 width="100%"
                               >
                                 <Select.HiddenSelect />

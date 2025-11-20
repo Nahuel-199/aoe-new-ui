@@ -20,9 +20,10 @@ export interface CurrentUser {
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   const session = await auth();
   if (!session?.user?.email) return null;
+  if (!session.user.id) return null;
 
   return {
-    id: session.user.id ?? crypto.randomUUID(),
+    id: session.user.id,
     name: session.user.name!,
     email: session.user.email!,
     image: session.user.image || undefined,
