@@ -6,7 +6,6 @@ import { getCurrentUserId } from "./auth-wrapper";
 import { CartItem } from "@/types/cart.types";
 import { redirect } from "next/navigation";
 import { Variant } from "@/types/product.types";
-import { Order } from "@/types/order.types";
 
 export async function createOrder({ items }: { items: CartItem[] }) {
   const client = await clientPromise;
@@ -262,6 +261,28 @@ export async function updateOrderStatus(
     { _id: new ObjectId(orderId) },
     { $set: { status } }
   );
+
+  if (result.modifiedCount === 1) {
+    const order = await ordersCol.findOne({ _id: new ObjectId(orderId) });
+    if (order) {
+      const statusMap: Record<string, string> = {
+        pending: "Pendiente",
+        confirmed: "Confirmada",
+        shipped: "En camino",
+        delivered: "Entregada",
+        cancelled: "Cancelada",
+      };
+
+      const statusText = statusMap[status] || status;
+
+      const { createNotification } = await import("./notification.actions");
+      await createNotification(
+        order.userId.toString(),
+        `El estado de tu orden ha cambiado a: ${statusText}`,
+        orderId
+      );
+    }
+  }
 
   return result.modifiedCount === 1;
 }

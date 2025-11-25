@@ -21,6 +21,7 @@ import NavbarUserMenu from "./NavbarUserMenu";
 import NavbarBrand from "./NavbarBrand";
 import NavbarLinks from "./NavbarLinks";
 import MobileDrawer from "./MobileDrawer";
+import NotificationBell from "./NotificationBell";
 
 const Navbar = () => {
   const navbarRef = useRef<HTMLDivElement>(null);
@@ -103,6 +104,8 @@ const Navbar = () => {
           <ColorModeButton
             _dark={{ color: "black", _hover: { bg: "gray.300" } }}
           />
+
+          {session?.user?.id && <NotificationBell userId={session.user.id} />}
 
           {status === "loading" ? (
             <SkeletonCircle size="10" />
