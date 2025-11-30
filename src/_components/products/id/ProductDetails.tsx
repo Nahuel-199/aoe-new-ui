@@ -19,11 +19,12 @@ import {
   Portal,
   Container,
   Dialog,
+  CloseButton,
 } from "@chakra-ui/react";
 import { colorMap } from "../utils/ColorMaps";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useCart } from "@/context/CartContext";
-import { FaCartPlus } from "react-icons/fa";
+import { FaCartPlus, FaTimes } from "react-icons/fa";
 import { showToast } from "nextjs-toast-notify";
 import OfferSlider from "@/_components/home/offer/OfferSlider";
 
@@ -147,15 +148,6 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                               <Dialog.Backdrop />
                               <Dialog.Positioner>
                                 <Dialog.Content>
-                                  <Dialog.CloseTrigger
-                                    _hover={{ bg: "gray.100" }}
-                                    position="absolute"
-                                    top="2"
-                                    right="2"
-                                    zIndex="popover"
-                                    bg="white"
-                                    borderRadius="full"
-                                  />
                                   <Dialog.Body p={0}>
                                     <Image
                                       src={mainImage}
@@ -165,6 +157,9 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                                       objectFit="contain"
                                     />
                                   </Dialog.Body>
+                                  <Dialog.CloseTrigger asChild>
+                                    <CloseButton size="sm" colorPalette={"red"} variant={"solid"} />
+                                  </Dialog.CloseTrigger>
                                 </Dialog.Content>
                               </Dialog.Positioner>
                             </Dialog.Root>
