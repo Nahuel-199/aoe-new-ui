@@ -18,11 +18,14 @@ import {
   Select,
   Portal,
   Container,
+  Dialog,
 } from "@chakra-ui/react";
 import { colorMap } from "../utils/ColorMaps";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useCart } from "@/context/CartContext";
 import { FaCartPlus } from "react-icons/fa";
+import { showToast } from "nextjs-toast-notify";
+import OfferSlider from "@/_components/home/offer/OfferSlider";
 
 interface ProductByIdProps {
   product: Product;
@@ -78,6 +81,7 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                     const [mainImage, setMainImage] = useState(
                       variant.images[0]?.url
                     );
+                    const [isZoomOpen, setIsZoomOpen] = useState(false);
 
                     const handleAddToCart = () => {
                       if (selectedSize.length === 0) return;
@@ -102,6 +106,14 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                         },
                         quantity: 1,
                       });
+                      showToast.success("¡Producto agregado con éxito!", {
+                        duration: 4000,
+                        progress: true,
+                        position: "top-center",
+                        transition: "bounceIn",
+                        icon: '',
+                        sound: true,
+                      });
                     };
                     return (
                       <Grid
@@ -123,7 +135,39 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                               w="100%"
                               maxW={{ base: "300px", md: "400px" }}
                               h="500px"
+                              cursor="zoom-in"
+                              onClick={() => setIsZoomOpen(true)}
                             />
+                            <Dialog.Root
+                              open={isZoomOpen}
+                              onOpenChange={(e) => setIsZoomOpen(e.open)}
+                              size="xl"
+                              placement="center"
+                            >
+                              <Dialog.Backdrop />
+                              <Dialog.Positioner>
+                                <Dialog.Content>
+                                  <Dialog.CloseTrigger
+                                    _hover={{ bg: "gray.100" }}
+                                    position="absolute"
+                                    top="2"
+                                    right="2"
+                                    zIndex="popover"
+                                    bg="white"
+                                    borderRadius="full"
+                                  />
+                                  <Dialog.Body p={0}>
+                                    <Image
+                                      src={mainImage}
+                                      alt={`${variant.color}-${variant.type}`}
+                                      w="100%"
+                                      h="100%"
+                                      objectFit="contain"
+                                    />
+                                  </Dialog.Body>
+                                </Dialog.Content>
+                              </Dialog.Positioner>
+                            </Dialog.Root>
                             <HStack gap={2} flexWrap="wrap" justify="center">
                               {variant.images.map((img) => (
                                 <Image
@@ -281,6 +325,9 @@ export default function ProductDetails({ product }: ProductByIdProps) {
           ))}
         </Tabs.Root>
       </VStack>
+      <Box mt={10}>
+        <OfferSlider title="Nuestras Ofertas" />
+      </Box>
     </Container>
   );
 }

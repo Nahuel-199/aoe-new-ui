@@ -41,6 +41,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           w="100%"
           h="250px"
           objectFit="cover"
+          onClick={() => router.push(`/products/${product._id}`)}
           cursor={"pointer"}
         />
       ) : (

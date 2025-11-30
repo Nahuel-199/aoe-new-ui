@@ -2,9 +2,10 @@
 
 import React, { useMemo, useState } from "react";
 import { Category, Product, Subcategory } from "@/types/product.types";
-import { Box, SimpleGrid } from "@chakra-ui/react";
+import { Box, SimpleGrid, VStack, Icon, Text } from "@chakra-ui/react";
 import ProductCard from "./ProductCard";
 import ProductFilters from "./ProductFilters";
+import { FaBoxOpen } from "react-icons/fa";
 
 interface ProductsProps {
   products: Product[];
@@ -56,11 +57,23 @@ export default function ProductsSection({
         onSearchChange={setSearch}
         onClearFilters={handleClearFilters}
       />
-      <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} gap={6} mt={4}>
-        {filteredProducts.map((product) => (
-          <ProductCard key={product._id} product={product} />
-        ))}
-      </SimpleGrid>
+      {filteredProducts.length === 0 ? (
+        <VStack py={10} gap={4} color="gray.500">
+          <Icon as={FaBoxOpen} boxSize={12} />
+          <Text fontSize="lg" fontWeight="medium">
+            No hay productos disponibles en esta categoría
+          </Text>
+          <Text fontSize="sm">
+            Intenta seleccionar otra categoría o limpiar los filtros
+          </Text>
+        </VStack>
+      ) : (
+        <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} gap={6} mt={4}>
+          {filteredProducts.map((product) => (
+            <ProductCard key={product._id} product={product} />
+          ))}
+        </SimpleGrid>
+      )}
     </Box>
   );
 }

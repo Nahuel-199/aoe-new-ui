@@ -204,6 +204,10 @@ export async function updateProduct(
     .collection("products")
     .updateOne({ _id: new ObjectId(id) }, { $set: updateData });
 
+  revalidatePath("/products");
+  revalidatePath("/");
+  revalidatePath("/admin/products");
+
   return getProductById(id);
 }
 

@@ -24,7 +24,11 @@ import { Product } from "@/types/product.types";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const OfferSlider = () => {
+interface OfferSliderProps {
+  title?: string;
+}
+
+const OfferSlider = ({ title }: OfferSliderProps) => {
   const titleRef = useRef<HTMLDivElement>(null);
   const [offers, setOffers] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,11 +82,17 @@ const OfferSlider = () => {
           textAlign="center"
           mb={6}
         >
-          OFERTAS
-          <Text as="span" color="black" _dark={{ color: "white" }}>
-            {" "}
-            ESPECIALES
-          </Text>
+          {title ? (
+            title
+          ) : (
+            <>
+              OFERTAS
+              <Text as="span" color="black" _dark={{ color: "white" }}>
+                {" "}
+                ESPECIALES
+              </Text>
+            </>
+          )}
         </Text>
       </Box>
 
