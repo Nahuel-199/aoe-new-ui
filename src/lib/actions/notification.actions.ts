@@ -3,6 +3,7 @@
 import { ObjectId } from "mongodb";
 import { NotificationCollection } from "@/models/notification.model";
 import { getCurrentUserId } from "./auth-wrapper";
+import { revalidatePath } from "next/cache";
 
 export async function createNotification(
   userId: string,
@@ -18,6 +19,8 @@ export async function createNotification(
     isRead: false,
     createdAt: new Date(),
   });
+
+  revalidatePath("/", "layout");
 }
 
 export async function getUserNotifications() {
@@ -46,6 +49,8 @@ export async function markNotificationAsRead(notificationId: string) {
     { $set: { isRead: true } }
   );
 
+  revalidatePath("/", "layout");
+
   return { success: true };
 }
 
@@ -60,6 +65,8 @@ export async function markAllNotificationsAsRead() {
     { $set: { isRead: true } }
   );
 
+  revalidatePath("/", "layout");
+
   return { success: true };
 }
 
@@ -73,6 +80,8 @@ export async function deleteNotification(notificationId: string) {
     _id: new ObjectId(notificationId),
     userId: new ObjectId(userId),
   });
+
+  revalidatePath("/", "layout");
 
   return { success: true };
 }

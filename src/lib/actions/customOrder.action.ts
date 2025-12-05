@@ -109,7 +109,8 @@ export async function createCustomOrder(prevState: any, formData: FormData) {
       updatedAt: now,
     });
 
-    revalidatePath("/dashboard/orders");
+    revalidatePath("/admin/custom-orders");
+    revalidatePath("/personalizados");
 
     return { success: true, message: "Orden creada exitosamente" };
   } catch (error) {

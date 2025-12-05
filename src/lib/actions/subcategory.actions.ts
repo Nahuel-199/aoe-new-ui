@@ -3,6 +3,8 @@
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 
+import { revalidatePath } from "next/cache";
+
 export async function createSubcategory(data: { name: string }) {
   const client = await clientPromise;
   const db = client.db("test");
@@ -16,6 +18,11 @@ export async function createSubcategory(data: { name: string }) {
   const subcategory = await db
     .collection("subcategories")
     .findOne({ _id: res.insertedId });
+
+  revalidatePath("/admin/subcategories");
+  revalidatePath("/admin/products");
+  revalidatePath("/products");
+  revalidatePath("/");
 
   return JSON.parse(JSON.stringify(subcategory));
 }
@@ -37,6 +44,11 @@ export async function deleteSubcategory(id: string) {
     .collection("subcategories")
     .deleteOne({ _id: new ObjectId(id) });
 
+  revalidatePath("/admin/subcategories");
+  revalidatePath("/admin/products");
+  revalidatePath("/products");
+  revalidatePath("/");
+
   return { success: res.deletedCount === 1 };
 }
 
@@ -54,6 +66,11 @@ export async function updateSubcategory(id: string, data: { name?: string }) {
   const updated = await db
     .collection("subcategories")
     .findOne({ _id: new ObjectId(id) });
+
+  revalidatePath("/admin/subcategories");
+  revalidatePath("/admin/products");
+  revalidatePath("/products");
+  revalidatePath("/");
 
   return JSON.parse(JSON.stringify(updated));
 }

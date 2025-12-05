@@ -6,6 +6,7 @@ import { getCurrentUserId } from "./auth-wrapper";
 import { CartItem } from "@/types/cart.types";
 import { redirect } from "next/navigation";
 import { Variant } from "@/types/product.types";
+import { revalidatePath } from "next/cache";
 
 export async function createOrder({ items }: { items: CartItem[] }) {
   const client = await clientPromise;
@@ -132,6 +133,8 @@ export async function createOrder({ items }: { items: CartItem[] }) {
     throw new Error(`Error creando la orden: ${err}`);
   } finally {
     await session.endSession();
+    revalidatePath("/admin/orders");
+    revalidatePath("/mis-pedidos");
   }
 }
 
@@ -284,6 +287,10 @@ export async function updateOrderStatus(
     }
   }
 
+  revalidatePath("/admin/orders");
+  revalidatePath("/mis-pedidos");
+  revalidatePath(`/orders/${orderId}`);
+
   return result.modifiedCount === 1;
 }
 
@@ -348,6 +355,9 @@ export async function deleteOrder(orderId: string) {
   const ordersCol = db.collection("orders");
 
   await ordersCol.deleteOne({ _id: new ObjectId(orderId) });
+
+  revalidatePath("/admin/orders");
+  revalidatePath("/mis-pedidos");
 
   return { success: true };
 }
