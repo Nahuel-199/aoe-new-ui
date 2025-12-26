@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 import { NotificationCollection } from "@/models/notification.model";
 import { getCurrentUserId } from "./auth-wrapper";
 import { revalidatePath } from "next/cache";
+import { deepSerialize } from "@/lib/serialize";
 
 export async function createNotification(
   userId: string,
@@ -35,7 +36,7 @@ export async function getUserNotifications() {
     .limit(20)
     .toArray();
 
-  return JSON.parse(JSON.stringify(notifications));
+  return deepSerialize(notifications);
 }
 
 export async function markNotificationAsRead(notificationId: string) {

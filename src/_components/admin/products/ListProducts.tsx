@@ -24,12 +24,14 @@ interface ListProductsProps {
   products: Product[];
   categories: Category[];
   subcategories: Subcategory[];
+  onOpenDrawer: (mode: "create" | "edit", productId?: string) => void;
 }
 
 export default function ListProducts({
   products,
   categories,
   subcategories,
+  onOpenDrawer,
 }: ListProductsProps) {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
@@ -80,7 +82,7 @@ export default function ListProducts({
   ]);
 
   const handleEdit = (id: string) => {
-    router.push(`/admin/products/${id}`);
+    onOpenDrawer("edit", id);
   };
 
   const handleDelete = (id: string) => {
@@ -107,7 +109,7 @@ export default function ListProducts({
           aria-label="Agregar producto"
           variant="outline"
           colorPalette="red"
-          onClick={() => router.push("/admin/products/new")}
+          onClick={() => onOpenDrawer("create")}
           size={"sm"}
           rounded={"full"}
         >

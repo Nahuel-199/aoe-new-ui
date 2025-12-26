@@ -38,7 +38,12 @@ const STATUS_LABELS: Record<string, string> = {
   cancelled: "Cancelada",
 };
 
-export default function ListOrders({ orders }: { orders: Order[] }) {
+interface ListOrdersProps {
+  orders: Order[];
+  onOpenDrawer: (orderId: string) => void;
+}
+
+export default function ListOrders({ orders, onOpenDrawer }: ListOrdersProps) {
   const router = useRouter();
   const [localOrders, setLocalOrders] = useState(orders);
   const [filters, setFilters] = useState({
@@ -85,18 +90,8 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
   return (
     <>
       <Flex mb={4}>
-        <IconButton
-          aria-label="Agregar orden de compra"
-          variant="outline"
-          colorPalette="red"
-          onClick={() => router.push("/admin/orders/new")}
-          size={"sm"}
-          rounded={"full"}
-        >
-          <FiPlus />
-        </IconButton>
-        <Heading size="2xl" ml={2}>
-          Ordenes de compra
+        <Heading size="2xl">
+          Órdenes de compra
         </Heading>
       </Flex>
       <OrderFilters onFilterChange={handleFilterChange} />
@@ -132,11 +127,11 @@ export default function ListOrders({ orders }: { orders: Order[] }) {
                 </Badge>
 
                 <IconButton
-                  aria-label="Editar orden"
+                  aria-label="Ver detalles"
                   size={{ base: "xs", md: "sm" }}
                   variant="outline"
                   colorPalette="blue"
-                  onClick={() => router.push(`/admin/orders/${order._id}`)}
+                  onClick={() => onOpenDrawer(order._id)}
                 >
                   <FaEdit />
                 </IconButton>

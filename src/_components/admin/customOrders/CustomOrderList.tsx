@@ -4,18 +4,13 @@ import React from "react";
 import { Box, Card, Text, Stack, Badge, HStack, Flex, IconButton, Heading } from "@chakra-ui/react";
 import { CustomOrder } from "@/types/customOrder.types";
 import { FiPlus } from "react-icons/fi";
-import { useRouter } from "next/navigation";
 
 interface CustomOrderListProps {
   orders: CustomOrder[];
+  onOpenDrawer: () => void;
 }
 
-export default function CustomOrderList({ orders }: CustomOrderListProps) {
-  const router = useRouter();
-  if (!orders || orders.length === 0) {
-    return <Text>No hay órdenes personalizadas registradas.</Text>;
-  }
-
+export default function CustomOrderList({ orders, onOpenDrawer }: CustomOrderListProps) {
   return (
     <Stack gap={4}>
       <Flex mb={4}>
@@ -23,7 +18,7 @@ export default function CustomOrderList({ orders }: CustomOrderListProps) {
           aria-label="Agregar orden de compra"
           variant="outline"
           colorPalette="red"
-          onClick={() => router.push("/admin/custom-orders/new")}
+          onClick={onOpenDrawer}
           size={"sm"}
           rounded={"full"}
         >
@@ -33,7 +28,11 @@ export default function CustomOrderList({ orders }: CustomOrderListProps) {
           Personalizados
         </Heading>
       </Flex>
-      {orders.map((order) => (
+
+      {(!orders || orders.length === 0) && (
+        <Text>No hay órdenes personalizadas registradas.</Text>
+      )}
+      {orders && orders.map((order) => (
         <Card.Root key={order._id} p={4} shadow="md" borderWidth="1px">
           <HStack justify="space-between" align="start">
             <Box>

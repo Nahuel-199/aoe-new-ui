@@ -1,6 +1,7 @@
 "use server";
 
 import clientPromise from "@/lib/db";
+import { deepSerialize } from "@/lib/serialize";
 
 export async function findOrCreateUser(userData: {
   name?: string;
@@ -35,5 +36,5 @@ export async function findOrCreateUser(userData: {
 
   const user = result?.value ?? null;
 
-  return JSON.parse(JSON.stringify(user));
+  return deepSerialize(user);
 }

@@ -5,6 +5,7 @@ import { Category, Product, Subcategory, Variant } from "@/types/product.types";
 import { deleteImage } from "@/utils/deleteCloudinary";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
+import { deepSerialize } from "@/lib/serialize";
 
 interface ImageInput {
   id: string;
@@ -42,6 +43,7 @@ export async function createProduct(data: {
 
   revalidatePath("/products");
   revalidatePath("/");
+  revalidatePath("/admin");
 
   return { _id: product.insertedId };
 }
@@ -73,7 +75,8 @@ export async function getProducts() {
     ])
     .toArray();
 
-  return JSON.parse(JSON.stringify(products));
+  // Serialización profunda para convertir TODOS los ObjectIds y Dates a valores primitivos
+  return deepSerialize<Product[]>(products);
 }
 
 export async function getOffers() {
@@ -104,7 +107,7 @@ export async function getOffers() {
     ])
     .toArray();
 
-  return JSON.parse(JSON.stringify(offers));
+  return deepSerialize<Product[]>(offers);
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
@@ -207,6 +210,7 @@ export async function updateProduct(
   revalidatePath("/products");
   revalidatePath("/");
   revalidatePath("/admin/products");
+  revalidatePath("/admin");
 
   return getProductById(id);
 }
@@ -229,7 +233,10 @@ export async function deleteProduct(id: string) {
 
   await db.collection("products").deleteOne({ _id: new ObjectId(id) });
 
+  revalidatePath("/products");
+  revalidatePath("/");
   revalidatePath("/admin/products");
+  revalidatePath("/admin");
 
   return { success: true };
 }
@@ -261,5 +268,5 @@ export async function deleteProductImage(
       { $set: { variants: product.variants } }
     );
 
-  return JSON.parse(JSON.stringify(product));
+  return deepSerialize(product);
 }

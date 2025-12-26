@@ -7,6 +7,8 @@ import {
     Portal,
     Box,
     Field,
+    Grid,
+    GridItem,
 } from "@chakra-ui/react";
 import { createListCollection } from "@chakra-ui/react";
 
@@ -51,99 +53,96 @@ export default function ProductFormFields({
     });
 
     return (
-        <Box
-            p={{ base: 2, md: 4 }}
-            w="100%"
-            maxW={{ base: "100%", md: "90%" }}
-            mx="auto"
-        >
-            <Field.Root required>
-                <Field.Label>
-                    Nombre
-                </Field.Label>
-                <Input
-                    placeholder="Nombre del producto"
-                    name="name"
-                    value={form.name}
-                    onChange={onChange}
-                    required
-                    mb={4}
-                    w="full"
-                />
-            </Field.Root>
-            <Field.Root required>
-                <Field.Label>
-                    Descripción
-                </Field.Label>
-                <Textarea
-                    placeholder="Descripción"
-                    name="description"
-                    value={form.description}
-                    onChange={onChange}
-                    required
-                    mb={4}
-                />
-            </Field.Root>
-            <Select.Root
-                collection={categoryCollection}
-                value={form.category}
-                onValueChange={(e) => onCategoryChange(e.value)}
-                mb={4}
-            >
-                <Select.HiddenSelect />
-                <Select.Label>Categoría</Select.Label>
-                <Select.Control>
-                    <Select.Trigger>
-                        <Select.ValueText placeholder="Selecciona una categoría" />
-                    </Select.Trigger>
-                    <Select.IndicatorGroup>
-                        <Select.Indicator />
-                    </Select.IndicatorGroup>
-                </Select.Control>
-                <Portal>
-                    <Select.Positioner>
-                        <Select.Content>
-                            {categoryCollection.items.map((item) => (
-                                <Select.Item item={item} key={item.value}>
-                                    {item.label}
-                                    <Select.ItemIndicator />
-                                </Select.Item>
-                            ))}
-                        </Select.Content>
-                    </Select.Positioner>
-                </Portal>
-            </Select.Root>
+        <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={6}>
+            <GridItem colSpan={{ base: 1, md: 2 }}>
+                <Field.Root required>
+                    <Field.Label>Nombre del Producto</Field.Label>
+                    <Input
+                        placeholder="Ej: Remera básica"
+                        name="name"
+                        value={form.name}
+                        onChange={onChange}
+                        required
+                        size="lg"
+                    />
+                </Field.Root>
+            </GridItem>
 
-            <Select.Root
-                collection={subcategoryCollection}
-                value={form.subcategories}
-                onValueChange={(e) => onSubcategoriesChange(e.value)}
-                mb={4}
-            >
-                <Select.HiddenSelect />
+            <GridItem colSpan={{ base: 1, md: 2 }}>
+                <Field.Root required>
+                    <Field.Label>Descripción</Field.Label>
+                    <Textarea
+                        placeholder="Describe las características del producto..."
+                        name="description"
+                        value={form.description}
+                        onChange={onChange}
+                        required
+                        rows={4}
+                    />
+                </Field.Root>
+            </GridItem>
 
-                <Select.Label>Subcategorías</Select.Label>
-                <Select.Control>
-                    <Select.Trigger>
-                        <Select.ValueText placeholder="Selecciona subcategorías" />
-                    </Select.Trigger>
-                    <Select.IndicatorGroup>
-                        <Select.Indicator />
-                    </Select.IndicatorGroup>
-                </Select.Control>
-                <Portal>
-                    <Select.Positioner>
-                        <Select.Content>
-                            {subcategoryCollection.items.map((item) => (
-                                <Select.Item item={item} key={item.value}>
-                                    {item.label}
-                                    <Select.ItemIndicator />
-                                </Select.Item>
-                            ))}
-                        </Select.Content>
-                    </Select.Positioner>
-                </Portal>
-            </Select.Root>
-        </Box>
+            <GridItem>
+                <Select.Root
+                    collection={categoryCollection}
+                    value={form.category}
+                    onValueChange={(e) => onCategoryChange(e.value)}
+                >
+                    <Select.HiddenSelect />
+                    <Select.Label>Categoría</Select.Label>
+                    <Select.Control>
+                        <Select.Trigger>
+                            <Select.ValueText placeholder="Selecciona una categoría" />
+                        </Select.Trigger>
+                        <Select.IndicatorGroup>
+                            <Select.Indicator />
+                        </Select.IndicatorGroup>
+                    </Select.Control>
+                    
+                        <Select.Positioner>
+                            <Select.Content>
+                                {categoryCollection.items.map((item) => (
+                                    <Select.Item item={item} key={item.value}>
+                                        {item.label}
+                                        <Select.ItemIndicator />
+                                    </Select.Item>
+                                ))}
+                            </Select.Content>
+                        </Select.Positioner>
+                    
+                </Select.Root>
+            </GridItem>
+
+            <GridItem>
+                <Select.Root
+                    collection={subcategoryCollection}
+                    value={form.subcategories}
+                    onValueChange={(e) => onSubcategoriesChange(e.value)}
+                >
+                    <Select.HiddenSelect />
+                    <Select.Label>Subcategorías</Select.Label>
+                    <Select.Control>
+                        <Select.Trigger>
+                            <Select.ValueText placeholder="Selecciona subcategorías" />
+                        </Select.Trigger>
+                        <Select.IndicatorGroup>
+                            <Select.Indicator />
+                        </Select.IndicatorGroup>
+                    </Select.Control>
+                    
+                        <Select.Positioner>
+                            <Select.Content>
+                                {subcategoryCollection.items.map((item) => (
+                                    <Select.Item item={item} key={item.value}>
+                                        {item.label}
+                                        <Select.ItemIndicator />
+                                    </Select.Item>
+                                ))}
+                            </Select.Content>
+                        </Select.Positioner>
+                
+                </Select.Root>
+            </GridItem>
+        </Grid>
     );
 }

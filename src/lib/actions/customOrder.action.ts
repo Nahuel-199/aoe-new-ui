@@ -4,6 +4,7 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { deepSerialize } from "@/lib/serialize";
 
 const ImageSchema = z.object({
   id: z.string().min(1, "ID de imagen requerido"),
@@ -78,20 +79,20 @@ export async function createCustomOrder(prevState: any, formData: FormData) {
 
     const data = {
       clientName: formData.get("clientName"),
-      phoneNumber: formData.get("phoneNumber"),
-      email: formData.get("email"),
+      phoneNumber: formData.get("phoneNumber") || undefined,
+      email: formData.get("email") || undefined,
       items,
       total: Number(formData.get("total")),
       remainingAmount: Number(formData.get("remainingAmount")) || 0,
       paidAmount: Number(formData.get("paidAmount")) || 0,
       deliveryCost: Number(formData.get("deliveryCost")) || 0,
-      deliveryMethod: formData.get("deliveryMethod"),
-      shippingAddress: formData.get("shippingAddress"),
-      meetingAddress: formData.get("meetingAddress"),
+      deliveryMethod: formData.get("deliveryMethod") || undefined,
+      shippingAddress: formData.get("shippingAddress") || undefined,
+      meetingAddress: formData.get("meetingAddress") || undefined,
       status: formData.get("status"),
       paymentStatus: formData.get("paymentStatus"),
-      comments: formData.get("comments"),
-      designNotes: formData.get("designNotes"),
+      comments: formData.get("comments") || undefined,
+      designNotes: formData.get("designNotes") || undefined,
       designReferences: [],
     };
 
@@ -110,6 +111,7 @@ export async function createCustomOrder(prevState: any, formData: FormData) {
     });
 
     revalidatePath("/admin/custom-orders");
+    revalidatePath("/admin");
     revalidatePath("/personalizados");
 
     return { success: true, message: "Orden creada exitosamente" };
@@ -143,13 +145,7 @@ export async function getCustomOrders(): Promise<{
       .sort({ createdAt: -1 })
       .toArray();
 
-    const serialized = orders.map((order: any) => ({
-      ...order,
-      _id: order._id.toString(),
-      createdAt: order.createdAt?.toISOString() ?? "",
-    }));
-
-    return { success: true, data: serialized };
+    return { success: true, data: deepSerialize(orders) };
   } catch (error) {
     console.error("💥 Error al obtener órdenes:", error);
     return {
@@ -170,7 +166,7 @@ export async function getCustomOrderById(id: string) {
 
     if (!order) return { success: false, message: "Orden no encontrada" };
 
-    return { success: true, data: JSON.parse(JSON.stringify(order)) };
+    return { success: true, data: deepSerialize(order) };
   } catch (error) {
     console.error("💥 Error al obtener orden:", error);
     return { success: false, message: "Error al obtener la orden" };
@@ -188,7 +184,7 @@ export async function getCustomOrdersByStatus(status: string) {
       .sort({ createdAt: -1 })
       .toArray();
 
-    return { success: true, data: JSON.parse(JSON.stringify(orders)) };
+    return { success: true, data: deepSerialize(orders) };
   } catch (error) {
     console.error(error);
     return { success: false, message: "Error al filtrar las órdenes" };

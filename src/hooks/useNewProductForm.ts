@@ -4,7 +4,7 @@ import { createProduct } from "@/lib/actions/product.actions";
 import { useRouter } from "next/navigation";
 import { showToast } from "nextjs-toast-notify";
 
-export const useNewProductForm = () => {
+export const useNewProductForm = (onClose?: () => void) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -80,6 +80,19 @@ export const useNewProductForm = () => {
     setForm({ ...form, variants: newVariants });
   };
 
+  const removeVariant = (index: number) => {
+    const newVariants = form.variants.filter((_, i) => i !== index);
+    setForm({ ...form, variants: newVariants });
+  };
+
+  const removeSizeFromVariant = (variantIndex: number, sizeIndex: number) => {
+    const newVariants = [...form.variants];
+    newVariants[variantIndex].sizes = newVariants[variantIndex].sizes.filter(
+      (_: any, i: number) => i !== sizeIndex
+    );
+    setForm({ ...form, variants: newVariants });
+  };
+
   const handleUploadImage = async (index: number, files: File[]) => {
     if (files.length === 0) return;
     try {
@@ -148,7 +161,11 @@ export const useNewProductForm = () => {
         transition: "bounceIn",
       });
 
-      router.push("/admin/products");
+      if (onClose) {
+        onClose();
+      } else {
+        router.push("/admin/products");
+      }
     } catch (err) {
       showToast.error("Error al crear el producto", {
         duration: 4000,
@@ -167,8 +184,10 @@ export const useNewProductForm = () => {
     handleCategory,
     handleSubcategories,
     addVariant,
+    removeVariant,
     updateVariant,
     addSizeToVariant,
+    removeSizeFromVariant,
     handleUploadImage,
     handleRemoveImage,
     handleSubmit,

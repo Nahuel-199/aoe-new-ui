@@ -2,8 +2,8 @@
 
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
-
 import { revalidatePath } from "next/cache";
+import { deepSerialize } from "@/lib/serialize";
 
 export async function createCategory(data: { name: string }) {
   const client = await clientPromise;
@@ -21,10 +21,11 @@ export async function createCategory(data: { name: string }) {
 
   revalidatePath("/admin/categories");
   revalidatePath("/admin/products");
+  revalidatePath("/admin");
   revalidatePath("/products");
   revalidatePath("/");
 
-  return JSON.parse(JSON.stringify(category));
+  return deepSerialize(category);
 }
 
 export async function getCategories() {
@@ -33,7 +34,7 @@ export async function getCategories() {
 
   const categories = await db.collection("categories").find().toArray();
 
-  return JSON.parse(JSON.stringify(categories));
+  return deepSerialize(categories);
 }
 
 export async function deleteCategory(id: string) {
@@ -46,6 +47,7 @@ export async function deleteCategory(id: string) {
 
   revalidatePath("/admin/categories");
   revalidatePath("/admin/products");
+  revalidatePath("/admin");
   revalidatePath("/products");
   revalidatePath("/");
 
@@ -68,8 +70,9 @@ export async function updateCategory(id: string, data: { name?: string }) {
 
   revalidatePath("/admin/categories");
   revalidatePath("/admin/products");
+  revalidatePath("/admin");
   revalidatePath("/products");
   revalidatePath("/");
 
-  return JSON.parse(JSON.stringify(updated));
+  return deepSerialize(updated);
 }

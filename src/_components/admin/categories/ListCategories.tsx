@@ -14,7 +14,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FiEdit, FiPlus, FiTrash } from "react-icons/fi";
-import DialogEditCategory from "./DialogEditCategory";
+import CategoryFormModal from "./CategoryFormModal";
 import ConfirmDeleteCategory from "./ConfirmDeleteCategory";
 
 interface Category {
@@ -24,8 +24,11 @@ interface Category {
 
 export default function ListCategories({ categories }: { categories: Category[] }) {
     const router = useRouter();
-    const [open, setOpen] = useState(false);
-    const [selected, setSelected] = useState<Category | null>(null);
+    const [modalState, setModalState] = useState({
+        open: false,
+        mode: "create" as "create" | "edit",
+        category: null as Category | null,
+    });
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
 
@@ -44,8 +47,15 @@ export default function ListCategories({ categories }: { categories: Category[] 
     };
 
     const handleEditClick = (cat: Category) => {
-        setSelected(cat);
-        setOpen(true);
+        setModalState({ open: true, mode: "edit", category: cat });
+    };
+
+    const handleCreateClick = () => {
+        setModalState({ open: true, mode: "create", category: null });
+    };
+
+    const handleCloseModal = () => {
+        setModalState({ open: false, mode: "create", category: null });
     };
 
     return (
@@ -55,7 +65,7 @@ export default function ListCategories({ categories }: { categories: Category[] 
                     aria-label="Agregar categoría"
                     variant="outline"
                     colorPalette="red"
-                    onClick={() => router.push("/admin/categories/new")}
+                    onClick={handleCreateClick}
                     size={"sm"}
                     rounded={"full"}
                 >
@@ -106,10 +116,11 @@ export default function ListCategories({ categories }: { categories: Category[] 
                     </Table.Root>
                 </Box>
             </Flex>
-            <DialogEditCategory
-                open={open}
-                onOpenChange={setOpen}
-                category={selected}
+            <CategoryFormModal
+                open={modalState.open}
+                mode={modalState.mode}
+                category={modalState.category}
+                onClose={handleCloseModal}
             />
             <ConfirmDeleteCategory
                 open={deleteOpen}

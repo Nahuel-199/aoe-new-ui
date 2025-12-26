@@ -46,7 +46,6 @@ export default function TotalsAndDeliverySection({
                     <Select.Indicator />
                   </Select.IndicatorGroup>
                 </Select.Control>
-                <Portal>
                   <Select.Positioner>
                     <Select.Content>
                       {deliveryCollection.items.map((item) => (
@@ -57,7 +56,6 @@ export default function TotalsAndDeliverySection({
                       ))}
                     </Select.Content>
                   </Select.Positioner>
-                </Portal>
               </Select.Root>
             </Box>
 

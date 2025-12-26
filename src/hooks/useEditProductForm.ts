@@ -5,7 +5,7 @@ import { Product } from "@/types/product.types";
 import { useRouter } from "next/navigation";
 import { showToast } from "nextjs-toast-notify";
 
-export const useEditProductForm = (product: Product) => {
+export const useEditProductForm = (product: Product, onClose?: () => void) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -61,6 +61,19 @@ export const useEditProductForm = (product: Product) => {
     setForm({ ...form, variants: newVariants });
   };
 
+  const removeVariant = (index: number) => {
+    const newVariants = form.variants.filter((_, i) => i !== index);
+    setForm({ ...form, variants: newVariants });
+  };
+
+  const removeSizeFromVariant = (variantIndex: number, sizeIndex: number) => {
+    const newVariants = [...form.variants];
+    newVariants[variantIndex].sizes = newVariants[variantIndex].sizes.filter(
+      (_: any, i: number) => i !== sizeIndex
+    );
+    setForm({ ...form, variants: newVariants });
+  };
+
   const handleUploadImage = async (index: number, files: File[]) => {
     if (files.length === 0) return;
 
@@ -102,7 +115,12 @@ export const useEditProductForm = (product: Product) => {
         icon: '',
         sound: true,
       });
-      router.push("/admin/products");
+
+      if (onClose) {
+        onClose();
+      } else {
+        router.push("/admin/products");
+      }
     } catch (err) {
       showToast.error("Error al actualizar el producto", {
         duration: 4000,
@@ -124,8 +142,10 @@ export const useEditProductForm = (product: Product) => {
     handleCategory,
     handleSubcategories,
     addVariant,
+    removeVariant,
     updateVariant,
     addSizeToVariant,
+    removeSizeFromVariant,
     handleUploadImage,
     handleRemoveImage,
     handleSubmit,

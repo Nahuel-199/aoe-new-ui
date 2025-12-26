@@ -22,6 +22,7 @@ import { useFormStatus } from "react-dom";
 
 interface OrderProps {
   orders: Order;
+  onClose?: () => void;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -32,7 +33,7 @@ const STATUS_COLORS: Record<string, string> = {
   cancelled: "red",
 };
 
-export default function OrderById({ orders }: OrderProps) {
+export default function OrderById({ orders, onClose }: OrderProps) {
   const { pending } = useFormStatus();
   const [deliveryMethod, setDeliveryMethod] = useState<string[]>(
     orders.deliveryMethod ? [orders.deliveryMethod] : []

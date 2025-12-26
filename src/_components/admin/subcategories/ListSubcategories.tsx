@@ -11,7 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FiEdit, FiPlus, FiTrash } from "react-icons/fi";
-import DialogEditsubcategory from "./DialogEditSubcategory";
+import SubcategoryFormModal from "./SubcategoryFormModal";
 import { deleteSubcategory } from "@/lib/actions/subcategory.actions";
 import ConfirmDeleteDialog from "./ConfirmDeleteDialog";
 
@@ -21,8 +21,11 @@ interface Subcategory {
 }
 
 export default function ListSubsubcategories({ subcategories }: { subcategories: Subcategory[] }) {
-    const [open, setOpen] = useState(false);
-    const [selected, setSelected] = useState<Subcategory | null>(null);
+    const [modalState, setModalState] = useState({
+        open: false,
+        mode: "create" as "create" | "edit",
+        subcategory: null as Subcategory | null,
+    });
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [subcategoryToDelete, setSubcategoryToDelete] = useState<string | null>(null);
     const router = useRouter();
@@ -41,9 +44,16 @@ export default function ListSubsubcategories({ subcategories }: { subcategories:
         router.refresh();
     };
 
-    const handleEditClick = (cat: Subcategory) => {
-        setSelected(cat);
-        setOpen(true);
+    const handleEditClick = (subcat: Subcategory) => {
+        setModalState({ open: true, mode: "edit", subcategory: subcat });
+    };
+
+    const handleCreateClick = () => {
+        setModalState({ open: true, mode: "create", subcategory: null });
+    };
+
+    const handleCloseModal = () => {
+        setModalState({ open: false, mode: "create", subcategory: null });
     };
 
     return (
@@ -53,7 +63,7 @@ export default function ListSubsubcategories({ subcategories }: { subcategories:
                     aria-label="Agregar subcategoría"
                     variant="outline"
                     colorPalette="red"
-                    onClick={() => router.push("/admin/subcategories/new")}
+                    onClick={handleCreateClick}
                     size={"sm"}
                     rounded={"full"}
                 >
@@ -105,10 +115,11 @@ export default function ListSubsubcategories({ subcategories }: { subcategories:
                     </Table.Root>
                 </Box>
             </Flex>
-            <DialogEditsubcategory
-                open={open}
-                onOpenChange={setOpen}
-                subcategory={selected}
+            <SubcategoryFormModal
+                open={modalState.open}
+                mode={modalState.mode}
+                subcategory={modalState.subcategory}
+                onClose={handleCloseModal}
             />
             <ConfirmDeleteDialog
                 open={deleteOpen}

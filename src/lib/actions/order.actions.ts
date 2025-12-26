@@ -7,6 +7,7 @@ import { CartItem } from "@/types/cart.types";
 import { redirect } from "next/navigation";
 import { Variant } from "@/types/product.types";
 import { revalidatePath } from "next/cache";
+import { deepSerialize } from "@/lib/serialize";
 
 export async function createOrder({ items }: { items: CartItem[] }) {
   const client = await clientPromise;
@@ -134,6 +135,7 @@ export async function createOrder({ items }: { items: CartItem[] }) {
   } finally {
     await session.endSession();
     revalidatePath("/admin/orders");
+    revalidatePath("/admin");
     revalidatePath("/mis-pedidos");
   }
 }
@@ -165,7 +167,7 @@ export async function getAllOrders() {
     ])
     .toArray();
 
-  return JSON.parse(JSON.stringify(orders));
+  return deepSerialize(orders);
 }
 
 export async function getOrderById(orderId: string): Promise<any | null> {
@@ -198,29 +200,23 @@ export async function getOrderById(orderId: string): Promise<any | null> {
 
   if (!orders[0]) return null;
 
-  const raw = JSON.parse(JSON.stringify(orders[0]));
+  const raw = deepSerialize(orders[0]);
 
   return {
     ...raw,
-    _id: raw._id.toString(),
     user: {
-      _id: raw.user._id.toString(),
+      _id: raw.user._id,
       name: raw.user.name,
       email: raw.user.email,
     },
     items: raw.items.map((item: any) => {
       const product = raw.products.find(
-        (p: any) => p._id.toString() === item.productId.toString()
+        (p: any) => p._id === item.productId
       );
 
       return {
         ...item,
-        product: product
-          ? {
-              ...product,
-              _id: product._id.toString(),
-            }
-          : null,
+        product: product || null,
       };
     }),
 
@@ -249,7 +245,7 @@ export async function getOrdersByUser(userId: string) {
     ])
     .toArray();
 
-  return JSON.parse(JSON.stringify(orders));
+  return deepSerialize(orders);
 }
 
 export async function updateOrderStatus(
@@ -288,6 +284,7 @@ export async function updateOrderStatus(
   }
 
   revalidatePath("/admin/orders");
+  revalidatePath("/admin");
   revalidatePath("/mis-pedidos");
   revalidatePath(`/orders/${orderId}`);
 
@@ -357,6 +354,7 @@ export async function deleteOrder(orderId: string) {
   await ordersCol.deleteOne({ _id: new ObjectId(orderId) });
 
   revalidatePath("/admin/orders");
+  revalidatePath("/admin");
   revalidatePath("/mis-pedidos");
 
   return { success: true };

@@ -3,14 +3,19 @@
 import { createCustomOrder } from "@/lib/actions/customOrder.action";
 import { Box, Button, Heading, VStack } from "@chakra-ui/react";
 import { useActionState, useEffect, useState } from "react";
+import { toaster } from "@/components/ui/toaster";
 import ClientDataSection from "./sections/ClientDataSection";
 import ProductDetailsSection from "./sections/ProductDetailsSection";
 import TotalsAndDeliverySection from "./sections/TotalsAndDeliverySection";
 import StatusAndNotesSection from "./sections/StatusAndNotesSection";
 
-const initialState = { message: "" };
+const initialState = { success: false, message: "" };
 
-export default function CustomOrderForm() {
+interface CustomOrderFormProps {
+  onClose?: () => void;
+}
+
+export default function CustomOrderForm({ onClose }: CustomOrderFormProps) {
   const [state, formAction, pending] = useActionState(createCustomOrder, initialState);
 
   const [status, setStatus] = useState<string[]>([]);
@@ -31,6 +36,38 @@ export default function CustomOrderForm() {
     setTotal(totalCalculated);
     setRemaining(remainingCalculated);
   }, [items, deliveryCost, paidAmount]);
+
+  // Handle success/error messages
+  useEffect(() => {
+    if (state?.message) {
+      if (state.success) {
+        toaster.success({
+          title: "¡Orden creada exitosamente!",
+          description: state.message,
+        });
+        // Reset form only on success
+        setItems([{ name: "", description: "", color: "", size: "", quantity: 1, price: 0 }]);
+        setDeliveryCost(0);
+        setPaidAmount(0);
+        setTotal(0);
+        setRemaining(0);
+        setStatus([]);
+        setPaymentStatus([]);
+        setDeliveryMethod([]);
+
+        // Close drawer after success
+        if (onClose) {
+          setTimeout(() => onClose(), 1000);
+        }
+      } else {
+        toaster.error({
+          title: "Error al crear la orden",
+          description: state.message,
+        });
+        // Don't reset form on error - keep user data
+      }
+    }
+  }, [state, onClose]);
 
   const addItem = () => {
     setItems([

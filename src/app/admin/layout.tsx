@@ -1,20 +1,34 @@
-'use client';
+import { Box } from "@chakra-ui/react";
+import AdminDashboardContainer from "@/_components/admin/dashboard/AdminDashboardContainer";
+import { getProducts } from "@/lib/actions/product.actions";
+import { getCategories } from "@/lib/actions/category.actions";
+import { getSubcategories } from "@/lib/actions/subcategory.actions";
+import { getAllOrders } from "@/lib/actions/order.actions";
+import { getCustomOrders } from "@/lib/actions/customOrder.action";
 
-import Sidebar from "@/_components/admin/sidebar/Sidebar";
-import { HStack, Box } from "@chakra-ui/react";
+export default async function AdminLayout() {
+  // Fetch all data in parallel
+  const [products, categories, subcategories, ordersResponse, customOrdersResponse] = await Promise.all([
+    getProducts(),
+    getCategories(),
+    getSubcategories(),
+    getAllOrders(),
+    getCustomOrders(),
+  ]);
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    return (
-        <HStack
-            align="start"
-            p={2}
-            w="full"
-            flexDir={{ base: "column", md: "row" }}
-        >
-            <Sidebar />
-            <Box flex="1" p={6} w="full">
-                {children}
-            </Box>
-        </HStack>
-    );
+  // Extract data from responses
+  const orders = ordersResponse || [];
+  const customOrders = customOrdersResponse?.data || [];
+
+  return (
+    <Box w="full" minH="100vh">
+      <AdminDashboardContainer
+        products={products}
+        categories={categories}
+        subcategories={subcategories}
+        orders={orders}
+        customOrders={customOrders}
+      />
+    </Box>
+  );
 }

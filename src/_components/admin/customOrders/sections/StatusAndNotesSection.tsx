@@ -55,7 +55,6 @@ export default function StatusAndNotesSection({ status, setStatus, paymentStatus
                   <Select.Indicator />
                 </Select.IndicatorGroup>
               </Select.Control>
-              <Portal>
                 <Select.Positioner>
                   <Select.Content>
                     {statusOptions.items.map((item) => (
@@ -66,7 +65,6 @@ export default function StatusAndNotesSection({ status, setStatus, paymentStatus
                     ))}
                   </Select.Content>
                 </Select.Positioner>
-              </Portal>
             </Select.Root>
           </Box>
 
@@ -87,7 +85,6 @@ export default function StatusAndNotesSection({ status, setStatus, paymentStatus
                   <Select.Indicator />
                 </Select.IndicatorGroup>
               </Select.Control>
-              <Portal>
                 <Select.Positioner>
                   <Select.Content>
                     {paymentOptions.items.map((item) => (
@@ -98,7 +95,6 @@ export default function StatusAndNotesSection({ status, setStatus, paymentStatus
                     ))}
                   </Select.Content>
                 </Select.Positioner>
-              </Portal>
             </Select.Root>
           </Box>
         </Grid>
