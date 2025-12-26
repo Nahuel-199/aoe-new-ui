@@ -8,11 +8,15 @@ import { useRouter } from "next/navigation";
 interface CustomOrderDrawerProps {
   open: boolean;
   onClose: () => void;
+  mode?: "create" | "edit";
+  orderId?: string;
 }
 
 export default function CustomOrderDrawer({
   open,
   onClose,
+  mode = "create",
+  orderId,
 }: CustomOrderDrawerProps) {
   const router = useRouter();
 
@@ -41,11 +45,13 @@ export default function CustomOrderDrawer({
               >
                 <LuArrowLeft />
               </IconButton>
-              <Drawer.Title>Crear Pedido Personalizado</Drawer.Title>
+              <Drawer.Title>
+                {mode === "edit" ? "Editar Pedido Personalizado" : "Crear Pedido Personalizado"}
+              </Drawer.Title>
             </HStack>
           </Drawer.Header>
           <Drawer.Body p={0}>
-            <CustomOrderForm onClose={handleClose} />
+            <CustomOrderForm onClose={handleClose} mode={mode} orderId={orderId} />
           </Drawer.Body>
           <Drawer.CloseTrigger />
         </Drawer.Content>

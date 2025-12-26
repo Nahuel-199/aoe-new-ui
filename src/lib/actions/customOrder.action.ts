@@ -190,3 +190,50 @@ export async function getCustomOrdersByStatus(status: string) {
     return { success: false, message: "Error al filtrar las órdenes" };
   }
 }
+
+export async function updateCustomOrder(
+  id: string,
+  data: Partial<CustomOrderInput>
+) {
+  try {
+    const client = await clientPromise;
+    const db = client.db("test");
+
+    await db.collection("customOrders").updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          ...data,
+          updatedAt: new Date(),
+        },
+      }
+    );
+
+    revalidatePath("/admin");
+    return { success: true, message: "Orden actualizada correctamente" };
+  } catch (error) {
+    console.error("💥 Error al actualizar orden:", error);
+    return { success: false, message: "Error al actualizar la orden" };
+  }
+}
+
+export async function deleteCustomOrder(id: string) {
+  try {
+    const client = await clientPromise;
+    const db = client.db("test");
+
+    const result = await db.collection("customOrders").deleteOne({
+      _id: new ObjectId(id),
+    });
+
+    if (result.deletedCount === 0) {
+      return { success: false, message: "Orden no encontrada" };
+    }
+
+    revalidatePath("/admin");
+    return { success: true, message: "Orden eliminada correctamente" };
+  } catch (error) {
+    console.error("💥 Error al eliminar orden:", error);
+    return { success: false, message: "Error al eliminar la orden" };
+  }
+}

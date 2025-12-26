@@ -75,7 +75,6 @@ export async function getProducts() {
     ])
     .toArray();
 
-  // Serialización profunda para convertir TODOS los ObjectIds y Dates a valores primitivos
   return deepSerialize<Product[]>(products);
 }
 

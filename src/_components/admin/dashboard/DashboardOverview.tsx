@@ -36,7 +36,7 @@ export default function DashboardOverview({
   onOpenCategoryModal,
   onOpenCustomOrderDrawer,
 }: DashboardOverviewProps) {
-  // Get recent orders (last 5)
+
   const recentOrders = orders.slice(0, 5);
 
   const STATUS_COLORS: Record<string, string> = {
@@ -69,7 +69,6 @@ export default function DashboardOverview({
       />
 
       <SimpleGrid columns={{ base: 1, lg: 2 }} gap={6} mt={8}>
-        {/* Recent Orders */}
         <Card.Root>
           <Card.Header>
             <Heading size="md">Órdenes Recientes</Heading>
@@ -104,7 +103,6 @@ export default function DashboardOverview({
           </Card.Body>
         </Card.Root>
 
-        {/* Quick Actions */}
         <Card.Root>
           <Card.Header>
             <Heading size="md">Acciones Rápidas</Heading>
@@ -144,7 +142,6 @@ export default function DashboardOverview({
         </Card.Root>
       </SimpleGrid>
 
-      {/* Products needing attention */}
       {products.filter(
         (p) =>
           p.variants.some((v) =>

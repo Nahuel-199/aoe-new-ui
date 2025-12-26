@@ -19,7 +19,6 @@ export default function StatisticsCards({
   orders,
   customOrders,
 }: StatisticsCardsProps) {
-  // Calculate statistics
   const totalProducts = products.length;
   const totalCategories = categories.length;
 
@@ -30,13 +29,11 @@ export default function StatisticsCards({
     (o) => o.status === "pending" || o.status === "in_progress"
   ).length;
 
-  // Calculate total revenue from completed orders
   const completedOrders = orders.filter(
     (o) => o.status === "delivered" || o.status === "confirmed"
   );
   const totalRevenue = completedOrders.reduce((sum, order) => sum + order.total, 0);
 
-  // Calculate low stock products (products with any variant size < 5 stock)
   const lowStockProducts = products.filter((product) =>
     product.variants.some((variant) =>
       variant.sizes.some((size) => size.stock < 5 && size.stock > 0)

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Box, VStack, Tabs } from "@chakra-ui/react";
+import { Box, VStack, Tabs, Drawer, IconButton, Stack, Text, Portal } from "@chakra-ui/react";
+import { HiMenu } from "react-icons/hi";
+import { MdDashboard, MdShoppingBag, MdCategory, MdList, MdReceipt, MdDesignServices } from "react-icons/md";
 import AdminHeader from "./AdminHeader";
 import DashboardOverview from "./DashboardOverview";
 import ListProducts from "../products/ListProducts";
@@ -16,6 +18,15 @@ import CategoryFormModal from "../categories/CategoryFormModal";
 import { Product, Category, Subcategory } from "@/types/product.types";
 import { Order } from "@/types/order.types";
 import { CustomOrder } from "@/types/customOrder.types";
+
+const menuItems = [
+  { label: "Dashboard", value: "0", icon: MdDashboard },
+  { label: "Productos", value: "1", icon: MdShoppingBag },
+  { label: "Categorías", value: "2", icon: MdCategory },
+  { label: "Subcategorías", value: "3", icon: MdList },
+  { label: "Órdenes", value: "4", icon: MdReceipt },
+  { label: "Personalizados", value: "5", icon: MdDesignServices },
+];
 
 interface AdminDashboardContainerProps {
   products: Product[];
@@ -32,33 +43,33 @@ export default function AdminDashboardContainer({
   orders,
   customOrders,
 }: AdminDashboardContainerProps) {
-  // Tab state
-  const [activeTab, setActiveTab] = useState("0");
 
-  // Product drawer state
+  const [activeTab, setActiveTab] = useState("0");
+  const [menuDrawerOpen, setMenuDrawerOpen] = useState(false);
+
   const [productDrawer, setProductDrawer] = useState({
     open: false,
     mode: "create" as "create" | "edit",
     productId: undefined as string | undefined,
   });
 
-  // Order drawer state
   const [orderDrawer, setOrderDrawer] = useState({
     open: false,
     orderId: undefined as string | undefined,
   });
 
-  // Custom order drawer state
-  const [customOrderDrawerOpen, setCustomOrderDrawerOpen] = useState(false);
+  const [customOrderDrawer, setCustomOrderDrawer] = useState({
+    open: false,
+    mode: "create" as "create" | "edit",
+    orderId: undefined as string | undefined,
+  });
 
-  // Category modal state
   const [categoryModal, setCategoryModal] = useState({
     open: false,
     mode: "create" as "create" | "edit",
     category: null as Category | null,
   });
 
-  // Handlers
   const handleOpenProductDrawer = (
     mode: "create" | "edit",
     productId?: string
@@ -78,12 +89,12 @@ export default function AdminDashboardContainer({
     setOrderDrawer({ open: false, orderId: undefined });
   };
 
-  const handleOpenCustomOrderDrawer = () => {
-    setCustomOrderDrawerOpen(true);
+  const handleOpenCustomOrderDrawer = (mode: "create" | "edit" = "create", orderId?: string) => {
+    setCustomOrderDrawer({ open: true, mode, orderId });
   };
 
   const handleCloseCustomOrderDrawer = () => {
-    setCustomOrderDrawerOpen(false);
+    setCustomOrderDrawer({ open: false, mode: "create", orderId: undefined });
   };
 
   const handleOpenCategoryModal = () => {
@@ -92,6 +103,11 @@ export default function AdminDashboardContainer({
 
   const handleCloseCategoryModal = () => {
     setCategoryModal({ open: false, mode: "create", category: null });
+  };
+
+  const handleMenuItemClick = (value: string) => {
+    setActiveTab(value);
+    setMenuDrawerOpen(false);
   };
 
   return (
@@ -105,72 +121,40 @@ export default function AdminDashboardContainer({
           variant="enclosed"
           colorPalette="red"
         >
-          <Tabs.List
-            mb={4}
-            overflowX={{ base: "auto", md: "visible" }}
-            whiteSpace="nowrap"
-            css={{
-              // Estilos para scroll horizontal en móviles
-              scrollbarWidth: "thin",
-              "&::-webkit-scrollbar": {
-                height: "4px",
-              },
-              "&::-webkit-scrollbar-track": {
-                background: "transparent",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                background: "var(--chakra-colors-gray-400)",
-                borderRadius: "2px",
-              },
-            }}
-            gap={{ base: 0, md: 1 }}
-          >
-            <Tabs.Trigger
-              value="0"
-              px={{ base: 3, md: 4 }}
-              py={{ base: 2, md: 2.5 }}
-              fontSize={{ base: "sm", md: "md" }}
+
+          <Box display={{ base: "block", md: "none" }} mb={4}>
+            <IconButton
+              aria-label="Abrir menú de navegación"
+              onClick={() => setMenuDrawerOpen(true)}
+              size="md"
+              variant="outline"
+              colorPalette="red"
             >
+              <HiMenu />
+            </IconButton>
+          </Box>
+
+          <Tabs.List
+            display={{ base: "none", md: "flex" }}
+            mb={4}
+            gap={1}
+          >
+            <Tabs.Trigger value="0" px={4} py={2.5}>
               Dashboard
             </Tabs.Trigger>
-            <Tabs.Trigger
-              value="1"
-              px={{ base: 3, md: 4 }}
-              py={{ base: 2, md: 2.5 }}
-              fontSize={{ base: "sm", md: "md" }}
-            >
+            <Tabs.Trigger value="1" px={4} py={2.5}>
               Productos
             </Tabs.Trigger>
-            <Tabs.Trigger
-              value="2"
-              px={{ base: 3, md: 4 }}
-              py={{ base: 2, md: 2.5 }}
-              fontSize={{ base: "sm", md: "md" }}
-            >
+            <Tabs.Trigger value="2" px={4} py={2.5}>
               Categorías
             </Tabs.Trigger>
-            <Tabs.Trigger
-              value="3"
-              px={{ base: 3, md: 4 }}
-              py={{ base: 2, md: 2.5 }}
-              fontSize={{ base: "sm", md: "md" }}
-            >
+            <Tabs.Trigger value="3" px={4} py={2.5}>
               Subcategorías
             </Tabs.Trigger>
-            <Tabs.Trigger
-              value="4"
-              px={{ base: 3, md: 4 }}
-              py={{ base: 2, md: 2.5 }}
-              fontSize={{ base: "sm", md: "md" }}
-            >
+            <Tabs.Trigger value="4" px={4} py={2.5}>
               Órdenes
             </Tabs.Trigger>
-            <Tabs.Trigger
-              value="5"
-              px={{ base: 3, md: 4 }}
-              py={{ base: 2, md: 2.5 }}
-              fontSize={{ base: "sm", md: "md" }}
-            >
+            <Tabs.Trigger value="5" px={4} py={2.5}>
               Personalizados
             </Tabs.Trigger>
           </Tabs.List>
@@ -220,7 +204,6 @@ export default function AdminDashboardContainer({
         </Tabs.Root>
       </Box>
 
-      {/* Overlay Drawers/Modals */}
       <ProductDrawer
         open={productDrawer.open}
         mode={productDrawer.mode}
@@ -235,7 +218,9 @@ export default function AdminDashboardContainer({
         onClose={handleCloseOrderDrawer}
       />
       <CustomOrderDrawer
-        open={customOrderDrawerOpen}
+        open={customOrderDrawer.open}
+        mode={customOrderDrawer.mode}
+        orderId={customOrderDrawer.orderId}
         onClose={handleCloseCustomOrderDrawer}
       />
       <CategoryFormModal
@@ -244,6 +229,59 @@ export default function AdminDashboardContainer({
         category={categoryModal.category}
         onClose={handleCloseCategoryModal}
       />
+
+      <Drawer.Root
+        open={menuDrawerOpen}
+        onOpenChange={(details) => setMenuDrawerOpen(details.open)}
+        placement="start"
+        size="xs"
+      >
+          <Portal>
+        <Drawer.Backdrop />
+        <Drawer.Positioner>
+          <Drawer.Content>
+            <Drawer.Header borderBottomWidth="1px">
+              <Drawer.Title>Menú</Drawer.Title>
+            </Drawer.Header>
+            <Drawer.Body p={0}>
+              <Stack gap={0}>
+                {menuItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeTab === item.value;
+                  return (
+                    <Box
+                      key={item.value}
+                      as="button"
+                      onClick={() => handleMenuItemClick(item.value)}
+                      px={4}
+                      py={3}
+                      display="flex"
+                      alignItems="center"
+                      gap={3}
+                      w="full"
+                      bg={isActive ? "red.50" : "transparent"}
+                      color={isActive ? "red.600" : "gray.700"}
+                      fontWeight={isActive ? "semibold" : "normal"}
+                      borderLeftWidth={3}
+                      cursor={"pointer"}
+                      borderLeftColor={isActive ? "red.600" : "transparent"}
+                      _hover={{
+                        bg: isActive ? "red.50" : "gray.50",
+                      }}
+                      transition="all 0.2s"
+                    >
+                      <Icon size={20} />
+                      <Text fontSize="md">{item.label}</Text>
+                    </Box>
+                  );
+                })}
+              </Stack>
+            </Drawer.Body>
+            <Drawer.CloseTrigger />
+          </Drawer.Content>
+        </Drawer.Positioner>
+        </Portal>
+      </Drawer.Root>
     </VStack>
   );
 }

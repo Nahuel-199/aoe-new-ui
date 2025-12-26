@@ -2,6 +2,7 @@
 
 import { Box, HStack, Text } from "@chakra-ui/react";
 import { ColorModeButton } from "@/components/ui/color-mode";
+import Link from "next/link";
 
 export default function AdminHeader() {
   return (
@@ -15,6 +16,7 @@ export default function AdminHeader() {
       shadow="sm"
     >
       <HStack justify="space-between" p={4}>
+          <Link href={"/"}>
         <HStack gap={1}>
           <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="bold">
             AOE
@@ -31,13 +33,15 @@ export default function AdminHeader() {
           </Text>
           <Text
             fontSize={{ base: "sm", md: "md" }}
+            display={{ base: "none", sm: "block", md: "block"}}
             fontWeight="medium"
             color="gray.500"
             ml={4}
-          >
+            >
             Admin Panel
           </Text>
         </HStack>
+            </Link>
         <ColorModeButton />
       </HStack>
     </Box>

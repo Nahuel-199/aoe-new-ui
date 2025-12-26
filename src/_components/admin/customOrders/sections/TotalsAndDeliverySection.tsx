@@ -3,6 +3,19 @@
 import { Card, Grid, Box, Field, Input, VStack, Heading, Select, Portal } from "@chakra-ui/react";
 import { createListCollection } from "@chakra-ui/react";
 
+interface TotalsAndDeliverySectionProps {
+  deliveryMethod: string[];
+  setDeliveryMethod: (value: string[]) => void;
+  deliveryCost: number;
+  setDeliveryCost: (value: number) => void;
+  paidAmount: number;
+  setPaidAmount: (value: number) => void;
+  total: number;
+  remaining: number;
+  shippingAddress?: string;
+  meetingAddress?: string;
+}
+
 export default function TotalsAndDeliverySection({
   deliveryMethod,
   setDeliveryMethod,
@@ -12,7 +25,9 @@ export default function TotalsAndDeliverySection({
   setPaidAmount,
   total,
   remaining,
-}: any) {
+  shippingAddress,
+  meetingAddress,
+}: TotalsAndDeliverySectionProps) {
   const deliveryCollection = createListCollection({
     items: [
       { label: "Correo", value: "correo" },
@@ -59,20 +74,28 @@ export default function TotalsAndDeliverySection({
               </Select.Root>
             </Box>
 
-            {deliveryMethod === "correo" && (
+            {deliveryMethod[0] === "correo" && (
               <Box>
                 <Field.Root>
                   <Field.Label>Dirección de envío</Field.Label>
-                  <Input type="text" name="shippingAddress" />
+                  <Input
+                    type="text"
+                    name="shippingAddress"
+                    defaultValue={shippingAddress}
+                  />
                 </Field.Root>
               </Box>
             )}
 
-            {deliveryMethod === "punto_encuentro" && (
+            {deliveryMethod[0] === "punto_encuentro" && (
               <Box>
                 <Field.Root>
                   <Field.Label>Dirección de encuentro</Field.Label>
-                  <Input type="text" name="meetingAddress" />
+                  <Input
+                    type="text"
+                    name="meetingAddress"
+                    defaultValue={meetingAddress}
+                  />
                 </Field.Root>
               </Box>
             )}

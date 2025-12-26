@@ -7,7 +7,6 @@ import { getAllOrders } from "@/lib/actions/order.actions";
 import { getCustomOrders } from "@/lib/actions/customOrder.action";
 
 export default async function AdminLayout() {
-  // Fetch all data in parallel
   const [products, categories, subcategories, ordersResponse, customOrdersResponse] = await Promise.all([
     getProducts(),
     getCategories(),
@@ -16,7 +15,6 @@ export default async function AdminLayout() {
     getCustomOrders(),
   ]);
 
-  // Extract data from responses
   const orders = ordersResponse || [];
   const customOrders = customOrdersResponse?.data || [];
 

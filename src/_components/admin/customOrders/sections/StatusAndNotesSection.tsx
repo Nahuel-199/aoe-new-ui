@@ -13,7 +13,23 @@ import {
   createListCollection,
 } from "@chakra-ui/react";
 
-export default function StatusAndNotesSection({ status, setStatus, paymentStatus, setPaymentStatus }: any) {
+interface StatusAndNotesSectionProps {
+  status: string[];
+  setStatus: (value: string[]) => void;
+  paymentStatus: string[];
+  setPaymentStatus: (value: string[]) => void;
+  comments?: string;
+  designNotes?: string;
+}
+
+export default function StatusAndNotesSection({
+  status,
+  setStatus,
+  paymentStatus,
+  setPaymentStatus,
+  comments,
+  designNotes,
+}: StatusAndNotesSectionProps) {
   const statusOptions = createListCollection({
     items: [
       { label: "Pendiente", value: "pending" },
@@ -104,14 +120,24 @@ export default function StatusAndNotesSection({ status, setStatus, paymentStatus
         <Box>
           <Field.Root>
             <Field.Label>Comentarios</Field.Label>
-            <Textarea placeholder="Comentarios adicionales..." name="comments" rows={3} />
+            <Textarea
+              placeholder="Comentarios adicionales..."
+              name="comments"
+              rows={3}
+              defaultValue={comments}
+            />
           </Field.Root>
         </Box>
 
         <Box mt={3}>
           <Field.Root>
             <Field.Label>Notas de diseño</Field.Label>
-            <Textarea placeholder="Detalles del diseño..." name="designNotes" rows={3} />
+            <Textarea
+              placeholder="Detalles del diseño..."
+              name="designNotes"
+              rows={3}
+              defaultValue={designNotes}
+            />
           </Field.Root>
         </Box>
       </Card.Body>
