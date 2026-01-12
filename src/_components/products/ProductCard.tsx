@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { Product } from "@/types/product.types";
 import { Tooltip } from "@/components/ui/tooltip";
 import { colorMap } from "./utils/ColorMaps";
+import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
@@ -20,10 +21,16 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const router = useRouter();
+  const [isHovered, setIsHovered] = useState(false);
   const uniqueTypes = Array.from(new Set(product.variants.map((v) => v.type)));
   const uniqueColors = Array.from(
     new Set(product.variants.map((v) => v.color))
   );
+
+  const firstVariantImages = product.variants?.[0]?.images || [];
+  const imageToShow = isHovered && firstVariantImages.length > 1
+    ? firstVariantImages[1].url
+    : firstVariantImages[0]?.url;
 
   return (
     <Box
@@ -34,15 +41,18 @@ export default function ProductCard({ product }: ProductCardProps) {
       transition="all 0.2s"
       _hover={{ transform: "scale(1.02)" }}
     >
-      {product.variants?.[0]?.images?.length ? (
+      {imageToShow ? (
         <Image
-          src={product.variants[0].images[0].url}
+          src={imageToShow}
           alt={product.name}
           w="100%"
           h="250px"
           objectFit="cover"
           onClick={() => router.push(`/products/${product._id}`)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           cursor={"pointer"}
+          transition="all 0.3s ease-in-out"
         />
       ) : (
         <Box w="100%" h="250px" bg="gray.200" />

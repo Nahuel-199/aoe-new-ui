@@ -8,6 +8,7 @@ import {
   Heading,
   HStack,
   IconButton,
+  Image,
   Table,
   useBreakpointValue,
 } from "@chakra-ui/react";
@@ -19,6 +20,38 @@ import { CardProducts } from "./CardProducts";
 import { useRouter } from "next/navigation";
 import { toaster } from "@/components/ui/toaster";
 import { deleteProduct } from "@/lib/actions/product.actions";
+
+const getColorHex = (colorName: string): string => {
+  const colorMap: { [key: string]: string } = {
+    rojo: "#FF0000",
+    azul: "#0000FF",
+    verde: "#00FF00",
+    amarillo: "#FFFF00",
+    negro: "#000000",
+    blanco: "#FFFFFF",
+    gris: "#808080",
+    rosa: "#FFC0CB",
+    morado: "#800080",
+    naranja: "#FFA500",
+    marron: "#8B4513",
+    beige: "#F5F5DC",
+    celeste: "#87CEEB",
+    violeta: "#8B00FF",
+    turquesa: "#40E0D0",
+    lila: "#C8A2C8",
+    fucsia: "#FF00FF",
+    bordo: "#800020",
+    cian: "#00FFFF",
+    dorado: "#FFD700",
+    plateado: "#C0C0C0",
+    coral: "#FF7F50",
+    salmon: "#FA8072",
+    oliva: "#808000",
+    crema: "#FFFDD0",
+  };
+
+  return colorMap[colorName.toLowerCase()] || "#CCCCCC";
+};
 
 interface ListProductsProps {
   products: Product[];
@@ -145,6 +178,9 @@ export default function ListProducts({
           <Table.Header>
             <Table.Row>
               <Table.ColumnHeader textAlign={"center"}>
+                Imagen
+              </Table.ColumnHeader>
+              <Table.ColumnHeader textAlign={"center"}>
                 Nombre
               </Table.ColumnHeader>
               <Table.ColumnHeader textAlign={"center"}>
@@ -155,6 +191,9 @@ export default function ListProducts({
               </Table.ColumnHeader>
               <Table.ColumnHeader textAlign={"center"}>
                 Tipos
+              </Table.ColumnHeader>
+              <Table.ColumnHeader textAlign={"center"}>
+                Colores
               </Table.ColumnHeader>
               <Table.ColumnHeader textAlign={"center"}>
                 Oferta
@@ -169,57 +208,93 @@ export default function ListProducts({
           </Table.Header>
 
           <Table.Body>
-            {filteredProducts.map((product) => (
-              <Table.Row key={product._id}>
-                <Table.Cell fontWeight="medium" textAlign={"center"}>
-                  {product.name}
-                </Table.Cell>
-                <Table.Cell textAlign={"center"}>
-                  {product.category?.name}
-                </Table.Cell>
-                <Table.Cell textAlign={"center"}>
-                  {product.subcategories.map((sub) => sub.name).join(", ")}
-                </Table.Cell>
-                <Table.Cell textAlign={"center"}>
-                  {Array.from(
-                    new Set(product.variants.map((v) => v.type))
-                  ).join(", ")}
-                </Table.Cell>
-                <Table.Cell textAlign={"center"}>
-                  {product.variants.some((v) => v.is_offer) ? (
-                    <Badge colorPalette="red">Sí</Badge>
-                  ) : (
-                    <Badge colorPalette="gray">No</Badge>
-                  )}
-                </Table.Cell>
-                <Table.Cell textAlign={"center"}>
-                  <VariantDialog variants={product.variants} />
-                </Table.Cell>
-                <Table.Cell textAlign="center">
-                  <HStack justify="center" gap={2}>
-                    <IconButton
-                      aria-label="Editar producto"
-                      size="sm"
-                      colorPalette="blue"
-                      variant={"outline"}
-                      onClick={() => handleEdit(product._id)}
-                    >
-                      <FiEdit />
-                    </IconButton>
-                    <IconButton
-                      aria-label="Borrar producto"
-                      size="sm"
-                      colorPalette="red"
-                      variant={"outline"}
-                      loading={isPending}
-                      onClick={() => handleDelete(product._id)}
-                    >
-                      <FiTrash />
-                    </IconButton>
-                  </HStack>
-                </Table.Cell>
-              </Table.Row>
-            ))}
+            {filteredProducts.map((product) => {
+              const firstImage = product.variants[0]?.images[0]?.url || "";
+              const uniqueColors = Array.from(
+                new Set(product.variants.map((v) => v.color))
+              );
+
+              return (
+                <Table.Row key={product._id}>
+                  <Table.Cell textAlign={"center"}>
+                    {firstImage && (
+                      <Image
+                        src={firstImage}
+                        alt={product.name}
+                        boxSize="70px"
+                        objectFit="cover"
+                        borderRadius="md"
+                        mx="auto"
+                      />
+                    )}
+                  </Table.Cell>
+                  <Table.Cell fontWeight="medium" textAlign={"center"}>
+                    {product.name}
+                  </Table.Cell>
+                  <Table.Cell textAlign={"center"}>
+                    {product.category?.name}
+                  </Table.Cell>
+                  <Table.Cell textAlign={"center"}>
+                    {product.subcategories.map((sub) => sub.name).join(", ")}
+                  </Table.Cell>
+                  <Table.Cell textAlign={"center"}>
+                    {Array.from(
+                      new Set(product.variants.map((v) => v.type))
+                    ).join(", ")}
+                  </Table.Cell>
+                  <Table.Cell textAlign={"center"}>
+                    <HStack justify="center" gap={1}>
+                      {uniqueColors.map((color) => (
+                        <Box
+                          key={color}
+                          w="24px"
+                          h="24px"
+                          rounded={"full"}
+                          bg={getColorHex(color)}
+                          borderRadius="md"
+                          border="1px solid"
+                          borderColor="gray.300"
+                          title={color}
+                        />
+                      ))}
+                    </HStack>
+                  </Table.Cell>
+                  <Table.Cell textAlign={"center"}>
+                    {product.variants.some((v) => v.is_offer) ? (
+                      <Badge colorPalette="red">Sí</Badge>
+                    ) : (
+                      <Badge colorPalette="gray">No</Badge>
+                    )}
+                  </Table.Cell>
+                  <Table.Cell textAlign={"center"}>
+                    <VariantDialog variants={product.variants} />
+                  </Table.Cell>
+                  <Table.Cell textAlign="center">
+                    <HStack justify="center" gap={2}>
+                      <IconButton
+                        aria-label="Editar producto"
+                        size="sm"
+                        colorPalette="blue"
+                        variant={"outline"}
+                        onClick={() => handleEdit(product._id)}
+                      >
+                        <FiEdit />
+                      </IconButton>
+                      <IconButton
+                        aria-label="Borrar producto"
+                        size="sm"
+                        colorPalette="red"
+                        variant={"outline"}
+                        loading={isPending}
+                        onClick={() => handleDelete(product._id)}
+                      >
+                        <FiTrash />
+                      </IconButton>
+                    </HStack>
+                  </Table.Cell>
+                </Table.Row>
+              );
+            })}
           </Table.Body>
         </Table.Root>
       )}
