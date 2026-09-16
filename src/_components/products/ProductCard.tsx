@@ -126,8 +126,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                 w="16px"
                 h="16px"
                 borderRadius="full"
-                border="1px solid"
-                borderColor="aoe.borderControl"
+                border="1.5px solid"
+                borderColor="aoe.textFaint"
                 bg={colorMap[color] || "gray.300"}
               />
             </Tooltip>

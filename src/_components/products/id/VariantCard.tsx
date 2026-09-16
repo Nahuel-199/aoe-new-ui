@@ -217,8 +217,8 @@ export default function VariantCard({ product, variant }: VariantCardProps) {
                 w="20px"
                 h="20px"
                 borderRadius="full"
-                border="1px solid"
-                borderColor="aoe.borderControl"
+                border="1.5px solid"
+                borderColor="aoe.textFaint"
                 bg={colorMap[variant.color] || "gray.300"}
               />
             </Tooltip>
