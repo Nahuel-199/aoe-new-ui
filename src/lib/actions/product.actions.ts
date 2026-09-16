@@ -68,12 +68,27 @@ export async function getProducts(
   const match: Record<string, unknown> = {};
   if (category) match.category = new ObjectId(category);
   if (subcategory) match.subcategories = new ObjectId(subcategory);
-  if (search) match.name = { $regex: search, $options: "i" };
   if (onlyOffers) match["variants.is_offer"] = true;
 
   const pipeline: Document[] = [];
   if (Object.keys(match).length) pipeline.push({ $match: match });
   pipeline.push(...categoryLookupStages);
+
+  // El regex de `search` corre después del $lookup para poder matchear
+  // también por nombre de categoría/subcategoría, no solo por el del producto
+  // (ej: buscar "naruto" debe encontrar productos de la subcategoría "Naruto"
+  // aunque esa palabra no esté en el nombre del producto).
+  if (search) {
+    pipeline.push({
+      $match: {
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { "category.name": { $regex: search, $options: "i" } },
+          { "subcategories.name": { $regex: search, $options: "i" } },
+        ],
+      },
+    });
+  }
 
   if (sort === "menor" || sort === "mayor") {
     pipeline.push({ $addFields: { _minPrice: { $min: "$variants.price" } } });
