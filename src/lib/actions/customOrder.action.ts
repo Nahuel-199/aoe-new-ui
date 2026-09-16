@@ -1,51 +1,15 @@
 "use server";
 
-import clientPromise from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { deepSerialize } from "@/lib/serialize";
-
-const ImageSchema = z.object({
-  id: z.string().min(1, "ID de imagen requerido"),
-  url: z.string().url("URL inválida"),
-});
-
-const customOrderItemSchema = z.object({
-  name: z.string().min(1, "Nombre del producto requerido"),
-  description: z.string().optional(),
-  images: z.array(ImageSchema).default([]),
-  color: z.string().optional(),
-  size: z.string().optional(),
-  quantity: z.coerce.number().min(1, "Cantidad mínima 1"),
-  price: z.coerce.number().min(0, "Precio mínimo 0"),
-});
-
-const customOrderSchema = z.object({
-  clientName: z.string().min(1, "Nombre del cliente requerido"),
-  phoneNumber: z.string().optional(),
-  email: z.string().email("Email inválido").optional().or(z.literal("")),
-  items: z
-    .array(customOrderItemSchema)
-    .min(1, "Debe agregar al menos un producto"),
-  total: z.coerce.number().min(0),
-  remainingAmount: z.coerce.number().min(0).optional(),
-  paidAmount: z.coerce.number().min(0).optional(),
-  deliveryCost: z.coerce.number().min(0).optional(),
-  deliveryMethod: z.string().optional(),
-  shippingAddress: z.string().optional(),
-  meetingAddress: z.string().optional(),
-  status: z
-    .enum(["pending", "in_progress", "completed", "cancelled"])
-    .default("pending"),
-  paymentStatus: z.enum(["pending", "paid", "refunded"]).default("pending"),
-  comments: z.string().optional(),
-  designNotes: z.string().optional(),
-  designReferences: z.array(ImageSchema).default([]),
-});
-
-export type CustomOrderInput = z.infer<typeof customOrderSchema>;
-export type CustomOrder = CustomOrderInput & { _id: string; createdAt: string };
+import {
+  customOrderSchema,
+  type CustomOrder,
+  type CustomOrderInput,
+} from "@/types/customOrder.types";
 
 export async function createCustomOrder(prevState: any, formData: FormData) {
   try {
@@ -98,8 +62,7 @@ export async function createCustomOrder(prevState: any, formData: FormData) {
 
     const validated = customOrderSchema.parse(data);
 
-    const client = await clientPromise;
-    const db = client.db("test");
+    const db = await getDb();
     const col = db.collection("customOrders");
 
     const now = new Date();
@@ -136,8 +99,7 @@ export async function getCustomOrders(): Promise<{
   message?: string;
 }> {
   try {
-    const client = await clientPromise;
-    const db = client.db("test");
+    const db = await getDb();
 
     const orders = await db
       .collection("customOrders")
@@ -157,8 +119,7 @@ export async function getCustomOrders(): Promise<{
 
 export async function getCustomOrderById(id: string) {
   try {
-    const client = await clientPromise;
-    const db = client.db("test");
+    const db = await getDb();
 
     const order = await db
       .collection("customOrders")
@@ -175,8 +136,7 @@ export async function getCustomOrderById(id: string) {
 
 export async function getCustomOrdersByStatus(status: string) {
   try {
-    const client = await clientPromise;
-    const db = client.db("test");
+    const db = await getDb();
 
     const orders = await db
       .collection("customOrders")
@@ -196,8 +156,7 @@ export async function updateCustomOrder(
   data: Partial<CustomOrderInput>
 ) {
   try {
-    const client = await clientPromise;
-    const db = client.db("test");
+    const db = await getDb();
 
     await db.collection("customOrders").updateOne(
       { _id: new ObjectId(id) },
@@ -219,8 +178,7 @@ export async function updateCustomOrder(
 
 export async function deleteCustomOrder(id: string) {
   try {
-    const client = await clientPromise;
-    const db = client.db("test");
+    const db = await getDb();
 
     const result = await db.collection("customOrders").deleteOne({
       _id: new ObjectId(id),

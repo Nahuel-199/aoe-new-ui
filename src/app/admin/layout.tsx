@@ -7,7 +7,7 @@ import { getAllOrders } from "@/lib/actions/order.actions";
 import { getCustomOrders } from "@/lib/actions/customOrder.action";
 
 export default async function AdminLayout() {
-  const [products, categories, subcategories, ordersResponse, customOrdersResponse] = await Promise.all([
+  const [{ products }, categories, subcategories, ordersResponse, customOrdersResponse] = await Promise.all([
     getProducts(),
     getCategories(),
     getSubcategories(),

@@ -1,27 +1,18 @@
 "use server";
 
-import clientPromise from "@/lib/db";
-import { Category, Product, Subcategory, Variant } from "@/types/product.types";
+import { getDb } from "@/lib/db";
+import {
+  Product,
+  ImageInput,
+  VariantInput,
+  GetProductsParams,
+  GetProductsResult,
+} from "@/types/product.types";
 import { deleteImage } from "@/utils/deleteCloudinary";
-import { ObjectId } from "mongodb";
+import { ObjectId, type Document } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { deepSerialize } from "@/lib/serialize";
-
-interface ImageInput {
-  id: string;
-  url: string;
-}
-
-interface VariantInput {
-  type: string;
-  price: number;
-  is_offer: boolean;
-  price_offer?: number;
-  color: string;
-  images: ImageInput[];
-  sizes: { size: string; stock: number }[];
-  size_chart?: string;
-}
+import { categoryLookupStages } from "./pipelines";
 
 export async function createProduct(data: {
   name: string;
@@ -30,8 +21,7 @@ export async function createProduct(data: {
   subcategories?: string[];
   variants: VariantInput[];
 }) {
-  const client = await clientPromise;
-  const db = client.db("test");
+  const db = await getDb();
 
   const product = await db.collection("products").insertOne({
     ...data,
@@ -48,135 +38,101 @@ export async function createProduct(data: {
   return { _id: product.insertedId };
 }
 
-export async function getProducts() {
-  const client = await clientPromise;
-  const db = client.db("test");
+/**
+ * Sin argumentos devuelve el catálogo completo, en el mismo orden y forma
+ * que antes (así lo sigue usando `src/app/admin/layout.tsx`). Con
+ * category/subcategory/search/sort/page+pageSize arma un `$match` + `$sort`
+ * + `$skip`/`$limit` en el propio pipeline de Mongo, en vez de traer todo y
+ * filtrar en el cliente (así lo usa el catálogo público en `/products`).
+ */
+export async function getProducts(
+  params: GetProductsParams = {}
+): Promise<GetProductsResult> {
+  const db = await getDb();
+  const { page, pageSize, category, subcategory, search, sort, onlyOffers } = params;
 
-  const products = await db
+  const hasFilters = Boolean(
+    category || subcategory || search || sort || page || pageSize || onlyOffers
+  );
+
+  if (!hasFilters) {
+    const products = await db
+      .collection("products")
+      .aggregate(categoryLookupStages)
+      .toArray();
+
+    const serialized = deepSerialize<Product[]>(products);
+    return { products: serialized, total: serialized.length };
+  }
+
+  const match: Record<string, unknown> = {};
+  if (category) match.category = new ObjectId(category);
+  if (subcategory) match.subcategories = new ObjectId(subcategory);
+  if (search) match.name = { $regex: search, $options: "i" };
+  if (onlyOffers) match["variants.is_offer"] = true;
+
+  const pipeline: Document[] = [];
+  if (Object.keys(match).length) pipeline.push({ $match: match });
+  pipeline.push(...categoryLookupStages);
+
+  if (sort === "menor" || sort === "mayor") {
+    pipeline.push({ $addFields: { _minPrice: { $min: "$variants.price" } } });
+    pipeline.push({ $sort: { _minPrice: sort === "menor" ? 1 : -1 } });
+  } else {
+    pipeline.push({ $sort: { createdAt: -1 } });
+  }
+
+  const hasPagination = typeof page === "number" && typeof pageSize === "number";
+
+  if (!hasPagination) {
+    const products = await db.collection("products").aggregate(pipeline).toArray();
+    const serialized = deepSerialize<Product[]>(products);
+    return { products: serialized, total: serialized.length };
+  }
+
+  const skip = (page! - 1) * pageSize!;
+  const [result] = await db
     .collection("products")
     .aggregate([
+      ...pipeline,
       {
-        $lookup: {
-          from: "categories",
-          localField: "category",
-          foreignField: "_id",
-          as: "category",
-        },
-      },
-      { $unwind: "$category" },
-      {
-        $lookup: {
-          from: "subcategories",
-          localField: "subcategories",
-          foreignField: "_id",
-          as: "subcategories",
+        $facet: {
+          data: [{ $skip: skip }, { $limit: pageSize! }],
+          count: [{ $count: "total" }],
         },
       },
     ])
     .toArray();
 
-  return deepSerialize<Product[]>(products);
+  return {
+    products: deepSerialize<Product[]>(result?.data ?? []),
+    total: result?.count?.[0]?.total ?? 0,
+  };
 }
 
 export async function getOffers() {
-  const client = await clientPromise;
-  const db = client.db("test");
+  const db = await getDb();
 
   const offers = await db
     .collection("products")
-    .aggregate([
-      { $match: { "variants.is_offer": true } },
-      {
-        $lookup: {
-          from: "categories",
-          localField: "category",
-          foreignField: "_id",
-          as: "category",
-        },
-      },
-      { $unwind: "$category" },
-      {
-        $lookup: {
-          from: "subcategories",
-          localField: "subcategories",
-          foreignField: "_id",
-          as: "subcategories",
-        },
-      },
-    ])
+    .aggregate([{ $match: { "variants.is_offer": true } }, ...categoryLookupStages])
     .toArray();
 
   return deepSerialize<Product[]>(offers);
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
-  const client = await clientPromise;
-  const db = client.db("test");
+  const db = await getDb();
 
   const products = await db
     .collection("products")
-    .aggregate([
-      { $match: { _id: new ObjectId(id) } },
-      {
-        $lookup: {
-          from: "categories",
-          localField: "category",
-          foreignField: "_id",
-          as: "category",
-        },
-      },
-      { $unwind: "$category" },
-      {
-        $lookup: {
-          from: "subcategories",
-          localField: "subcategories",
-          foreignField: "_id",
-          as: "subcategories",
-        },
-      },
-    ])
+    .aggregate([{ $match: { _id: new ObjectId(id) } }, ...categoryLookupStages])
     .toArray();
 
   const raw = products[0];
   if (!raw) return null;
 
-  const product: Product = {
-    _id: raw._id.toString(),
-    name: raw.name,
-    description: raw.description,
-
-    category: {
-      _id: raw.category._id.toString(),
-      name: raw.category.name,
-    } satisfies Category,
-
-    subcategories: raw.subcategories.map((sub: any) => ({
-      _id: sub._id.toString(),
-      name: sub.name,
-    })) satisfies Subcategory[],
-
-    variants: (raw.variants ?? []).map((v: any) => ({
-      type: v.type,
-      price: v.price,
-      is_offer: v.is_offer,
-      price_offer: v.price_offer,
-      color: v.color,
-
-      images: (v.images ?? []).map((img: any) => ({
-        id: img.id,
-        url: img.url,
-      })),
-
-      sizes: (v.sizes ?? []).map((s: any) => ({
-        size: s.size,
-        stock: s.stock,
-      })),
-
-      size_chart: v.size_chart,
-    })) satisfies Variant[],
-  };
-
-  return product;
+  return deepSerialize<Product>(raw);
 }
 
 export async function updateProduct(
@@ -189,10 +145,9 @@ export async function updateProduct(
     variants?: VariantInput[];
   }
 ) {
-  const client = await clientPromise;
-  const db = client.db("test");
+  const db = await getDb();
 
-  const updateData: any = { ...data, updatedAt: new Date() };
+  const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() };
 
   if (data.category) {
     updateData.category = new ObjectId(data.category);
@@ -215,8 +170,7 @@ export async function updateProduct(
 }
 
 export async function deleteProduct(id: string) {
-  const client = await clientPromise;
-  const db = client.db("test");
+  const db = await getDb();
 
   const product = await db
     .collection("products")
@@ -245,8 +199,7 @@ export async function deleteProductImage(
   variantIndex: number,
   imageId: string
 ) {
-  const client = await clientPromise;
-  const db = client.db("test");
+  const db = await getDb();
 
   await deleteImage(imageId);
 
@@ -258,7 +211,7 @@ export async function deleteProductImage(
 
   product.variants[variantIndex].images = product.variants[
     variantIndex
-  ].images.filter((img: any) => img.id !== imageId);
+  ].images.filter((img: ImageInput) => img.id !== imageId);
 
   await db
     .collection("products")

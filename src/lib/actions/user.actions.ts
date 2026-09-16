@@ -1,16 +1,16 @@
 "use server";
 
-import clientPromise from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { deepSerialize } from "@/lib/serialize";
+import { User } from "@/types/user.types";
 
 export async function findOrCreateUser(userData: {
   name?: string;
   email: string;
   image?: string;
-}) {
-  const client = await clientPromise;
-  const db = client.db("test");
-  const usersCol = db.collection("users");
+}): Promise<User | null> {
+  const db = await getDb();
+  const usersCol = db.collection<User>("users");
 
   const now = new Date();
 
@@ -34,7 +34,5 @@ export async function findOrCreateUser(userData: {
     }
   );
 
-  const user = result?.value ?? null;
-
-  return deepSerialize(user);
+  return deepSerialize<User | null>(result ?? null);
 }

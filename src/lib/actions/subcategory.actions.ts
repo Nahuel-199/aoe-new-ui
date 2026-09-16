@@ -1,13 +1,12 @@
 "use server";
 
-import clientPromise from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { deepSerialize } from "@/lib/serialize";
 
 export async function createSubcategory(data: { name: string }) {
-  const client = await clientPromise;
-  const db = client.db("test");
+  const db = await getDb();
 
   const res = await db.collection("subcategories").insertOne({
     name: data.name,
@@ -29,8 +28,7 @@ export async function createSubcategory(data: { name: string }) {
 }
 
 export async function getSubcategories() {
-  const client = await clientPromise;
-  const db = client.db("test");
+  const db = await getDb();
 
   const subcategories = await db.collection("subcategories").find().toArray();
 
@@ -38,8 +36,7 @@ export async function getSubcategories() {
 }
 
 export async function deleteSubcategory(id: string) {
-  const client = await clientPromise;
-  const db = client.db("test");
+  const db = await getDb();
 
   const res = await db
     .collection("subcategories")
@@ -55,10 +52,9 @@ export async function deleteSubcategory(id: string) {
 }
 
 export async function updateSubcategory(id: string, data: { name?: string }) {
-  const client = await clientPromise;
-  const db = client.db("test");
+  const db = await getDb();
 
-  const updateData: any = { ...data, updatedAt: new Date() };
+  const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() };
 
   await db.collection("subcategories").updateOne(
     { _id: new ObjectId(id) },

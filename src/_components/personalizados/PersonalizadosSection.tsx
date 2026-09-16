@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Box, Heading, Text, SimpleGrid, VStack, HStack, Button, Image, Avatar, Card, CardBody, Flex } from "@chakra-ui/react";
-import { FaWhatsapp, FaCheckCircle } from "react-icons/fa";
+import { Box, Text, SimpleGrid, VStack, Flex, Image, Avatar } from "@chakra-ui/react";
+import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -25,6 +25,12 @@ const images = [
     "/personalizados/p13.jpg",
     "/personalizados/p14.jpg",
     "/personalizados/p15.jpg",
+];
+
+const pasos = [
+    { n: "01", title: "Contanos tu idea", body: "Mandanos tu diseño o concepto por WhatsApp o email. Te asesoramos sin compromiso." },
+    { n: "02", title: "Creamos tu propuesta", body: "Te mostramos una vista previa digital antes de producir, para que apruebes el diseño." },
+    { n: "03", title: "Lo hacemos realidad", body: "Producimos tu prenda y la enviamos directamente a tu domicilio." },
 ];
 
 const testimonios = [
@@ -97,152 +103,144 @@ export default function PersonalizadosSection() {
         "https://wa.me/5491124969558?text=Hola!%20Quiero%20consultar%20por%20un%20trabajo%20personalizado.";
 
     return (
-        <Box as="section" py={{ base: 10, md: 20 }} px={{ base: 4, md: 10 }}>
-            <VStack ref={heroRef} gap={4} textAlign="center" mb={10}>
-                <Heading
-                    as="h2"
-                    fontSize={{ base: "2xl", md: "4xl" }}
-                    color="red.500"
+        <Box as="section" maxW="900px" mx="auto" py={{ base: 10, md: "48px" }} px={{ base: 4, md: 5 }}>
+            <Box ref={heroRef}>
+                <Text
+                    fontFamily="heading"
+                    fontSize={{ base: "38px", md: "clamp(38px, 8vw, 88px)" }}
+                    lineHeight="0.88"
+                    textTransform="uppercase"
+                    color="aoe.text"
+                    m={0}
                 >
-                    Personalizá tu prenda con nosotros
-                </Heading>
-                <Text maxW="600px" color="gray.600" _dark={{ color: "gray.300" }} fontSize={{ base: "md", md: "lg" }}>
-                    Transformamos tus ideas en prendas únicas. Desde frases, logos o ilustraciones,
-                    hacemos realidad tu diseño con la mejor calidad.
+                    Tu idea,<br />nuestra <Text as="span" color="aoe.red">prensa</Text>
                 </Text>
-                <Link href={whatsappLink} target="_blank">
-                    <Button
-                        size="lg"
-                        colorPalette="green"
-                        _hover={{ transform: "scale(1.05)" }}
-                        transition="all 0.3s ease"
-                    >
-                        <FaWhatsapp />  Contanos tu idea
-                    </Button>
-                </Link>
-            </VStack>
+                <Text color="aoe.textMuted" fontSize="17px" lineHeight="1.55" maxW="560px" mt="22px" mb="36px">
+                    Mandanos tu diseño o contanos la idea. Cotizamos en el día y producimos desde 1 unidad.
+                </Text>
+            </Box>
 
-            <VStack ref={pasosRef} gap={8} mb={16}>
-                <Heading as="h3" size="lg" textAlign="center">
-                    ¿Cómo funciona?
-                </Heading>
-
-                <SimpleGrid columns={{ base: 1, md: 3 }} gap={8}>
-                    <VStack
-                        bg="bg"
-                        p={6}
-                        borderRadius="xl"
-                        boxShadow="md"
-                        _hover={{ transform: "translateY(-5px)" }}
-                        transition="all 0.3s ease"
+            <SimpleGrid ref={pasosRef} columns={{ base: 1, md: 3 }} gap="14px" mb={16}>
+                {pasos.map((s) => (
+                    <Box
+                        key={s.n}
+                        border="1px solid"
+                        borderColor="aoe.borderSubtle"
+                        borderRadius="18px"
+                        p="22px"
+                        bg="aoe.tile"
                     >
-                        <FaCheckCircle size={32} color="#E53E3E" />
-                        <Heading size="md">1. Contanos tu idea</Heading>
-                        <Text textAlign="center">
-                            Mandanos tu diseño o concepto por WhatsApp o email. Te asesoramos sin compromiso.
+                        <Text fontFamily="heading" fontSize="40px" color="aoe.red" lineHeight={1}>
+                            {s.n}
                         </Text>
-                    </VStack>
-
-                    <VStack
-                        bg="bg"
-                        p={6}
-                        borderRadius="xl"
-                        boxShadow="md"
-                        _hover={{ transform: "translateY(-5px)" }}
-                        transition="all 0.3s ease"
-                    >
-                        <FaCheckCircle size={32} color="#E53E3E" />
-                        <Heading size="md">2. Creamos tu propuesta</Heading>
-                        <Text textAlign="center">
-                            Te mostramos una vista previa digital antes de producir, para que apruebes el diseño.
+                        <Text fontSize="14px" fontWeight="800" letterSpacing="0.06em" textTransform="uppercase" color="aoe.text" mt="10px">
+                            {s.title}
                         </Text>
-                    </VStack>
-
-                    <VStack
-                        bg="bg"
-                        p={6}
-                        borderRadius="xl"
-                        boxShadow="md"
-                        _hover={{ transform: "translateY(-5px)" }}
-                        transition="all 0.3s ease"
-                    >
-                        <FaCheckCircle size={32} color="#E53E3E" />
-                        <Heading size="md">3. Lo hacemos realidad</Heading>
-                        <Text textAlign="center">
-                            Producimos tu prenda y la enviamos directamente a tu domicilio 🚚✨
+                        <Text color="aoe.textSubtle" fontSize="13px" mt="8px" lineHeight="1.5">
+                            {s.body}
                         </Text>
-                    </VStack>
-                </SimpleGrid>
-            </VStack>
+                    </Box>
+                ))}
+            </SimpleGrid>
 
-            <VStack ref={galleryRef} gap={8} mb={16}>
-                <Heading as="h3" size="lg" textAlign="center">
+            <Link href={whatsappLink} target="_blank">
+                <Flex
+                    as="span"
+                    display="inline-flex"
+                    alignItems="center"
+                    gap={2}
+                    h="56px"
+                    px="28px"
+                    mb={16}
+                    borderRadius="pill"
+                    bg="aoe.red"
+                    color="white"
+                    fontFamily="mono"
+                    fontSize="14px"
+                    fontWeight="800"
+                    letterSpacing="0.1em"
+                    textTransform="uppercase"
+                    _hover={{ bg: "aoe.text", color: "aoe.bg" }}
+                    transition="all 0.2s ease"
+                >
+                    <FaWhatsapp /> Pedir cotización
+                </Flex>
+            </Link>
+
+            <VStack ref={galleryRef} gap={6} mb={16} align="stretch">
+                <Text fontFamily="heading" fontSize={{ base: "26px", md: "clamp(26px, 4vw, 40px)" }} textTransform="uppercase" color="aoe.text">
                     Algunos de nuestros trabajos
-                </Heading>
-
-                <SimpleGrid columns={{ base: 2, md: 5 }} gap={4}>
+                </Text>
+                <SimpleGrid columns={{ base: 2, md: 5 }} gap="12px">
                     {images.map((src, i) => (
                         <Image
                             key={i}
                             src={src}
                             alt={`Trabajo personalizado ${i + 1}`}
-                            borderRadius="lg"
+                            borderRadius="14px"
                             objectFit="cover"
                             w="100%"
-                            h="250px"
-                            boxShadow="md"
-                            _hover={{
-                                transform: "scale(1.05)",
-                                boxShadow: "xl",
-                            }}
-                            transition="all 0.3s ease"
+                            h="200px"
+                            _hover={{ outline: "2px solid", outlineColor: "aoe.red" }}
+                            transition="all 0.2s ease"
                         />
                     ))}
                 </SimpleGrid>
             </VStack>
 
-            <VStack ref={testimoniosRef} gap={8} mb={16}>
-                <Heading as="h3" size="lg" textAlign="center">
+            <VStack ref={testimoniosRef} gap={6} mb={16} align="stretch">
+                <Text fontFamily="heading" fontSize={{ base: "26px", md: "clamp(26px, 4vw, 40px)" }} textTransform="uppercase" color="aoe.text">
                     Lo que dicen nuestros clientes
-                </Heading>
-
-                <SimpleGrid columns={{ base: 1, md: 3 }} gap={6}>
+                </Text>
+                <SimpleGrid columns={{ base: 1, md: 3 }} gap="14px">
                     {testimonios.map((t, i) => (
-                        <Card.Root
+                        <Box
                             key={i}
-                            boxShadow="lg"
-                            borderRadius="xl"
-                            p={4}
-                            _hover={{ transform: "translateY(-5px)", boxShadow: "xl" }}
-                            transition="all 0.3s ease"
+                            border="1px solid"
+                            borderColor="aoe.borderSubtle"
+                            borderRadius="18px"
+                            bg="aoe.tile"
+                            p="22px"
                         >
-                            <Card.Body>
-                                <VStack gap={3} textAlign="center">
-                                    <Avatar.Root size="lg">
-                                        <Avatar.Fallback name={t.nombre} />
-                                        <Avatar.Image src={t.avatar} />
-                                    </Avatar.Root>
-                                    <Text fontStyle="italic" color="gray.600" _dark={{ color: "gray.300" }}>
-                                        “{t.texto}”
-                                    </Text>
-                                    <Text fontWeight="bold">{t.nombre}</Text>
-                                </VStack>
-                            </Card.Body>
-                        </Card.Root>
+                            <VStack gap={3} textAlign="center">
+                                <Avatar.Root size="lg">
+                                    <Avatar.Fallback name={t.nombre} />
+                                    <Avatar.Image src={t.avatar} />
+                                </Avatar.Root>
+                                <Text fontStyle="italic" color="aoe.textSubtle" fontSize="14px">
+                                    "{t.texto}"
+                                </Text>
+                                <Text fontWeight="700" color="aoe.text" fontSize="14px">
+                                    {t.nombre}
+                                </Text>
+                            </VStack>
+                        </Box>
                     ))}
                 </SimpleGrid>
             </VStack>
 
             <Flex justify="center">
                 <Link href={whatsappLink} target="_blank">
-                    <Button
-                        size="lg"
-                        colorPalette="green"
-                        _hover={{ transform: "scale(1.05)" }}
-                        transition="all 0.3s ease"
+                    <Flex
+                        as="span"
+                        display="inline-flex"
+                        alignItems="center"
+                        gap={2}
+                        h="56px"
+                        px="28px"
+                        borderRadius="pill"
+                        bg="aoe.red"
+                        color="white"
+                        fontFamily="mono"
+                        fontSize="14px"
+                        fontWeight="800"
+                        letterSpacing="0.1em"
+                        textTransform="uppercase"
+                        _hover={{ bg: "aoe.text", color: "aoe.bg" }}
+                        transition="all 0.2s ease"
                     >
-                        <FaWhatsapp /> Hablá con nosotros por WhatsApp
-                    </Button>
+                        <FaWhatsapp /> Hablá con nosotros
+                    </Flex>
                 </Link>
             </Flex>
         </Box>

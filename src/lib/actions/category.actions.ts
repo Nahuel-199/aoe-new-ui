@@ -1,13 +1,12 @@
 "use server";
 
-import clientPromise from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { deepSerialize } from "@/lib/serialize";
 
 export async function createCategory(data: { name: string }) {
-  const client = await clientPromise;
-  const db = client.db("test");
+  const db = await getDb();
 
   const res = await db.collection("categories").insertOne({
     name: data.name,
@@ -29,8 +28,7 @@ export async function createCategory(data: { name: string }) {
 }
 
 export async function getCategories() {
-  const client = await clientPromise;
-  const db = client.db("test");
+  const db = await getDb();
 
   const categories = await db.collection("categories").find().toArray();
 
@@ -38,8 +36,7 @@ export async function getCategories() {
 }
 
 export async function deleteCategory(id: string) {
-  const client = await clientPromise;
-  const db = client.db("test");
+  const db = await getDb();
 
   const res = await db
     .collection("categories")
@@ -55,10 +52,9 @@ export async function deleteCategory(id: string) {
 }
 
 export async function updateCategory(id: string, data: { name?: string }) {
-  const client = await clientPromise;
-  const db = client.db("test");
+  const db = await getDb();
 
-  const updateData: any = { ...data, updatedAt: new Date() };
+  const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() };
 
   await db
     .collection("categories")

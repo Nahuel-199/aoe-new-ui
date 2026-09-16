@@ -1,15 +1,29 @@
 import type { Metadata } from "next";
 import { Provider } from "@/components/ui/provider";
 import { ProviderSesion } from "./providers";
-import { Poppins } from "next/font/google";
+import { Anton, Archivo, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import LayoutWrapper from "./layout-wrapper";
 import { CartProvider } from "@/context/CartContext";
 
-const poppins = Poppins({
+const anton = Anton({
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-  style: ["normal", "italic"],
+  weight: "400",
+  variable: "--font-anton",
+  display: "swap",
+});
+
+const archivo = Archivo({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-archivo",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-jetbrains-mono",
   display: "swap",
 });
 
@@ -26,7 +40,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${poppins.className}`}>
+      <body
+        className={`${anton.variable} ${archivo.variable} ${jetbrainsMono.variable} ${archivo.className}`}
+      >
         <Provider>
           <ProviderSesion>
             <CartProvider>

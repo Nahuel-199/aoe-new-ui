@@ -13,8 +13,7 @@ import {
 import { useEffect } from "react";
 import ProductFormFields from "./ProductFormFields";
 import { VariantForm } from "./variants/VariantForm";
-import { useNewProductForm } from "@/hooks/useNewProductForm";
-import { useEditProductForm } from "@/hooks/useEditProductForm";
+import { useProductForm } from "@/hooks/useProductForm";
 import { Category, Product, Subcategory } from "@/types/product.types";
 import { FiPlus } from "react-icons/fi";
 
@@ -33,8 +32,7 @@ export default function ProductFormContainer({
     product,
     onClose,
 }: ProductFormContainerProps) {
-    const formHook =
-        mode === "create" ? useNewProductForm(onClose) : useEditProductForm(product!, onClose);
+    const formHook = useProductForm({ mode, product, onClose });
 
     const {
         form,

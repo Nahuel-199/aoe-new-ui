@@ -1,68 +1,51 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import { Box, Text } from '@chakra-ui/react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { TextPlugin } from "gsap/TextPlugin";
+import React from 'react';
+import { Box } from '@chakra-ui/react';
 
-gsap.registerPlugin(ScrollTrigger, TextPlugin);
+const items = [
+    'Envío a todo el país · Correo Argentino',
+    'Moto envío en CABA y GBA',
+    '3 cuotas sin interés',
+    'Envío gratis a partir de $30.000',
+];
+
+const Strip = () => (
+    <Box
+        as="span"
+        display="flex"
+        gap="40px"
+        px="20px"
+        flex="none"
+        fontFamily="mono"
+        fontSize="11px"
+        letterSpacing="0.14em"
+        textTransform="uppercase"
+    >
+        {items.map((item, i) => (
+            <React.Fragment key={i}>
+                <Box as="span">{item}</Box>
+                <Box as="span">◆</Box>
+            </React.Fragment>
+        ))}
+    </Box>
+);
 
 const OfferBanner: React.FC = () => {
-    const textRefBanner = useRef<HTMLDivElement>(null);
-    const sectionRefBanner = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        let bannerTrigger: ScrollTrigger | undefined;
-    
-        if (sectionRefBanner.current && textRefBanner.current) {
-            gsap.fromTo(
-                textRefBanner.current,
-                { text: "" },
-                {
-                    text: "A partir de una compra mayor a $30.000, el ENVÍO ES GRATIS 🚚",
-                    duration: 3,
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: sectionRefBanner.current,
-                        start: "top 80%",
-                        once: true,
-                        markers: false,
-                        onEnter: (self) => {
-                            bannerTrigger = self;
-                        },
-                    },
-                }
-            );
-        }
-    
-        return () => {
-            bannerTrigger?.kill();
-        };
-    }, []);
-
     return (
         <Box
-        ref={sectionRefBanner}
-        bg="black"
-        _dark={{ bg: "white", color: "black" }}
-        color="white"
-        zIndex={1}
-        py={2}
-        overflow="hidden"
-        position="relative"
-        width="100%"
-        textAlign="center"
-    >
-        <Text
-            ref={textRefBanner}
-            fontSize={{ base: "12px", md: "lg", lg: "lg" }}
-            fontWeight="bold"
-            color={"white"}
-            _dark={{ color: "black" }}
-            textTransform="uppercase"
-        />
-    </Box>
+            bg="aoe.red"
+            color="white"
+            overflow="hidden"
+            whiteSpace="nowrap"
+            display="flex"
+            py="7px"
+        >
+            <Box display="flex" flex="none" animation="aoeMarquee 26s linear infinite">
+                <Strip />
+                <Strip />
+            </Box>
+        </Box>
     );
 };
 

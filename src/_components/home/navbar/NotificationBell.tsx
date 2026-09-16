@@ -93,7 +93,8 @@ const NotificationBell = ({ userId }: { userId: string }) => {
                 aria-label="Notifications"
                 variant="ghost"
                 onClick={() => setIsOpen(!isOpen)}
-                _dark={{ color: "blackAlpha.900", _hover: { bg: "gray.300" } }}
+                color="aoe.textMuted"
+                _hover={{ bg: "aoe.surface", color: "aoe.text" }}
             >
                 <FaRegBell />
             </IconButton>
@@ -118,29 +119,29 @@ const NotificationBell = ({ userId }: { userId: string }) => {
                     right={0}
                     mt={2}
                     w="300px"
-                    bg="white"
-                    _dark={{ bg: "gray.800" }}
-                    boxShadow="lg"
-                    borderRadius="md"
+                    bg="aoe.bgAlt"
+                    boxShadow="0 18px 40px rgba(0,0,0,0.5)"
+                    borderRadius="14px"
                     zIndex={20}
                     maxH="400px"
                     overflowY="auto"
                     borderWidth="1px"
+                    borderColor="aoe.borderSubtle"
                 >
                     <HStack
                         justify="space-between"
                         p={3}
                         borderBottomWidth="1px"
-                        bg="gray.50"
-                        _dark={{ bg: "gray.700" }}
+                        borderColor="aoe.borderSubtle"
+                        bg="aoe.bg"
                     >
-                        <Text fontWeight="bold" fontSize="sm">
+                        <Text fontFamily="mono" fontSize="10px" letterSpacing="0.12em" textTransform="uppercase" color="aoe.textMuted">
                             Notificaciones
                         </Text>
                         {unreadCount > 0 && (
                             <Text
                                 fontSize="xs"
-                                color="blue.500"
+                                color="aoe.red"
                                 cursor="pointer"
                                 onClick={handleMarkAllRead}
                                 _hover={{ textDecoration: "underline" }}
@@ -152,11 +153,11 @@ const NotificationBell = ({ userId }: { userId: string }) => {
 
                     {loading ? (
                         <Box p={4} textAlign="center">
-                            <Spinner size="sm" />
+                            <Spinner size="sm" color="aoe.red" />
                         </Box>
                     ) : notifications.length === 0 ? (
                         <Box p={4} textAlign="center">
-                            <Text fontSize="sm" color="gray.500">
+                            <Text fontSize="sm" color="aoe.textFaint">
                                 No tienes notificaciones
                             </Text>
                         </Box>
@@ -167,14 +168,11 @@ const NotificationBell = ({ userId }: { userId: string }) => {
                                     key={notification._id}
                                     p={3}
                                     cursor="pointer"
-                                    bg={notification.isRead ? "transparent" : "blue.50"}
-                                    _dark={{
-                                        bg: notification.isRead ? "transparent" : "whiteAlpha.100",
-                                        _hover: { bg: "whiteAlpha.200" },
-                                    }}
-                                    _hover={{ bg: "gray.50" }}
+                                    bg={notification.isRead ? "transparent" : "aoe.surface"}
+                                    _hover={{ bg: "aoe.surface" }}
                                     onClick={() => handleNotificationClick(notification)}
                                     borderBottomWidth="1px"
+                                    borderColor="aoe.borderSubtle"
                                     position="relative"
                                 >
                                     <HStack justify="space-between" align="start">
@@ -182,10 +180,11 @@ const NotificationBell = ({ userId }: { userId: string }) => {
                                             <Text
                                                 fontSize="sm"
                                                 fontWeight={notification.isRead ? "normal" : "bold"}
+                                                color="aoe.text"
                                             >
                                                 {notification.message}
                                             </Text>
-                                            <Text fontSize="xs" color="gray.500" mt={1}>
+                                            <Text fontFamily="mono" fontSize="10px" color="aoe.textFaint" mt={1}>
                                                 {new Date(notification.createdAt).toLocaleString()}
                                             </Text>
                                         </Box>
@@ -193,9 +192,9 @@ const NotificationBell = ({ userId }: { userId: string }) => {
                                             aria-label="Delete notification"
                                             size="xs"
                                             variant="ghost"
-                                            colorPalette="red"
+                                            color="aoe.textGhost"
                                             onClick={(e) => handleDeleteNotification(e, notification._id)}
-                                            _hover={{ bg: "red.100", color: "red.600" }}
+                                            _hover={{ bg: "aoe.bg", color: "aoe.red" }}
                                         >
                                             <FaTrash />
                                         </IconButton>

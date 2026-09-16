@@ -6,39 +6,39 @@ import {
   Text,
   VStack,
   Badge,
-  Card,
   Button,
   Stack,
+  Flex,
   Skeleton,
 } from "@chakra-ui/react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getOffers } from "@/lib/actions/product.actions";
 import { Product } from "@/types/product.types";
 
-gsap.registerPlugin(ScrollTrigger);
-
 interface OfferSliderProps {
   title?: string;
+  /** Ofertas ya cargadas por el padre (ej. home). Si no se pasan, el componente hace su propio fetch (ej. uso en la PDP). */
+  offers?: Product[];
 }
 
-const OfferSlider = ({ title }: OfferSliderProps) => {
-  const titleRef = useRef<HTMLDivElement>(null);
-  const [offers, setOffers] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+const OfferSlider = ({ title, offers: providedOffers }: OfferSliderProps) => {
+  const [fetchedOffers, setFetchedOffers] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(providedOffers === undefined);
   const router = useRouter();
+  const offers = providedOffers ?? fetchedOffers;
 
   useEffect(() => {
+    if (providedOffers !== undefined) return;
+
     const fetchData = async () => {
       try {
         const data = await getOffers();
-        setOffers(data);
+        setFetchedOffers(data);
       } catch (error) {
         console.error(error);
       } finally {
@@ -47,54 +47,26 @@ const OfferSlider = ({ title }: OfferSliderProps) => {
     };
 
     fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (titleRef.current) {
-      gsap.fromTo(
-        titleRef.current,
-        { scale: 4, opacity: 1 },
-        {
-          scale: 1,
-          opacity: 1,
-          duration: 3,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: titleRef.current,
-            start: "top 90%",
-            end: "bottom top",
-            scrub: 1,
-            markers: false,
-          },
-        }
-      );
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <Box w="90%" mx="auto" py={5} mb={6} _dark={{ bg: "black" }}>
-      <Box w="100%" overflow="hidden" position="relative">
-        <Text
-          fontSize={{ base: "2xl", md: "4xl", lg: "5xl" }}
-          fontWeight="bold"
-          color="red.500"
-          ref={titleRef}
-          textAlign="center"
-          mb={6}
-        >
-          {title ? (
-            title
-          ) : (
-            <>
-              OFERTAS
-              <Text as="span" color="black" _dark={{ color: "white" }}>
-                {" "}
-                ESPECIALES
-              </Text>
-            </>
-          )}
-        </Text>
-      </Box>
+    <Box as="section" maxW="1360px" mx="auto" px={{ base: 4, md: 5 }} py={{ base: 10, md: "56px" }}>
+      <Text
+        fontFamily="heading"
+        fontSize={{ base: "28px", md: "clamp(28px, 4vw, 44px)" }}
+        textTransform="uppercase"
+        color="aoe.text"
+        mb="22px"
+      >
+        {title ? (
+          title
+        ) : (
+          <>
+            Ofertas <Text as="span" color="aoe.red">especiales</Text>
+          </>
+        )}
+      </Text>
 
       {loading ? (
         <Stack
@@ -117,6 +89,7 @@ const OfferSlider = ({ title }: OfferSliderProps) => {
               640: { slidesPerView: 1 },
               768: { slidesPerView: 2 },
               1024: { slidesPerView: 3 },
+              1280: { slidesPerView: 4 },
             }}
             spaceBetween={20}
             pagination={{ clickable: true }}
@@ -125,59 +98,89 @@ const OfferSlider = ({ title }: OfferSliderProps) => {
           >
             {offers.map((product) => (
               <SwiperSlide key={product._id}>
-                <VStack
-                  overflow="hidden"
-                  p={4}
-                  w="100%"
-                  height="auto"
-                  _dark={{ bg: "black" }}
-                >
-                  <Card.Root maxW="sm" w="90%" overflow="hidden">
+                <VStack overflow="hidden" p={4} w="100%" height="auto">
+                  <Box
+                    w="90%"
+                    bg="aoe.surface"
+                    borderRadius="16px"
+                    overflow="hidden"
+                    position="relative"
+                  >
                     {product.variants?.[0]?.images?.length ? (
-                      <Image
-                        src={product.variants[0].images[0].url}
-                        alt={product.name}
-                        objectFit="cover"
-                        h={{ base: "300px", md: "300px", lg: "auto" }}
-                      />
-                    ) : (
-                      <Skeleton height="480px" width="100%" />
-                    )}
-                    <Card.Body gap="2">
-                      <Card.Title>{product.name}</Card.Title>
-                      <Card.Description>
-                        {product.category?.name} -{" "}
-                        {product.subcategories?.map((e) => e.name)}{" "}
-                      </Card.Description>
-                      <Box display="flex" justifyContent="space-evenly  ">
+                      <Box position="relative" aspectRatio="4 / 5">
+                        <Image
+                          src={product.variants[0].images[0].url}
+                          alt={product.name}
+                          objectFit="cover"
+                          w="100%"
+                          h="100%"
+                        />
                         <Badge
+                          position="absolute"
+                          top="10px"
+                          left="10px"
+                          bg="aoe.red"
+                          color="white"
+                          borderRadius="6px"
+                          px="8px"
+                          py="4px"
+                          fontFamily="mono"
+                          fontSize="10px"
+                          fontWeight="700"
+                        >
+                          OFERTA
+                        </Badge>
+                      </Box>
+                    ) : (
+                      <Skeleton height="320px" width="100%" />
+                    )}
+                    <Box p="14px">
+                      <Text fontSize="14px" fontWeight="700" color="aoe.text">
+                        {product.name}
+                      </Text>
+                      <Text
+                        fontFamily="mono"
+                        fontSize="10px"
+                        color="aoe.textFaint"
+                        letterSpacing="0.08em"
+                        textTransform="uppercase"
+                        mt="5px"
+                      >
+                        {product.category?.name} ·{" "}
+                        {product.subcategories?.map((e) => e.name).join(", ")}
+                      </Text>
+                      <Flex gap="8px" align="baseline" mt="8px">
+                        <Text
                           as="s"
-                          fontWeight="medium"
-                          letterSpacing="tight"
-                          colorPalette="red"
-                          fontSize={{ base: "lg" }}
+                          color="aoe.textGhost"
+                          fontSize="12px"
                         >
                           ${product.variants.map((v) => v.price)[0]}
-                        </Badge>
-                        <Text
-                          fontWeight="medium"
-                          letterSpacing="tight"
-                          fontSize={{ base: "lg" }}
-                        >
+                        </Text>
+                        <Text fontWeight="800" fontSize="14px" color="aoe.text">
                           ${product.variants.map((v) => v.price_offer)[0]}
                         </Text>
-                      </Box>
-                    </Card.Body>
-                    <Card.Footer gap="2">
+                      </Flex>
                       <Button
-                        variant="solid"
-                        w={"full"}
+                        mt="12px"
+                        w="full"
+                        h="42px"
+                        borderRadius="pill"
+                        bg="aoe.red"
+                        color="white"
+                        fontFamily="mono"
+                        fontSize="11px"
+                        fontWeight="800"
+                        letterSpacing="0.08em"
+                        textTransform="uppercase"
+                        border="none"
+                        _hover={{ bg: "aoe.text", color: "aoe.bg" }}
                         onClick={() => router.push(`/products/${product._id}`)}
                       >
-                        Ver mas
+                        Ver más
                       </Button>
-                    </Card.Footer>
-                  </Card.Root>
+                    </Box>
+                  </Box>
                 </VStack>
               </SwiperSlide>
             ))}

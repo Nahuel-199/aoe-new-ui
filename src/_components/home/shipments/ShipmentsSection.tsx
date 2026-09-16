@@ -1,119 +1,84 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { Box, Text, Heading, Stack, Image } from '@chakra-ui/react';
+import { Box, Text, Grid, Flex } from '@chakra-ui/react';
 import { gsap } from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const items = [
+    { n: '01', title: 'Envíos a todo el país', body: 'Correo Argentino, ideal para envíos a todo el país.' },
+    { n: '02', title: 'Moto envío', body: 'Servicio rápido y seguro dentro de CABA y GBA, coordinás por WhatsApp.' },
+    { n: '03', title: 'Costo de envío', body: 'Cotizamos el envío al momento de la compra según tu localidad.' },
+    { n: '04', title: 'Pagás como querés', body: 'Mercado Pago en cuotas o transferencia.' },
+];
+
 const ShipmentsSection: React.FC = () => {
-    const servicesRef = useRef<HTMLDivElement[]>([]);
+    const itemsRef = useRef<HTMLDivElement[]>([]);
     const sectionRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (sectionRef.current) {
-
-            gsap.utils.toArray(servicesRef.current).forEach((el: any) => {
+            gsap.utils.toArray(itemsRef.current).forEach((el: any) => {
                 gsap.fromTo(
                     el,
-                    {
-                        opacity: 0,
-                        y: 50,
-                    },
+                    { opacity: 0, y: 30 },
                     {
                         opacity: 1,
                         y: 0,
-                        duration: 1,
+                        duration: 0.8,
                         ease: 'power3.out',
-                        stagger: 0.3,
+                        stagger: 0.15,
                         scrollTrigger: {
                             trigger: el,
-                            start: 'top 80%',
-                            end: 'top 30%',
+                            start: 'top 90%',
+                            end: 'top 40%',
                             scrub: 1,
                             markers: false,
-                        }
+                        },
                     }
                 );
             });
         }
 
         return () => {
-            ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+            ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
         };
     }, []);
 
     return (
-        <Box
-            as="section"
-            py={10} px={5}
-            bg="white"
-            _dark={{ bg: 'black' }}
-            textAlign="center"
-            ref={sectionRef}
-            position="relative"
-            minH="70vh"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            overflow="hidden"
-            zIndex={1}
-        >
-            <Stack
-                align="center"
-                justify="center"
-                flexDirection={{ base: 'column', md: 'row' }}
+        <Box as="section" borderBottom="1px solid" borderColor="aoe.borderSubtle" bg="aoe.bgAlt" ref={sectionRef}>
+            <Grid
+                maxW="1360px"
+                mx="auto"
+                px={{ base: 4, md: 5 }}
+                py="28px"
+                templateColumns={{ base: '1fr', sm: 'repeat(auto-fit, minmax(210px, 1fr))' }}
                 gap={6}
-                zIndex={6}
             >
-                {[{
-                    title: '¿Cómo enviamos tu pedido?',
-                    description: 'Correo Argentino, ideal para envíos a todo el país.',
-                    icon: "/delivery.png",
-                },
-                {
-                    title: '¿Hay otro método más rápido?',
-                    description: 'Sí, también trabajamos con moto envío, un servicio rápido y seguro dentro de la ciudad.',
-                    icon: "/moto.png",
-                },
-                {
-                    title: 'Sobre el costo de envío',
-                    description: 'Cotizamos el envío al momento de la compra según tu localidad.',
-                    icon: "/salary.png",
-                }].map((service, index) => (
-                    <Box
+                {items.map((item, index) => (
+                    <Flex
                         key={index}
-                        ref={(el: HTMLDivElement) => (servicesRef.current[index] = el)}
+                        ref={(el: HTMLDivElement) => { itemsRef.current[index] = el; }}
                         opacity={0}
-                        textAlign="center"
-                        border="1px solid rgba(255, 255, 255, 0.222)"
-                        borderRadius="lg"
-                        p={6}
-                        boxShadow="lg"
-                        width={{ base: '100%', md: '300px' }}
-                        h={{base: "30vh", md: "auto"}}
-                        bg="rgba(255, 255, 255, 0.074)"
-                        backdropFilter="blur(20px)"
-                        _hover={{
-                            boxShadow: '0px 0px 20px 1px rgba(255, 187, 118, 0.3)',
-                            borderColor: 'rgba(255, 255, 255, 0.454)',
-                            cursor: 'pointer',
-                        }}
-                        transition="all 0.3s ease"
+                        gap={3}
+                        align="flex-start"
                     >
-                        <Box mb={4} display="flex" justifyContent="center" color="black" _dark={{ color: 'white' }}>
-                        <Image src={service.icon} alt={service.title} boxSize="60px" />
-                        </Box>
-                        <Heading size="md" color="red.600" fontWeight="bold" mb={4} textTransform="uppercase">
-                            {service.title}
-                        </Heading>
-                        <Text fontSize="md" color="black" _dark={{ color: 'white' }}>
-                            {service.description}
+                        <Text fontFamily="mono" fontSize="11px" color="aoe.red" pt="3px">
+                            {item.n}
                         </Text>
-                    </Box>
+                        <Box minW={0}>
+                            <Text fontSize="13px" fontWeight="800" letterSpacing="0.06em" textTransform="uppercase" color="aoe.text">
+                                {item.title}
+                            </Text>
+                            <Text color="aoe.textSubtle" fontSize="13px" mt={1} lineHeight="1.45">
+                                {item.body}
+                            </Text>
+                        </Box>
+                    </Flex>
                 ))}
-            </Stack>
+            </Grid>
         </Box>
     );
 };

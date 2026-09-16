@@ -4,23 +4,42 @@ import React from "react";
 import Link from "next/link";
 import { Button, HStack } from "@chakra-ui/react";
 
+const linkProps = {
+  variant: "ghost" as const,
+  color: "aoe.textMuted",
+  fontFamily: "mono",
+  fontSize: "13px",
+  fontWeight: "700",
+  letterSpacing: "0.1em",
+  textTransform: "uppercase" as const,
+  px: 0,
+  _hover: { color: "aoe.text", bg: "transparent" },
+};
+
 const NavbarLinks = ({ session }: { session: any }) => (
-  <HStack gap={3}>
+  <HStack gap="26px">
     <Link href="/products">
-      <Button variant="ghost" ml={4} _dark={{ color: "black", _hover: { bg: "gray.300" } }}>
-        Productos
+      <Button {...linkProps} color="aoe.text">
+        Todo
+      </Button>
+    </Link>
+    <Link href="/products?category=Remeras">
+      <Button {...linkProps}>Remeras</Button>
+    </Link>
+    <Link href="/products?category=Buzos">
+      <Button {...linkProps}>Buzos</Button>
+    </Link>
+    <Link href="/products?category=Ofertas">
+      <Button {...linkProps} color="aoe.red" _hover={{ color: "aoe.red", bg: "transparent" }}>
+        Ofertas
       </Button>
     </Link>
     <Link href="/personalizados">
-      <Button variant="ghost" ml={4} _dark={{ color: "black", _hover: { bg: "gray.300" } }}>
-        Personalizados
-      </Button>
+      <Button {...linkProps}>Personalizados</Button>
     </Link>
     {session?.user?.email && (
       <Link href="/mis-pedidos">
-        <Button variant="ghost" _dark={{ color: "black", _hover: { bg: "gray.300" } }}>
-          Mis pedidos
-        </Button>
+        <Button {...linkProps}>Mis pedidos</Button>
       </Link>
     )}
   </HStack>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import {
   Box,
@@ -10,12 +10,12 @@ import {
   IconButton,
   Badge,
   SkeletonCircle,
+  Input,
 } from "@chakra-ui/react";
 import { FaBars } from "react-icons/fa";
-import { FiShoppingCart } from "react-icons/fi";
+import { FiShoppingCart, FiSearch, FiX } from "react-icons/fi";
 import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
-import { ColorModeButton } from "@/components/ui/color-mode";
 
 import NavbarUserMenu from "./NavbarUserMenu";
 import NavbarBrand from "./NavbarBrand";
@@ -26,9 +26,13 @@ import NotificationBell from "./NotificationBell";
 const Navbar = () => {
   const navbarRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const { data: session, status } = useSession();
-  const { cart } = useCart();
+  const { cart, openCart } = useCart();
+  const router = useRouter();
   const isAdmin = session?.user?.role === "admin";
+  const cartCount = cart.reduce((a, i) => a + i.quantity, 0);
 
   useEffect(() => {
     gsap.fromTo(
@@ -38,82 +42,147 @@ const Navbar = () => {
     );
   }, []);
 
+  const submitSearch = () => {
+    router.push(`/products?q=${encodeURIComponent(query)}`);
+    setSearchOpen(false);
+  };
+
   return (
     <Box
       ref={navbarRef}
       as="nav"
       position="sticky"
-      top="10px"
-      zIndex={10}
-      bg="white"
-      _dark={{ bg: "white.800" }}
-      boxShadow="lg"
-      borderRadius="lg"
-      px={{ base: 3, md: 6 }}
-      py={2}
-      mx="auto"
-      mb={4}
-      width={{ base: "95%", md: "100%" }}
-      maxW={{ base: "container.xl", md: "fit-content" }}
+      top={0}
+      zIndex={60}
+      bg="rgba(10,10,10,0.92)"
+      backdropFilter="blur(14px)"
+      borderBottom="1px solid"
+      borderColor="aoe.borderSubtle"
     >
-      <Flex align="center" justify="space-between" w="100%">
-        <Flex align="center" gap={2}>
-          <IconButton
-            aria-label="Open Menu"
-            display={{ base: "flex", md: "none" }}
-            onClick={() => setOpen(true)}
-            variant="ghost"
-            _dark={{ color: "black", _hover: { bg: "gray.300" } }}
-          >
-            <FaBars />
-          </IconButton>
+      <Box maxW="1360px" mx="auto" px={{ base: 3, md: 5 }} py="14px">
+        <Flex align="center" gap={{ base: 3, md: 6 }}>
+          <Flex align="center" gap={2}>
+            <IconButton
+              aria-label="Open Menu"
+              display={{ base: "flex", md: "none" }}
+              onClick={() => setOpen(true)}
+              variant="ghost"
+              color="aoe.text"
+              _hover={{ bg: "aoe.surface" }}
+            >
+              <FaBars />
+            </IconButton>
 
-          <NavbarBrand />
-        </Flex>
+            <NavbarBrand />
+          </Flex>
 
-        <HStack display={{ base: "none", md: "flex" }} gap={3}>
-          <NavbarLinks session={session} />
-        </HStack>
+          <HStack display={{ base: "none", md: "flex" }} flex={1} ml={2}>
+            <NavbarLinks session={session} />
+          </HStack>
 
-        <Flex align="center" gap={{ base: 2, md: 4 }}>
-          <Box position="relative">
-            <Link href="/cart">
-              <IconButton
-                aria-label="Cart"
-                variant="ghost"
-                _dark={{ color: "blackAlpha.900", _hover: { bg: "gray.300" } }}
+          <Flex align="center" gap={{ base: 2, md: 3 }} ml={{ base: "auto", md: 0 }}>
+            <IconButton
+              aria-label="Buscar"
+              onClick={() => setSearchOpen((v) => !v)}
+              borderRadius="pill"
+              variant="outline"
+              borderColor="aoe.borderControl"
+              bg="aoe.chip"
+              color="aoe.text"
+              _hover={{ borderColor: "aoe.red" }}
+            >
+              {searchOpen ? <FiX /> : <FiSearch />}
+            </IconButton>
+
+            <Box position="relative">
+              <Box
+                as="button"
+                onClick={openCart}
+                h="40px"
+                px="16px"
+                borderRadius="pill"
+                border="none"
+                bg="aoe.text"
+                color="aoe.bg"
+                display="flex"
+                alignItems="center"
+                gap="8px"
+                fontFamily="mono"
+                fontSize="12px"
+                fontWeight="800"
+                letterSpacing="0.08em"
+                textTransform="uppercase"
+                cursor="pointer"
+                _hover={{ bg: "aoe.red", color: "white" }}
               >
-                <FiShoppingCart />
-              </IconButton>
-            </Link>
-            {cart.length > 0 && (
-              <Badge
-                colorPalette="red"
-                borderRadius="full"
-                position="absolute"
-                top={0}
-                right={-2}
-                fontSize="0.7em"
-                px={2}
-              >
-                {cart.length}
-              </Badge>
+                Carrito
+                <Box
+                  minW="20px"
+                  h="20px"
+                  px="5px"
+                  borderRadius="pill"
+                  bg="aoe.red"
+                  color="white"
+                  display="grid"
+                  placeItems="center"
+                  fontFamily="mono"
+                  fontSize="11px"
+                >
+                  {cartCount}
+                </Box>
+              </Box>
+            </Box>
+
+            {session?.user?.id && <NotificationBell userId={session.user.id} />}
+
+            {status === "loading" ? (
+              <SkeletonCircle size="10" />
+            ) : (
+              <NavbarUserMenu session={session} isAdmin={isAdmin} />
             )}
-          </Box>
-
-          <ColorModeButton
-            _dark={{ color: "black", _hover: { bg: "gray.300" } }}
-          />
-
-          {session?.user?.id && <NotificationBell userId={session.user.id} />}
-
-          {status === "loading" ? (
-            <SkeletonCircle size="10" />
-          ) : (
-            <NavbarUserMenu session={session} isAdmin={isAdmin} />
-          )}
+          </Flex>
         </Flex>
-      </Flex>
+      </Box>
+
+      {searchOpen && (
+        <Box borderTop="1px solid" borderColor="aoe.borderSubtle" bg="aoe.bgAlt">
+          <Flex maxW="1360px" mx="auto" px={{ base: 3, md: 5 }} py="16px" align="center" gap={3}>
+            <Box fontFamily="mono" fontSize="11px" color="aoe.textFaint" letterSpacing="0.12em">
+              BUSCAR
+            </Box>
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && submitSearch()}
+              placeholder="Stranger Things, Naruto, oversize…"
+              flex={1}
+              bg="transparent"
+              border="none"
+              borderBottom="1px solid"
+              borderColor="aoe.borderControl"
+              borderRadius={0}
+              color="aoe.text"
+              fontSize="lg"
+              px="2px"
+              _focusVisible={{ outline: "none", borderColor: "aoe.red" }}
+              autoFocus
+            />
+            <Box
+              as="button"
+              onClick={() => setSearchOpen(false)}
+              fontFamily="mono"
+              fontSize="11px"
+              color="aoe.textFaint"
+              letterSpacing="0.12em"
+              cursor="pointer"
+              bg="transparent"
+              border="none"
+            >
+              CERRAR ✕
+            </Box>
+          </Flex>
+        </Box>
+      )}
 
       <MobileDrawer
         open={open}

@@ -19,6 +19,13 @@ const ringCss = defineStyle({
 
 const NavbarUserMenu = ({ session, isAdmin }: { session: any, isAdmin: boolean }) => {
 
+  const menuContentProps = {
+    bg: "aoe.bgAlt",
+    borderColor: "aoe.borderSubtle",
+    borderWidth: "1px",
+    color: "aoe.text",
+  };
+
   if (!session?.user?.email) {
     return (
       <Menu.Root>
@@ -31,9 +38,9 @@ const NavbarUserMenu = ({ session, isAdmin }: { session: any, isAdmin: boolean }
         </Menu.Trigger>
         <Portal>
           <Menu.Positioner>
-            <Menu.Content>
+            <Menu.Content {...menuContentProps}>
               <Link href="/login">
-                <Menu.Item value="login">Iniciar sesión</Menu.Item>
+                <Menu.Item value="login" _hover={{ bg: "aoe.surface" }}>Iniciar sesión</Menu.Item>
               </Link>
             </Menu.Content>
           </Menu.Positioner>
@@ -55,17 +62,21 @@ const NavbarUserMenu = ({ session, isAdmin }: { session: any, isAdmin: boolean }
 
       <Portal>
         <Menu.Positioner>
-          <Menu.Content>
-            <Menu.Item value="User email" disabled>{session.user.email}</Menu.Item>
+          <Menu.Content {...menuContentProps}>
+            <Menu.Item value="User email" disabled color="aoe.textFaint">{session.user.email}</Menu.Item>
 
             {isAdmin && (
               <Link href="/admin">
-                <Menu.Item value="admin-panel" cursor="pointer">
+                <Menu.Item value="admin-panel" cursor="pointer" _hover={{ bg: "aoe.surface" }}>
                   Panel de Administrador
                 </Menu.Item>
               </Link>
             )}
-            <Menu.Item value="logout" onClick={() => window.location.href = "/api/auth/signout?callbackUrl=/"}>
+            <Menu.Item
+              value="logout"
+              _hover={{ bg: "aoe.surface" }}
+              onClick={() => window.location.href = "/api/auth/signout?callbackUrl=/"}
+            >
               Cerrar sesión
             </Menu.Item>
           </Menu.Content>

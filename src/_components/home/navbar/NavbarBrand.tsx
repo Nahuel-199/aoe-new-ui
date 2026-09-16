@@ -2,42 +2,22 @@
 
 import React from "react";
 import Link from "next/link";
-import { Text, Box } from "@chakra-ui/react";
+import { Text, Box, Image } from "@chakra-ui/react";
 
 const NavbarBrand = () => (
   <Link href="/">
-    <Box display="inline-flex" alignItems="center">
+    <Box display="inline-flex" alignItems="center" gap="10px">
+      <Image src="/logo_aoe.png" alt="AOE" h="34px" w="auto" />
       <Text
         as="span"
-        fontSize={{ base: "lg", md: "xl" }}
-        fontWeight="bold"
-        color="red.500"
+        fontFamily="heading"
+        fontSize="xl"
+        letterSpacing="0.02em"
+        color="aoe.text"
+        textTransform="uppercase"
+        lineHeight={1}
       >
-        AOE
-      </Text>
-
-      <Text
-        as="span"
-        fontSize={{ base: "lg", md: "xl" }}
-         fontWeight="bold"
-        color="black"
-        _dark={{ color: "black" }}
-        display={{ base: "none", md: "inline" }}
-        ml={1}
-      >
-        _INDUMENTARIA
-      </Text>
-
-      <Text
-        as="span"
-        fontSize={{ base: "lg", md: "xl" }}
-         fontWeight="bold"
-        color="black"
-        _dark={{ color: "black" }}
-        display={{ base: "inline", md: "none" }}
-        ml={1}
-      >
-        _IND
+        AOE<Text as="span" color="aoe.red">.</Text>
       </Text>
     </Box>
   </Link>

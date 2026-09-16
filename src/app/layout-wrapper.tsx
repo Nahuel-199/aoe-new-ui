@@ -3,6 +3,9 @@
 import { usePathname } from "next/navigation";
 import Navbar from "@/_components/home/navbar/Navbar";
 import FooterSection from "@/_components/home/footer/FooterSection";
+import OfferBanner from "@/_components/home/banner/OfferBanner";
+import CartDrawer from "@/_components/cart/CartDrawer";
+import { Box } from "@chakra-ui/react";
 
 export default function LayoutWrapper({
   children,
@@ -12,11 +15,17 @@ export default function LayoutWrapper({
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
 
+  if (isAdmin) {
+    return <>{children}</>;
+  }
+
   return (
-    <>
-      {!isAdmin && <Navbar />}
+    <Box bg="aoe.bg" color="aoe.text" minH="100vh" overflowX="hidden">
+      <OfferBanner />
+      <Navbar />
       {children}
-      {!isAdmin && <FooterSection />}
-    </>
+      <FooterSection />
+      <CartDrawer />
+    </Box>
   );
 }

@@ -1,17 +1,18 @@
-"use client";
-
 import CategoriesSection from "@/_components/home/categories/CategoriesSection";
 import HeaderSection from "@/_components/home/header/HeaderSection";
 import OfferSlider from "@/_components/home/offer/OfferSlider";
 import ShipmentsSection from "@/_components/home/shipments/ShipmentsSection";
+import { getOffers } from "@/lib/actions/product.actions";
 
-export default function Home() {
+export default async function Home() {
+  const offers = await getOffers();
+
   return (
     <>
-      <HeaderSection />
-      <CategoriesSection />
+      <HeaderSection offers={offers} />
       <ShipmentsSection />
-      <OfferSlider />
+      <OfferSlider offers={offers} />
+      <CategoriesSection />
     </>
   );
 }
