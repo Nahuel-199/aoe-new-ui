@@ -10,6 +10,7 @@ const NavbarBrand = () => (
       <Image src="/logo_aoe.png" alt="AOE" h="34px" w="auto" />
       <Text
         as="span"
+        display={{ base: "none", md: "inline" }}
         fontFamily="heading"
         fontSize="xl"
         letterSpacing="0.02em"
