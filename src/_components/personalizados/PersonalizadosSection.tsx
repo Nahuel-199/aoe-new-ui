@@ -113,7 +113,7 @@ export default function PersonalizadosSection() {
                     color="aoe.text"
                     m={0}
                 >
-                    Tu idea,<br />nuestra <Text as="span" color="aoe.red">prensa</Text>
+                    Tu idea,<br />nuestra <Text as="span" color="aoe.red">prenda</Text>
                 </Text>
                 <Text color="aoe.textMuted" fontSize="17px" lineHeight="1.55" maxW="560px" mt="22px" mb="36px">
                     Mandanos tu diseño o contanos la idea. Cotizamos en el día y producimos desde 1 unidad.

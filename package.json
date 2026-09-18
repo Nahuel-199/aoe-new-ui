@@ -14,6 +14,8 @@
     "@emotion/react": "^11.14.0",
     "cloudinary": "^2.7.0",
     "gsap": "^3.13.0",
+    "leaflet": "^1.9.4",
+    "mercadopago": "^3.6.1",
     "mongodb": "^6.19.0",
     "next": "15.5.9",
     "next-auth": "5.0.0-beta.29",
@@ -27,6 +29,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/leaflet": "^1.9.22",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

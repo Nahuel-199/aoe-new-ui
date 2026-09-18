@@ -13,6 +13,7 @@ import { Product } from "@/types/product.types";
 import { Tooltip } from "@/components/ui/tooltip";
 import { colorMap } from "./utils/ColorMaps";
 import { useState } from "react";
+import FavoriteButton from "./FavoriteButton";
 
 interface ProductCardProps {
   product: Product;
@@ -41,9 +42,15 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Box minW={0}>
       <Box
-        as="button"
+        role="button"
+        tabIndex={0}
         onClick={() => router.push(`/products/${product._id}`)}
-        border="none"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            router.push(`/products/${product._id}`);
+          }
+        }}
         p={0}
         w="100%"
         bg="aoe.surface"
@@ -57,6 +64,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
+        <FavoriteButton productId={product._id} variant="overlay" />
         {imageToShow ? (
           <Image
             src={imageToShow}

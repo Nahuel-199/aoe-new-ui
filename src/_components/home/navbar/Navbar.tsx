@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import {
@@ -77,7 +77,9 @@ const Navbar = () => {
           </Flex>
 
           <HStack display={{ base: "none", md: "flex" }} flex={1} ml={2}>
-            <NavbarLinks session={session} />
+            <Suspense fallback={<HStack gap="26px" />}>
+              <NavbarLinks session={session} />
+            </Suspense>
           </HStack>
 
           <Flex align="center" gap={{ base: 2, md: 3 }} ml={{ base: "auto", md: 0 }}>
@@ -184,11 +186,9 @@ const Navbar = () => {
         </Box>
       )}
 
-      <MobileDrawer
-        open={open}
-        onClose={() => setOpen(false)}
-        session={session}
-      />
+      <Suspense fallback={null}>
+        <MobileDrawer open={open} onClose={() => setOpen(false)} session={session} />
+      </Suspense>
     </Box>
   );
 };

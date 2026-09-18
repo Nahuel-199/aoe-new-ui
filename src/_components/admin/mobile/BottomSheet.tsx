@@ -1,0 +1,94 @@
+"use client";
+
+import { Box, Text } from "@chakra-ui/react";
+
+export interface SheetAction {
+  label: string;
+  color?: string;
+  onClick: () => void;
+}
+
+export interface SheetConfig {
+  title: string;
+  subtitle?: string;
+  actions: SheetAction[];
+}
+
+interface BottomSheetProps {
+  sheet: SheetConfig | null;
+  onClose: () => void;
+}
+
+/**
+ * Cada acción es responsable de cerrar (o encadenar otro sheet) llamando a
+ * `onClose`/al setter de estado ella misma — así se pueden armar flujos de
+ * confirmación (ej: "Eliminar" abre un segundo sheet de confirmación).
+ */
+export default function BottomSheet({ sheet, onClose }: BottomSheetProps) {
+  if (!sheet) return null;
+
+  return (
+    <Box position="fixed" inset={0} zIndex={90} display="flex" alignItems="flex-end">
+      <Box
+        as="button"
+        aria-label="Cerrar"
+        position="absolute"
+        inset={0}
+        bg="rgba(0,0,0,0.7)"
+        border="none"
+        onClick={onClose}
+      />
+      <Box
+        position="relative"
+        w="full"
+        maxW="760px"
+        mx="auto"
+        bg="aoe.tile"
+        borderTop="1px solid"
+        borderColor="aoe.borderControl"
+        borderTopRadius="22px"
+        px={4}
+        pt="10px"
+        pb="22px"
+      >
+        <Box w="44px" h="4px" borderRadius="pill" bg="aoe.borderHover" mx="auto" mb="16px" mt="6px" />
+        <Text fontSize="16px" fontWeight="700" mb="4px" color="aoe.text">
+          {sheet.title}
+        </Text>
+        {sheet.subtitle && (
+          <Text
+            fontFamily="mono"
+            fontSize="11px"
+            color="aoe.textMuted"
+            letterSpacing="0.08em"
+            textTransform="uppercase"
+            mb="16px"
+          >
+            {sheet.subtitle}
+          </Text>
+        )}
+        <Box display="grid" gap="8px">
+          {sheet.actions.map((a, i) => (
+            <Box
+              key={i}
+              as="button"
+              onClick={a.onClick}
+              h="54px"
+              borderRadius="14px"
+              border="1px solid"
+              borderColor="aoe.borderControl"
+              bg="aoe.chip"
+              color={a.color || "aoe.text"}
+              fontSize="14px"
+              fontWeight="700"
+              textAlign="left"
+              px={4}
+            >
+              {a.label}
+            </Box>
+          ))}
+        </Box>
+      </Box>
+    </Box>
+  );
+}

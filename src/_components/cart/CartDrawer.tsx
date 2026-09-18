@@ -10,13 +10,11 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { FiX } from "react-icons/fi";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createOrder } from "@/lib/actions/order.actions";
 import { showToast } from "nextjs-toast-notify";
 import { useSession } from "next-auth/react";
+import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants/shipping";
 
-const FREE_SHIPPING_THRESHOLD = 30000;
 const ars = (n: number) => "$" + n.toLocaleString("es-AR");
 
 export default function CartDrawer() {
@@ -29,7 +27,6 @@ export default function CartDrawer() {
     cartOpen,
     closeCart,
   } = useCart();
-  const [loading, setLoading] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -45,7 +42,7 @@ export default function CartDrawer() {
   );
   const total = subtotal;
 
-  const handleCreateOrder = async () => {
+  const handleGoToCheckout = () => {
     if (!session) {
       showToast.warning("Debes iniciar sesión para continuar con la compra.", {
         duration: 4000,
@@ -60,73 +57,8 @@ export default function CartDrawer() {
       return;
     }
 
-    try {
-      setLoading(true);
-
-      const items = cart.map((item) => ({
-        productId: item.productId,
-        name: item.name,
-        quantity: item.quantity,
-        variant: {
-          type: item.variant.type,
-          color: item.variant.color,
-          size: item.variant.size,
-          price: item.variant.price,
-          imageUrl: item.variant.imageUrl,
-        },
-      }));
-
-      await createOrder({ items });
-
-      showToast.success("¡Orden de compra creada exitósamente!", {
-        duration: 4000,
-        progress: true,
-        position: "top-center",
-        transition: "bounceIn",
-        icon: "",
-        sound: true,
-      });
-
-      setTimeout(() => {
-        const phoneNumber = "5491124969558";
-        let message = `¡Hola! 👋 Vengo desde la página y quiero confirmar este pedido:\n\n`;
-
-        cart.forEach((item, index) => {
-          message += `*${index + 1}. ${item.name}*\n`;
-          message += `   🧥 Tipo: _${item.variant.type}_\n`;
-          message += `   🎨 Color: _${item.variant.color}_\n`;
-          message += `   📏 Talle: _${item.variant.size}_\n`;
-          message += `   🔢 Cantidad: *${item.quantity}*\n`;
-          message += `   💰 Precio: $${item.variant.price} c/u\n`;
-          message += `   ➕ Subtotal: *$${item.variant.price * item.quantity}*\n\n`;
-        });
-
-        message += `━━━━━━━━━━━━━━━\n`;
-        message += `💵 *Total a pagar:* $${total}\n`;
-        message += `━━━━━━━━━━━━━━━\n\n`;
-        message += `🙌 ¡Desde ya muchas gracias! Espero tu confirmación para coordinar el envío 🚚✨`;
-
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-
-        clearCart();
-        closeCart();
-        window.open(whatsappLink, "_blank");
-        router.push("/mis-pedidos");
-      }, 2000);
-    } catch (error) {
-      showToast.error("Error creando la orden de compra", {
-        duration: 4000,
-        progress: true,
-        position: "top-center",
-        transition: "bounceIn",
-        icon: "",
-        sound: true,
-      });
-      console.error("Error creando orden:", error);
-    } finally {
-      setLoading(false);
-    }
+    closeCart();
+    router.push("/checkout");
   };
 
   if (!cartOpen) return null;
@@ -331,8 +263,8 @@ export default function CartDrawer() {
               letterSpacing="0.1em"
               textTransform="uppercase"
               _hover={{ bg: "aoe.text", color: "aoe.bg" }}
-              loading={loading || status === "loading"}
-              onClick={handleCreateOrder}
+              loading={status === "loading"}
+              onClick={handleGoToCheckout}
             >
               Finalizar compra
             </Button>

@@ -7,7 +7,7 @@ const items = [
     'Envío a todo el país · Correo Argentino',
     'Moto envío en CABA y GBA',
     '3 cuotas sin interés',
-    'Envío gratis a partir de $30.000',
+    'Envío gratis a partir de $70.000',
 ];
 
 const Strip = () => (

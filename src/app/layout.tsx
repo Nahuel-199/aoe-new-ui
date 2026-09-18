@@ -5,6 +5,7 @@ import { Anton, Archivo, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import LayoutWrapper from "./layout-wrapper";
 import { CartProvider } from "@/context/CartContext";
+import { FavoritesProvider } from "@/context/FavoritesContext";
 
 const anton = Anton({
   subsets: ["latin"],
@@ -46,9 +47,11 @@ export default function RootLayout({
         <Provider>
           <ProviderSesion>
             <CartProvider>
-              <LayoutWrapper>
-                {children}
-              </LayoutWrapper>
+              <FavoritesProvider>
+                <LayoutWrapper>
+                  {children}
+                </LayoutWrapper>
+              </FavoritesProvider>
             </CartProvider>
           </ProviderSesion>
         </Provider>

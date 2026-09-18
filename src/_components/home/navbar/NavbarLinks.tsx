@@ -1,48 +1,49 @@
-'use client';
+"use client";
 
 import React from "react";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Button, HStack } from "@chakra-ui/react";
+import { NAV_LINKS, isNavLinkActive } from "@/lib/constants/navLinks";
 
-const linkProps = {
-  variant: "ghost" as const,
-  color: "aoe.textMuted",
-  fontFamily: "mono",
-  fontSize: "13px",
-  fontWeight: "700",
-  letterSpacing: "0.1em",
-  textTransform: "uppercase" as const,
-  px: 0,
-  _hover: { color: "aoe.text", bg: "transparent" },
+const NavbarLinks = ({ session }: { session: any }) => {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category");
+
+  return (
+    <HStack gap="26px">
+      {NAV_LINKS.filter((link) => !link.requiresAuth || session?.user?.email).map(
+        (link) => {
+          const active = isNavLinkActive(link, pathname, category);
+          return (
+            <Link key={link.label} href={link.href}>
+              <Button
+                variant="ghost"
+                color={active ? "aoe.text" : "aoe.textMuted"}
+                fontFamily="mono"
+                fontSize="13px"
+                fontWeight="700"
+                letterSpacing="0.1em"
+                textTransform="uppercase"
+                px={0}
+                h="auto"
+                py="2px"
+                borderRadius={0}
+                border="none"
+                borderBottomWidth="2px"
+                borderBottomStyle="solid"
+                borderBottomColor={active ? "aoe.red" : "transparent"}
+                _hover={{ color: "aoe.text", bg: "transparent" }}
+              >
+                {link.label}
+              </Button>
+            </Link>
+          );
+        }
+      )}
+    </HStack>
+  );
 };
-
-const NavbarLinks = ({ session }: { session: any }) => (
-  <HStack gap="26px">
-    <Link href="/products">
-      <Button {...linkProps} color="aoe.text">
-        Todo
-      </Button>
-    </Link>
-    <Link href="/products?category=Remeras">
-      <Button {...linkProps}>Remeras</Button>
-    </Link>
-    <Link href="/products?category=Buzos">
-      <Button {...linkProps}>Buzos</Button>
-    </Link>
-    <Link href="/products?category=Ofertas">
-      <Button {...linkProps} color="aoe.red" _hover={{ color: "aoe.red", bg: "transparent" }}>
-        Ofertas
-      </Button>
-    </Link>
-    <Link href="/personalizados">
-      <Button {...linkProps}>Personalizados</Button>
-    </Link>
-    {session?.user?.email && (
-      <Link href="/mis-pedidos">
-        <Button {...linkProps}>Mis pedidos</Button>
-      </Link>
-    )}
-  </HStack>
-);
 
 export default NavbarLinks;
