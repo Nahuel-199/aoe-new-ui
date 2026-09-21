@@ -115,8 +115,7 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ offers }) => {
                         </Button>
                     </Flex>
 
-                    <Flex gap={7} mt={10} fontFamily="mono" fontSize="11px" color="aoe.textFaint" letterSpacing="0.08em" flexWrap="wrap">
-                        <Text>Cambios sin cargo</Text>
+                    <Flex gap={7} mt={10} fontFamily="mono" fontSize="11px" color="aoe.textMuted" letterSpacing="0.08em" flexWrap="wrap">
                         <Text>Hecho en Argentina</Text>
                     </Flex>
                 </Box>

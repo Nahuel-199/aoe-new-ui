@@ -1,13 +1,19 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import { Box, Text, Link, Image, Grid, Stack } from '@chakra-ui/react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Box, Text, Link, Image, Grid, Stack, Dialog, Portal } from '@chakra-ui/react';
 import { gsap } from 'gsap';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import { sizeChartUrls } from '@/utils/sizeChartUrls';
+
+const sizeChartTypes = Object.keys(sizeChartUrls);
 
 const FooterSection: React.FC = () => {
   const iconsRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLImageElement>(null);
+  const [shippingInfoOpen, setShippingInfoOpen] = useState(false);
+  const [sizeChartOpen, setSizeChartOpen] = useState(false);
+  const [selectedSizeChartType, setSelectedSizeChartType] = useState(sizeChartTypes[0]);
 
   useEffect(() => {
     if (logoRef.current) {
@@ -75,9 +81,24 @@ const FooterSection: React.FC = () => {
             Ayuda
           </Text>
           <Stack gap={2} fontSize="14px" color="aoe.textMuted">
-            <Text>Envíos y tiempos</Text>
-            <Text>Cambios y devoluciones</Text>
-            <Text>Guía de talles</Text>
+            <Text
+              as="button"
+              textAlign="left"
+              cursor="pointer"
+              onClick={() => setShippingInfoOpen(true)}
+              _hover={{ color: 'aoe.text' }}
+            >
+              Envíos y tiempos
+            </Text>
+            <Text
+              as="button"
+              textAlign="left"
+              cursor="pointer"
+              onClick={() => setSizeChartOpen(true)}
+              _hover={{ color: 'aoe.text' }}
+            >
+              Tablas de talles
+            </Text>
             <Link href="/mis-pedidos">Seguir mi pedido</Link>
           </Stack>
         </Box>
@@ -115,6 +136,157 @@ const FooterSection: React.FC = () => {
         <Text>© 2026 AOE INDUMENTARIA</Text>
         <Text>MERCADO PAGO · CORREO ARGENTINO · MOTO ENVÍO</Text>
       </Stack>
+
+      <Dialog.Root
+        open={shippingInfoOpen}
+        onOpenChange={(details) => setShippingInfoOpen(details.open)}
+        placement="center"
+      >
+        <Portal>
+          <Dialog.Backdrop bg="blackAlpha.700" />
+          <Dialog.Positioner>
+            <Dialog.Content
+              bg="aoe.surface"
+              border="1px solid"
+              borderColor="aoe.borderSubtle"
+              borderRadius="18px"
+              maxW="420px"
+              mx={4}
+            >
+              <Dialog.Header>
+                <Dialog.Title
+                  fontFamily="heading"
+                  textTransform="uppercase"
+                  letterSpacing="0.02em"
+                  color="aoe.text"
+                >
+                  Envíos y tiempos
+                </Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body>
+                <Text color="aoe.textMuted" fontSize="14px" lineHeight="1.6">
+                  Los pedidos demoran entre 5 y 7 días después de realizado el encargo.
+                  Una vez que confirmes tu compra, te iremos informando el estado de tu
+                  producto hasta que llegue a tus manos.
+                </Text>
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Box
+                  as="button"
+                  onClick={() => setShippingInfoOpen(false)}
+                  h="40px"
+                  px="20px"
+                  borderRadius="pill"
+                  border="none"
+                  bg="aoe.text"
+                  color="aoe.bg"
+                  fontFamily="mono"
+                  fontSize="12px"
+                  fontWeight="800"
+                  letterSpacing="0.08em"
+                  textTransform="uppercase"
+                  cursor="pointer"
+                  _hover={{ bg: 'aoe.red', color: 'white' }}
+                >
+                  Entendido
+                </Box>
+              </Dialog.Footer>
+              <Dialog.CloseTrigger color="aoe.textMuted" />
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
+
+      <Dialog.Root
+        open={sizeChartOpen}
+        onOpenChange={(details) => setSizeChartOpen(details.open)}
+        placement="center"
+        size="lg"
+      >
+        <Portal>
+          <Dialog.Backdrop bg="blackAlpha.700" />
+          <Dialog.Positioner>
+            <Dialog.Content
+              bg="aoe.surface"
+              border="1px solid"
+              borderColor="aoe.borderSubtle"
+              borderRadius="18px"
+              maxW="560px"
+              mx={4}
+            >
+              <Dialog.Header>
+                <Dialog.Title
+                  fontFamily="heading"
+                  textTransform="uppercase"
+                  letterSpacing="0.02em"
+                  color="aoe.text"
+                >
+                  Tablas de talles
+                </Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body>
+                <Stack gap={4}>
+                  <Stack direction="row" gap={2} flexWrap="wrap">
+                    {sizeChartTypes.map((type) => (
+                      <Box
+                        key={type}
+                        as="button"
+                        onClick={() => setSelectedSizeChartType(type)}
+                        px="12px"
+                        h="32px"
+                        borderRadius="pill"
+                        border="1px solid"
+                        borderColor={selectedSizeChartType === type ? 'aoe.red' : 'aoe.borderControl'}
+                        bg={selectedSizeChartType === type ? 'aoe.red' : 'transparent'}
+                        color={selectedSizeChartType === type ? 'white' : 'aoe.textMuted'}
+                        fontFamily="mono"
+                        fontSize="11px"
+                        letterSpacing="0.04em"
+                        cursor="pointer"
+                        _hover={{ borderColor: 'aoe.red' }}
+                      >
+                        {type}
+                      </Box>
+                    ))}
+                  </Stack>
+
+                  <Box borderRadius="12px" overflow="hidden" bg="aoe.tile">
+                    <Image
+                      src={sizeChartUrls[selectedSizeChartType]}
+                      alt={`Tabla de talles ${selectedSizeChartType}`}
+                      w="100%"
+                      h="auto"
+                      objectFit="contain"
+                    />
+                  </Box>
+                </Stack>
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Box
+                  as="button"
+                  onClick={() => setSizeChartOpen(false)}
+                  h="40px"
+                  px="20px"
+                  borderRadius="pill"
+                  border="none"
+                  bg="aoe.text"
+                  color="aoe.bg"
+                  fontFamily="mono"
+                  fontSize="12px"
+                  fontWeight="800"
+                  letterSpacing="0.08em"
+                  textTransform="uppercase"
+                  cursor="pointer"
+                  _hover={{ bg: 'aoe.red', color: 'white' }}
+                >
+                  Entendido
+                </Box>
+              </Dialog.Footer>
+              <Dialog.CloseTrigger color="aoe.textMuted" />
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
     </Box>
   );
 };

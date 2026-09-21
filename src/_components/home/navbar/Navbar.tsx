@@ -13,7 +13,7 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { FaBars } from "react-icons/fa";
-import { FiShoppingCart, FiSearch, FiX } from "react-icons/fi";
+import { FiShoppingBag, FiSearch, FiX } from "react-icons/fi";
 import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 
@@ -99,9 +99,10 @@ const Navbar = () => {
             <Box position="relative">
               <Box
                 as="button"
+                aria-label="Carrito"
                 onClick={openCart}
                 h="40px"
-                px="16px"
+                px="14px"
                 borderRadius="pill"
                 border="none"
                 bg="aoe.text"
@@ -109,15 +110,10 @@ const Navbar = () => {
                 display="flex"
                 alignItems="center"
                 gap="8px"
-                fontFamily="mono"
-                fontSize="12px"
-                fontWeight="800"
-                letterSpacing="0.08em"
-                textTransform="uppercase"
                 cursor="pointer"
                 _hover={{ bg: "aoe.red", color: "white" }}
               >
-                Carrito
+                <FiShoppingBag size={18} />
                 <Box
                   minW="20px"
                   h="20px"

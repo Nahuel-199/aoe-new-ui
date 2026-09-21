@@ -166,6 +166,52 @@ export default function OrdersScreen({
                 </Box>
               </Flex>
 
+              <Grid
+                p="12px 14px"
+                borderBottom="1px solid"
+                borderColor="aoe.borderSubtle"
+                templateColumns={{ base: "1fr", sm: "repeat(auto-fit, minmax(150px, 1fr))" }}
+                gap="10px"
+              >
+                <Box minW={0}>
+                  <Text fontFamily="mono" fontSize="11px" color="aoe.textMuted" letterSpacing="0.12em" textTransform="uppercase">
+                    Email
+                  </Text>
+                  <Text fontSize="13px" fontWeight="600" mt="3px" color="aoe.text" wordBreak="break-word">
+                    {o.user.email}
+                  </Text>
+                </Box>
+                <Box minW={0}>
+                  <Text fontFamily="mono" fontSize="11px" color="aoe.textMuted" letterSpacing="0.12em" textTransform="uppercase">
+                    Teléfono
+                  </Text>
+                  <Text fontSize="13px" fontWeight="600" mt="3px" color="aoe.text">
+                    {o.phoneNumber || "—"}
+                  </Text>
+                </Box>
+                {o.shippingAddress && (
+                  <>
+                    <Box minW={0}>
+                      <Text fontFamily="mono" fontSize="11px" color="aoe.textMuted" letterSpacing="0.12em" textTransform="uppercase">
+                        Dirección
+                      </Text>
+                      <Text fontSize="13px" fontWeight="600" mt="3px" color="aoe.text">
+                        {o.shippingAddress.street} {o.shippingAddress.streetNumber}
+                        {o.shippingAddress.floorApt ? `, ${o.shippingAddress.floorApt}` : ""}, {o.shippingAddress.city}, {o.shippingAddress.province}
+                      </Text>
+                    </Box>
+                    <Box minW={0}>
+                      <Text fontFamily="mono" fontSize="11px" color="aoe.textMuted" letterSpacing="0.12em" textTransform="uppercase">
+                        Código postal
+                      </Text>
+                      <Text fontSize="13px" fontWeight="600" mt="3px" color="aoe.text">
+                        {o.shippingAddress.postalCode}
+                      </Text>
+                    </Box>
+                  </>
+                )}
+              </Grid>
+
               <Box p="12px 14px" display="grid" gap="10px">
                 {o.items.map((it, idx) => (
                   <Grid key={idx} templateColumns="44px 1fr auto" gap="10px" alignItems="center">
