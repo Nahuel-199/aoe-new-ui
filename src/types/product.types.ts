@@ -26,6 +26,7 @@ export interface Product {
   category: Category;
   subcategories: Subcategory[];
   variants: Variant[];
+  createdAt?: string;
 }
 
 // Nota: estos tipos/constantes viven acá (y no en product.actions.ts) porque

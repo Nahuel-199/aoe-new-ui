@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
-import { Box, Flex, Image, Input, Text } from "@chakra-ui/react";
+import { useMemo, useState } from "react";
+import { Box, Flex, Image, Input, NativeSelect, Text } from "@chakra-ui/react";
 import { Product } from "@/types/product.types";
-import { ProductFilterValue } from "@/lib/constants/adminNav";
+import { PRODUCT_SORT_OPTIONS, ProductFilterValue, ProductSortValue } from "@/lib/constants/adminNav";
 import { getDisplayPricing, getTotalStock, isLowStock, isOnSale, isOutOfStock } from "@/lib/productStock";
 
 const ars = (n: number) => "$" + n.toLocaleString("es-AR");
@@ -36,9 +36,11 @@ export default function ProductsScreen({
   onEdit,
   onOpenMenu,
 }: ProductsScreenProps) {
+  const [sort, setSort] = useState<ProductSortValue>("recent");
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return products.filter((p) => {
+    const result = products.filter((p) => {
       if (q) {
         const haystack = `${p.name} ${p.subcategories.map((s) => s.name).join(" ")} ${p.variants
           .map((v) => v.type)
@@ -50,7 +52,31 @@ export default function ProductsScreen({
       if (filter === "outOfStock") return isOutOfStock(p);
       return true;
     });
-  }, [products, query, filter]);
+
+    // El ObjectId de Mongo trae la fecha de creación codificada en sus primeros
+    // 4 bytes: sirve de fallback para productos viejos sin `createdAt`.
+    const withTime = (p: Product) =>
+      p.createdAt ? new Date(p.createdAt).getTime() : parseInt(p._id.slice(0, 8), 16) * 1000;
+    const withPrice = (p: Product) => getDisplayPricing(p).finalPrice;
+
+    return [...result].sort((a, b) => {
+      switch (sort) {
+        case "oldest":
+          return withTime(a) - withTime(b);
+        case "nameAsc":
+          return a.name.localeCompare(b.name);
+        case "nameDesc":
+          return b.name.localeCompare(a.name);
+        case "priceAsc":
+          return withPrice(a) - withPrice(b);
+        case "priceDesc":
+          return withPrice(b) - withPrice(a);
+        case "recent":
+        default:
+          return withTime(b) - withTime(a);
+      }
+    });
+  }, [products, query, filter, sort]);
 
   return (
     <Box>
@@ -128,9 +154,35 @@ export default function ProductsScreen({
         })}
       </Flex>
 
-      <Text fontFamily="mono" fontSize="11px" color="aoe.textMuted" letterSpacing="0.12em" textTransform="uppercase" my="12px">
-        {filtered.length} {filtered.length === 1 ? "producto" : "productos"}
-      </Text>
+      <Flex justify="space-between" align="center" gap="10px" my="12px">
+        <Text fontFamily="mono" fontSize="11px" color="aoe.textMuted" letterSpacing="0.12em" textTransform="uppercase">
+          {filtered.length} {filtered.length === 1 ? "producto" : "productos"}
+        </Text>
+        <NativeSelect.Root width="auto" size="sm">
+          <NativeSelect.Field
+            value={sort}
+            onChange={(e) => setSort(e.target.value as ProductSortValue)}
+            h="34px"
+            borderRadius="10px"
+            border="1px solid"
+            borderColor="aoe.borderControl"
+            bg="aoe.chip"
+            color="aoe.textMuted"
+            fontSize="11px"
+            fontWeight="700"
+            letterSpacing="0.04em"
+            textTransform="uppercase"
+            px="10px"
+          >
+            {PRODUCT_SORT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </NativeSelect.Field>
+          <NativeSelect.Indicator />
+        </NativeSelect.Root>
+      </Flex>
 
       <Box display="grid" gap="10px">
         {filtered.map((p) => {

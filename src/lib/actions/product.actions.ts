@@ -58,7 +58,7 @@ export async function getProducts(
   if (!hasFilters) {
     const products = await db
       .collection("products")
-      .aggregate(categoryLookupStages)
+      .aggregate([{ $sort: { _id: -1 } }, ...categoryLookupStages])
       .toArray();
 
     const serialized = deepSerialize<Product[]>(products);
@@ -94,7 +94,10 @@ export async function getProducts(
     pipeline.push({ $addFields: { _minPrice: { $min: "$variants.price" } } });
     pipeline.push({ $sort: { _minPrice: sort === "menor" ? 1 : -1 } });
   } else {
-    pipeline.push({ $sort: { createdAt: -1 } });
+    // Se ordena por _id (no por createdAt) porque el ObjectId ya trae la
+    // fecha de creación codificada, y así el orden es correcto también para
+    // productos viejos que se cargaron antes de que existiera este campo.
+    pipeline.push({ $sort: { _id: -1 } });
   }
 
   const hasPagination = typeof page === "number" && typeof pageSize === "number";

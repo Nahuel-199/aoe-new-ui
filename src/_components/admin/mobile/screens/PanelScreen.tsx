@@ -33,6 +33,7 @@ interface PanelScreenProps {
   onGoCustom: () => void;
   onGoForm: () => void;
   onGoCategories: () => void;
+  onGoHero: () => void;
 }
 
 export default function PanelScreen({
@@ -43,6 +44,7 @@ export default function PanelScreen({
   onGoCustom,
   onGoForm,
   onGoCategories,
+  onGoHero,
 }: PanelScreenProps) {
   const stats = useMemo(() => {
     const now = new Date();
@@ -101,6 +103,7 @@ export default function PanelScreen({
     { icon: "✦", label: "Pedido personalizado", onClick: onGoCustom },
     { icon: "％", label: "Armar una oferta", onClick: () => onGoProducts("onSale") },
     { icon: "▦", label: "Categorías y subcategorías", onClick: onGoCategories },
+    { icon: "🖼", label: "Imágenes de portada", onClick: onGoHero },
   ];
 
   const recentOrders = orders.slice(0, 3);

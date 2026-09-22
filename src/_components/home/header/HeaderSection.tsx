@@ -5,12 +5,14 @@ import { useRouter } from 'next/navigation';
 import { gsap } from 'gsap';
 import { Box, Text, Grid, Image, Button, Flex } from '@chakra-ui/react';
 import { Product } from '@/types/product.types';
+import { HeroBanner } from '@/types/heroBanner.types';
 
 interface HeaderSectionProps {
     offers: Product[];
+    heroBanners?: (HeroBanner | null)[];
 }
 
-const HeaderSection: React.FC<HeaderSectionProps> = ({ offers }) => {
+const HeaderSection: React.FC<HeaderSectionProps> = ({ offers, heroBanners = [] }) => {
     const titleRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const shots = offers.slice(0, 4);
@@ -121,14 +123,17 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ offers }) => {
                 </Box>
 
                 <Grid templateColumns="1fr 1fr" gap="14px" minW={0}>
-                    {(shots.length
-                        ? shots
-                        : (Array.from({ length: 4 }) as (Product | undefined)[])
-                    ).map((p, i) => {
-                        const img = p?.variants?.[0]?.images?.[0]?.url;
+                    {Array.from({ length: 4 }).map((_, i) => {
+                        const banner = heroBanners[i];
+                        const product = shots[i];
+                        const img = banner?.url || product?.variants?.[0]?.images?.[0]?.url;
+                        // Si hay una imagen curada en este slot, el link es el que se le
+                        // asignó a ELLA (o ninguno) — nunca el del producto que ocupaba
+                        // el slot antes de que se subiera esta imagen.
+                        const href = banner ? banner.link || undefined : product ? `/products/${product._id}` : undefined;
                         return (
                             <Box
-                                key={p?._id ?? i}
+                                key={banner?.id ?? product?._id ?? i}
                                 as="button"
                                 position="relative"
                                 bg="aoe.tile"
@@ -137,12 +142,12 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ offers }) => {
                                 aspectRatio="4 / 5"
                                 border="none"
                                 p={0}
-                                cursor={p ? 'pointer' : 'default'}
-                                _hover={p ? { outline: '2px solid', outlineColor: 'aoe.red' } : undefined}
-                                onClick={() => p && router.push(`/products/${p._id}`)}
+                                cursor={href ? 'pointer' : 'default'}
+                                _hover={href ? { outline: '2px solid', outlineColor: 'aoe.red' } : undefined}
+                                onClick={() => href && router.push(href)}
                             >
                                 {img && (
-                                    <Image src={img} alt={p?.name} w="100%" h="100%" objectFit="cover" />
+                                    <Image src={img} alt={banner ? '' : product?.name} w="100%" h="100%" objectFit="cover" />
                                 )}
                             </Box>
                         );

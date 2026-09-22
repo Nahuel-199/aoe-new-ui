@@ -11,7 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import { Product } from "@/types/product.types";
 import { Tooltip } from "@/components/ui/tooltip";
-import { colorMap } from "./utils/ColorMaps";
+import { getColorHex } from "./utils/ColorMaps";
 import { useState } from "react";
 import FavoriteButton from "./FavoriteButton";
 
@@ -136,7 +136,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 borderRadius="full"
                 border="1.5px solid"
                 borderColor="aoe.textFaint"
-                bg={colorMap[color] || "gray.300"}
+                bg={getColorHex(color) || "gray.300"}
               />
             </Tooltip>
           ))}

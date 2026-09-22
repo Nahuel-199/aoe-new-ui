@@ -14,3 +14,15 @@ export const colorMap: Record<string, string> = {
   "Gris topo": "#505050",
   Rosa: "#FFC0CB",
 };
+
+const normalizedColorMap: Record<string, string> = Object.fromEntries(
+  Object.entries(colorMap).map(([name, hex]) => [name.toLowerCase(), hex])
+);
+
+/**
+ * Datos viejos pueden tener el color guardado con otra capitalización
+ * (ej: "negro" en vez de "Negro"), lo que hacía fallar el lookup directo
+ * por `colorMap[color]` y mostraba el swatch gris por defecto.
+ */
+export const getColorHex = (name?: string | null): string | undefined =>
+  name ? normalizedColorMap[name.trim().toLowerCase()] : undefined;

@@ -1,8 +1,9 @@
 "use client";
 
-import { Box, Grid, Input, NativeSelect, Text, Textarea } from "@chakra-ui/react";
+import { Box, Grid, Input, NativeSelect, Skeleton, Text, Textarea } from "@chakra-ui/react";
 import { useProductForm } from "@/hooks/useProductForm";
 import { Category, Product, Subcategory } from "@/types/product.types";
+import { colorMap } from "@/_components/products/utils/ColorMaps";
 
 interface ProductFormScreenProps {
   product?: Product;
@@ -10,7 +11,11 @@ interface ProductFormScreenProps {
   subcategories: Subcategory[];
   onCancel: () => void;
   onSaved: () => void;
+  isDesktop?: boolean;
 }
+
+const VARIANT_TYPES = ["Básica", "Oversize"];
+const VARIANT_COLORS = Object.keys(colorMap);
 
 const fieldLabelProps = {
   fontSize: "12px",
@@ -36,6 +41,7 @@ export default function ProductFormScreen({
   subcategories,
   onCancel,
   onSaved,
+  isDesktop = false,
 }: ProductFormScreenProps) {
   const mode = product ? "edit" : "create";
   const {
@@ -50,9 +56,10 @@ export default function ProductFormScreen({
     removeSizeFromVariant,
     handleUploadImage,
     handleRemoveImage,
+    moveImage,
     handleSubmit,
     isLoading,
-    isUploadingImage,
+    uploadingCounts,
   } = useProductForm({ mode, product, onClose: onSaved });
 
   const toggleSubcategory = (id: string) => {
@@ -196,35 +203,55 @@ export default function ProductFormScreen({
                   <Text fontFamily="mono" fontSize="11px" color="aoe.textMuted" letterSpacing="0.12em" textTransform="uppercase">
                     Tipo
                   </Text>
-                  <Input
-                    value={v.type}
-                    onChange={(e) => updateVariant(index, "type", e.target.value)}
-                    placeholder="Oversize"
-                    h="48px"
-                    borderRadius="11px"
-                    border="1px solid"
-                    borderColor="aoe.borderControl"
-                    bg="aoe.tile"
-                    color="aoe.text"
-                    fontSize="15px"
-                  />
+                  <NativeSelect.Root>
+                    <NativeSelect.Field
+                      value={v.type}
+                      onChange={(e) => updateVariant(index, "type", e.target.value)}
+                      h="48px"
+                      borderRadius="11px"
+                      border="1px solid"
+                      borderColor="aoe.borderControl"
+                      bg="aoe.tile"
+                      color="aoe.text"
+                      fontSize="15px"
+                      px="12px"
+                    >
+                      <option value="">Elegí un tipo</option>
+                      {[...new Set([...VARIANT_TYPES, ...(v.type ? [v.type] : [])])].map((t) => (
+                        <option key={t} value={t}>
+                          {t}
+                        </option>
+                      ))}
+                    </NativeSelect.Field>
+                    <NativeSelect.Indicator />
+                  </NativeSelect.Root>
                 </Box>
                 <Box display="grid" gap="6px">
                   <Text fontFamily="mono" fontSize="11px" color="aoe.textMuted" letterSpacing="0.12em" textTransform="uppercase">
                     Color
                   </Text>
-                  <Input
-                    value={v.color}
-                    onChange={(e) => updateVariant(index, "color", e.target.value)}
-                    placeholder="Negro"
-                    h="48px"
-                    borderRadius="11px"
-                    border="1px solid"
-                    borderColor="aoe.borderControl"
-                    bg="aoe.tile"
-                    color="aoe.text"
-                    fontSize="15px"
-                  />
+                  <NativeSelect.Root>
+                    <NativeSelect.Field
+                      value={v.color}
+                      onChange={(e) => updateVariant(index, "color", e.target.value)}
+                      h="48px"
+                      borderRadius="11px"
+                      border="1px solid"
+                      borderColor="aoe.borderControl"
+                      bg="aoe.tile"
+                      color="aoe.text"
+                      fontSize="15px"
+                      px="12px"
+                    >
+                      <option value="">Elegí un color</option>
+                      {[...new Set([...VARIANT_COLORS, ...(v.color ? [v.color] : [])])].map((c) => (
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
+                      ))}
+                    </NativeSelect.Field>
+                    <NativeSelect.Indicator />
+                  </NativeSelect.Root>
                 </Box>
                 <Box display="grid" gap="6px">
                   <Text fontFamily="mono" fontSize="11px" color="aoe.textMuted" letterSpacing="0.12em" textTransform="uppercase">
@@ -290,6 +317,24 @@ export default function ProductFormScreen({
                     <Box key={img.id} position="relative" aspectRatio="4 / 5" borderRadius="10px" overflow="hidden" bg="aoe.tile">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={img.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                      {imgIdx === 0 && (
+                        <Box
+                          position="absolute"
+                          bottom="4px"
+                          left="4px"
+                          px="6px"
+                          py="2px"
+                          borderRadius="6px"
+                          bg="rgba(0,0,0,0.7)"
+                          color="white"
+                          fontSize="9px"
+                          fontWeight="700"
+                          letterSpacing="0.06em"
+                          textTransform="uppercase"
+                        >
+                          Principal
+                        </Box>
+                      )}
                       <Box
                         as="button"
                         onClick={() => handleRemoveImage(index, imgIdx)}
@@ -306,10 +351,45 @@ export default function ProductFormScreen({
                       >
                         ✕
                       </Box>
+                      <Box position="absolute" bottom="4px" right="4px" display="flex" gap="4px">
+                        <Box
+                          as="button"
+                          onClick={() => moveImage(index, imgIdx, "left")}
+                          w="22px"
+                          h="22px"
+                          borderRadius="pill"
+                          bg="rgba(0,0,0,0.7)"
+                          color="white"
+                          fontSize="11px"
+                          border="none"
+                          opacity={imgIdx === 0 ? 0.35 : 1}
+                          cursor={imgIdx === 0 ? "default" : "pointer"}
+                        >
+                          ‹
+                        </Box>
+                        <Box
+                          as="button"
+                          onClick={() => moveImage(index, imgIdx, "right")}
+                          w="22px"
+                          h="22px"
+                          borderRadius="pill"
+                          bg="rgba(0,0,0,0.7)"
+                          color="white"
+                          fontSize="11px"
+                          border="none"
+                          opacity={imgIdx === v.images.length - 1 ? 0.35 : 1}
+                          cursor={imgIdx === v.images.length - 1 ? "default" : "pointer"}
+                        >
+                          ›
+                        </Box>
+                      </Box>
                     </Box>
                   ))}
+                  {Array.from({ length: uploadingCounts[index] || 0 }).map((_, skeletonIdx) => (
+                    <Skeleton key={`uploading-${skeletonIdx}`} aspectRatio="4 / 5" borderRadius="10px" />
+                  ))}
                   <Box as="label" aspectRatio="4 / 5" borderRadius="10px" border="1px dashed" borderColor="aoe.borderHover" display="grid" placeItems="center" color="aoe.textMuted" fontSize="22px" cursor="pointer">
-                    {isUploadingImage ? "…" : "+"}
+                    +
                     <input
                       type="file"
                       accept="image/*"
@@ -422,7 +502,13 @@ export default function ProductFormScreen({
       </Box>
 
       <Box position="fixed" left={0} right={0} bottom={0} zIndex={70} bg="rgba(10,10,10,0.96)" backdropFilter="blur(14px)" borderTop="1px solid" borderColor="aoe.borderSubtle" px={4} py="12px" pb="16px">
-        <Box maxW="760px" mx="auto" display="flex" gap="10px">
+        <Box
+          maxW={isDesktop ? "1320px" : "760px"}
+          mx={isDesktop ? undefined : "auto"}
+          ml={isDesktop ? "236px" : undefined}
+          display="flex"
+          gap="10px"
+        >
           <Box
             as="button"
             onClick={onCancel}

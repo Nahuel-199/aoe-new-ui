@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Box } from "@chakra-ui/react";
 import { showToast } from "nextjs-toast-notify";
@@ -8,6 +8,7 @@ import { Product, Category, Subcategory } from "@/types/product.types";
 import { AdminOrder } from "@/types/order.types";
 import { CustomOrder } from "@/types/customOrder.types";
 import { ShippingZone } from "@/types/shippingZone.types";
+import { HeroBanner } from "@/types/heroBanner.types";
 import {
   AdminScreen,
   AdminTab,
@@ -21,6 +22,7 @@ import { getTotalStock, isLowStock } from "@/lib/productStock";
 
 import AdminHeaderMobile from "./AdminHeaderMobile";
 import BottomNav from "./BottomNav";
+import DesktopSidebar from "./DesktopSidebar";
 import BottomSheet, { SheetConfig } from "./BottomSheet";
 import PanelScreen from "./screens/PanelScreen";
 import ProductsScreen from "./screens/ProductsScreen";
@@ -29,11 +31,14 @@ import OrdersScreen from "./screens/OrdersScreen";
 import CustomScreen from "./screens/CustomScreen";
 import CategoriesScreen from "./screens/CategoriesScreen";
 import ShippingZonesScreen from "./screens/ShippingZonesScreen";
+import HeroBannersScreen from "./screens/HeroBannersScreen";
 import CustomOrderDrawer from "../customOrders/CustomOrderDrawer";
 
 function notify(kind: "success" | "error", message: string) {
   showToast[kind](message, { duration: 3000, progress: true, position: "top-center" });
 }
+
+const DESKTOP_BREAKPOINT = 960;
 
 interface AdminAppProps {
   products: Product[];
@@ -42,6 +47,7 @@ interface AdminAppProps {
   orders: AdminOrder[];
   customOrders: CustomOrder[];
   shippingZones: ShippingZone[];
+  heroBanners: (HeroBanner | null)[];
 }
 
 const SCREEN_TITLES: Record<AdminScreen, [string, string]> = {
@@ -52,6 +58,7 @@ const SCREEN_TITLES: Record<AdminScreen, [string, string]> = {
   custom: ["Personalizados", ""],
   categories: ["Categorías", "Categorías y subcategorías"],
   shipping: ["Envíos", "Zonas de envío"],
+  hero: ["Portada", "Imágenes del hero"],
 };
 
 export default function AdminApp({
@@ -61,8 +68,17 @@ export default function AdminApp({
   orders,
   customOrders,
   shippingZones,
+  heroBanners,
 }: AdminAppProps) {
   const router = useRouter();
+
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const onResize = () => setIsDesktop(window.innerWidth >= DESKTOP_BREAKPOINT);
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   const [tab, setTab] = useState<AdminScreen>("home");
   const [query, setQuery] = useState("");
@@ -120,8 +136,12 @@ export default function AdminApp({
         : "Nuevo producto"
       : subBase;
 
-  const showBottomNav = tab === "home" || tab === "products" || tab === "orders" || tab === "custom";
-  const showBack = !showBottomNav;
+  const showNav = tab === "home" || tab === "products" || tab === "orders" || tab === "custom";
+  const showBack = !showNav;
+
+  const mw = isDesktop ? "1320px" : "760px";
+  const mainMarginLeft = isDesktop ? "236px" : "0";
+  const rootPadBottom = isDesktop ? "24px" : "104px";
 
   const handleOpenAlerts = () => {
     setSheet({
@@ -223,16 +243,25 @@ export default function AdminApp({
   };
 
   return (
-    <Box bg="aoe.bg" color="aoe.text" minH="100vh" pb="104px">
+    <Box bg="aoe.bg" color="aoe.text" minH="100vh" pb={rootPadBottom}>
       <AdminHeaderMobile
         title={titleBase}
         subtitle={screenSub}
         hasAlerts={hasAlerts}
         onOpenAlerts={handleOpenAlerts}
         onBack={showBack ? () => go(tab === "form" ? "products" : "home") : undefined}
+        onLogoClick={() => router.push("/")}
+        maxW={mw}
+        isDesktop={isDesktop}
       />
 
-      <Box maxW="760px" mx="auto" px={4} pt="18px">
+      <Box
+        maxW={mw}
+        mx={isDesktop ? undefined : "auto"}
+        ml={isDesktop ? mainMarginLeft : undefined}
+        px={4}
+        pt="18px"
+      >
         {tab === "home" && (
           <PanelScreen
             products={products}
@@ -242,6 +271,7 @@ export default function AdminApp({
             onGoCustom={() => go("custom")}
             onGoForm={() => goForm(null)}
             onGoCategories={() => go("categories")}
+            onGoHero={() => go("hero")}
           />
         )}
         {tab === "products" && (
@@ -266,6 +296,7 @@ export default function AdminApp({
               refresh();
               go("products");
             }}
+            isDesktop={isDesktop}
           />
         )}
         {tab === "orders" && (
@@ -290,11 +321,13 @@ export default function AdminApp({
           <CategoriesScreen categories={categories} subcategories={subcategories} />
         )}
         {tab === "shipping" && <ShippingZonesScreen zones={shippingZones} />}
+        {tab === "hero" && <HeroBannersScreen banners={heroBanners} isDesktop={isDesktop} />}
       </Box>
 
-      {showBottomNav && <BottomNav active={tab as AdminTab} onChange={go} />}
+      {showNav && !isDesktop && <BottomNav active={tab as AdminTab} onChange={go} />}
+      {showNav && isDesktop && <DesktopSidebar active={tab as AdminTab} onChange={go} />}
 
-      <BottomSheet sheet={sheet} onClose={() => setSheet(null)} />
+      <BottomSheet sheet={sheet} onClose={() => setSheet(null)} isDesktop={isDesktop} />
 
       <CustomOrderDrawer
         open={customDrawer.open}

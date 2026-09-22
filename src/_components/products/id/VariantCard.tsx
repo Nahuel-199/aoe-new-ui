@@ -16,7 +16,7 @@ import {
   CloseButton,
   Flex,
 } from "@chakra-ui/react";
-import { colorMap } from "../utils/ColorMaps";
+import { getColorHex } from "../utils/ColorMaps";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useCart } from "@/context/CartContext";
 import { showToast } from "nextjs-toast-notify";
@@ -219,7 +219,7 @@ export default function VariantCard({ product, variant }: VariantCardProps) {
                 borderRadius="full"
                 border="1.5px solid"
                 borderColor="aoe.textFaint"
-                bg={colorMap[variant.color] || "gray.300"}
+                bg={getColorHex(variant.color) || "gray.300"}
               />
             </Tooltip>
           </HStack>

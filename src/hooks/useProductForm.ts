@@ -70,7 +70,7 @@ interface UseProductFormOptions {
 export const useProductForm = ({ mode, product, onClose }: UseProductFormOptions) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadingCounts, setUploadingCounts] = useState<Record<number, number>>({});
   const [form, setForm] = useState<ProductFormState>(() =>
     mode === "edit" && product ? formFromProduct(product) : emptyForm()
   );
@@ -129,7 +129,7 @@ export const useProductForm = ({ mode, product, onClose }: UseProductFormOptions
   const handleUploadImage = async (index: number, files: File[]) => {
     if (files.length === 0) return;
     try {
-      setIsUploadingImage(true);
+      setUploadingCounts((prev) => ({ ...prev, [index]: (prev[index] || 0) + files.length }));
 
       const uploaded = await imageUpload(files);
       const formattedImages: ImageInput[] = uploaded.map((img) => ({
@@ -153,7 +153,7 @@ export const useProductForm = ({ mode, product, onClose }: UseProductFormOptions
         position: "top-center",
       });
     } finally {
-      setIsUploadingImage(false);
+      setUploadingCounts((prev) => ({ ...prev, [index]: 0 }));
     }
   };
 
@@ -162,6 +162,18 @@ export const useProductForm = ({ mode, product, onClose }: UseProductFormOptions
     newVariants[variantIndex].images = newVariants[variantIndex].images.filter(
       (_, i) => i !== imgIndex
     );
+    setForm({ ...form, variants: newVariants });
+  };
+
+  const moveImage = (variantIndex: number, imgIndex: number, direction: "left" | "right") => {
+    const targetIndex = direction === "left" ? imgIndex - 1 : imgIndex + 1;
+    const images = form.variants[variantIndex].images;
+    if (targetIndex < 0 || targetIndex >= images.length) return;
+
+    const newVariants = [...form.variants];
+    const newImages = [...images];
+    [newImages[imgIndex], newImages[targetIndex]] = [newImages[targetIndex], newImages[imgIndex]];
+    newVariants[variantIndex] = { ...newVariants[variantIndex], images: newImages };
     setForm({ ...form, variants: newVariants });
   };
 
@@ -225,8 +237,9 @@ export const useProductForm = ({ mode, product, onClose }: UseProductFormOptions
     removeSizeFromVariant,
     handleUploadImage,
     handleRemoveImage,
+    moveImage,
     handleSubmit,
     isLoading,
-    isUploadingImage,
+    uploadingCounts,
   };
 };
