@@ -6,6 +6,7 @@ import FooterSection from "@/_components/home/footer/FooterSection";
 import OfferBanner from "@/_components/home/banner/OfferBanner";
 import CartDrawer from "@/_components/cart/CartDrawer";
 import { Box } from "@chakra-ui/react";
+import { useScrollToTopOnNavigate } from "@/hooks/useScrollToTopOnNavigate";
 
 export default function LayoutWrapper({
   children,
@@ -14,6 +15,7 @@ export default function LayoutWrapper({
 }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
+  useScrollToTopOnNavigate();
 
   if (isAdmin) {
     return <>{children}</>;

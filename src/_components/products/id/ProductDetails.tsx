@@ -3,10 +3,11 @@
 import React, { useState } from "react";
 import NextLink from "next/link";
 import { Product } from "@/types/product.types";
-import { Box, Flex, VStack, Tabs, Button, Container } from "@chakra-ui/react";
+import { Box, Flex, HStack, VStack, Tabs, Button, Container } from "@chakra-ui/react";
 import OfferSlider from "@/_components/home/offer/OfferSlider";
 import VariantCard from "./VariantCard";
 import FavoriteButton from "../FavoriteButton";
+import ShareButton from "../ShareButton";
 
 interface ProductByIdProps {
   product: Product;
@@ -33,7 +34,10 @@ export default function ProductDetails({ product }: ProductByIdProps) {
           <NextLink href="/products">← Volver al catálogo</NextLink>
         </Button>
 
-        <FavoriteButton productId={product._id} variant="inline" />
+        <HStack gap={2}>
+          <ShareButton productId={product._id} productName={product.name} />
+          <FavoriteButton productId={product._id} variant="inline" />
+        </HStack>
       </Flex>
 
       <VStack align="stretch" gap={8} w="full">
