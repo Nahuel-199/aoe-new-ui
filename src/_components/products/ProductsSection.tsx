@@ -116,6 +116,7 @@ export default function ProductsSection({
         Inicio / Catálogo
       </Text>
       <Text
+        as="h1"
         fontFamily="heading"
         fontSize={{ base: "36px", md: "clamp(36px, 7vw, 76px)" }}
         lineHeight="0.9"

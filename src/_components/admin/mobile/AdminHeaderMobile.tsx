@@ -71,7 +71,7 @@ export default function AdminHeaderMobile({
             flexShrink={0}
             overflow="hidden"
           >
-            <Image src="/logo_aoe.png" alt="AOE" boxSize="38px" objectFit="contain" />
+            <Image src="/logo_aoe-small.webp" alt="AOE" boxSize="38px" objectFit="contain" />
           </Box>
         )}
         <Box minW={0} flex={1}>

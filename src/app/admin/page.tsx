@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { NO_INDEX } from "@/lib/seo";
 import AdminApp from "@/_components/admin/mobile/AdminApp";
 import { getProducts } from "@/lib/actions/product.actions";
 import { getCategories } from "@/lib/actions/category.actions";
@@ -6,6 +8,11 @@ import { getAllOrders } from "@/lib/actions/order.actions";
 import { getCustomOrders } from "@/lib/actions/customOrder.action";
 import { getShippingZones } from "@/lib/actions/shippingZone.actions";
 import { getHeroBanners } from "@/lib/actions/heroBanner.actions";
+
+export const metadata: Metadata = {
+  title: "Panel de administración",
+  robots: NO_INDEX,
+};
 
 export default async function AdminPage() {
   const [

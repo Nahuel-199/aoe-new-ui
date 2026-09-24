@@ -6,6 +6,7 @@ import { showToast } from "nextjs-toast-notify";
 import { CustomerOrder } from "@/types/order.types";
 import { useCart } from "@/context/CartContext";
 import { createPaymentPreference } from "@/lib/actions/payment.actions";
+import { cldThumb } from "@/utils/cloudinaryImage";
 
 const FLOW: CustomerOrder["status"][] = ["pending", "confirmed", "shipped", "delivered"];
 
@@ -221,7 +222,7 @@ export default function OrderCard({ order }: { order: CustomerOrder }) {
             <Box w="72px" h="90px" borderRadius="12px" bg="aoe.tile" overflow="hidden">
               {(item.variant.imageUrl || item.productImage) && (
                 <Image
-                  src={item.variant.imageUrl || item.productImage || ""}
+                  {...cldThumb(item.variant.imageUrl || item.productImage || "", 72)}
                   alt={item.productName}
                   w="100%"
                   h="100%"

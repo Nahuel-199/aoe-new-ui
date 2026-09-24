@@ -5,6 +5,7 @@ import { Box, Text, Link, Image, Grid, Stack, Dialog, Portal } from '@chakra-ui/
 import { gsap } from 'gsap';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa';
 import { sizeChartUrls } from '@/utils/sizeChartUrls';
+import { cldImage } from "@/utils/cloudinaryImage";
 
 const sizeChartTypes = Object.keys(sizeChartUrls);
 
@@ -50,7 +51,7 @@ const FooterSection: React.FC = () => {
         <Box>
           <Image
             ref={logoRef}
-            src="/logo_aoe.png"
+            src="/logo_aoe-small.webp"
             alt="Logo AOE"
             h="46px"
             w="auto"
@@ -108,10 +109,10 @@ const FooterSection: React.FC = () => {
             Contacto
           </Text>
           <Stack gap={2} fontSize="14px" ref={iconsRef} align="start">
-            <Link href="https://www.instagram.com/aoe_indumentaria" display="inline-flex" alignItems="center" gap={2} color="aoe.text" _hover={{ color: "aoe.red" }}>
+            <Link href="https://www.instagram.com/aoe_indumentaria" target="_blank" rel="noopener noreferrer" display="inline-flex" alignItems="center" gap={2} color="aoe.text" _hover={{ color: "aoe.red" }}>
               <FaInstagram size={18} /> @aoe_indumentaria
             </Link>
-            <Link href="https://wa.me/5491124969558" display="inline-flex" alignItems="center" gap={2} color="aoe.text" _hover={{ color: "aoe.red" }}>
+            <Link href="https://wa.me/5491124969558" target="_blank" rel="noopener noreferrer" display="inline-flex" alignItems="center" gap={2} color="aoe.text" _hover={{ color: "aoe.red" }}>
               <FaWhatsapp size={18} /> WhatsApp 11 2496-9558
             </Link>
           </Stack>
@@ -252,7 +253,7 @@ const FooterSection: React.FC = () => {
 
                   <Box borderRadius="12px" overflow="hidden" bg="aoe.tile">
                     <Image
-                      src={sizeChartUrls[selectedSizeChartType]}
+                      {...cldImage(sizeChartUrls[selectedSizeChartType], { sizes: "(min-width: 640px) 576px, 100vw" })}
                       alt={`Tabla de talles ${selectedSizeChartType}`}
                       w="100%"
                       h="auto"

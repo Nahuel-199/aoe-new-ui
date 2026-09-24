@@ -6,6 +6,7 @@ import { Product } from "@/types/product.types";
 import { AdminOrder } from "@/types/order.types";
 import { OrderTabValue, ProductFilterValue } from "@/lib/constants/adminNav";
 import { getTotalStock, isLowStock } from "@/lib/productStock";
+import { cldThumb } from "@/utils/cloudinaryImage";
 
 const ars = (n: number) => "$" + n.toLocaleString("es-AR");
 
@@ -270,7 +271,7 @@ export default function PanelScreen({
               color="aoe.text"
             >
               <Box w="52px" h="64px" borderRadius="10px" bg="aoe.chip" overflow="hidden">
-                {thumbSrc && <Image src={thumbSrc} alt="" w="100%" h="100%" objectFit="cover" />}
+                {thumbSrc && <Image {...cldThumb(thumbSrc, 52)} alt="" w="100%" h="100%" objectFit="cover" />}
               </Box>
               <Box minW={0}>
                 <Text fontSize="15px" fontWeight="700" whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">

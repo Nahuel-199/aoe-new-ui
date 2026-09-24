@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Box, Flex, Grid, Image, Input, Link, Text } from "@chakra-ui/react";
 import { AdminOrder } from "@/types/order.types";
 import { OrderTabValue } from "@/lib/constants/adminNav";
+import { cldThumb } from "@/utils/cloudinaryImage";
 
 const ars = (n: number) => "$" + n.toLocaleString("es-AR");
 
@@ -217,7 +218,7 @@ export default function OrdersScreen({
                   <Grid key={idx} templateColumns="44px 1fr auto" gap="10px" alignItems="center">
                     <Box w="44px" h="54px" borderRadius="8px" bg="aoe.chip" overflow="hidden">
                       {(it.variant.imageUrl || it.productImage) && (
-                        <Image src={it.variant.imageUrl || it.productImage || ""} alt="" w="100%" h="100%" objectFit="cover" />
+                        <Image {...cldThumb(it.variant.imageUrl || it.productImage || "", 44)} alt="" w="100%" h="100%" objectFit="cover" />
                       )}
                     </Box>
                     <Box minW={0}>

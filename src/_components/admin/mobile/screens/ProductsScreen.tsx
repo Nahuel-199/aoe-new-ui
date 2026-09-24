@@ -5,6 +5,7 @@ import { Box, Flex, Image, Input, NativeSelect, Text } from "@chakra-ui/react";
 import { Product } from "@/types/product.types";
 import { PRODUCT_SORT_OPTIONS, ProductFilterValue, ProductSortValue } from "@/lib/constants/adminNav";
 import { getDisplayPricing, getTotalStock, isLowStock, isOnSale, isOutOfStock } from "@/lib/productStock";
+import { cldThumb } from "@/utils/cloudinaryImage";
 
 const ars = (n: number) => "$" + n.toLocaleString("es-AR");
 
@@ -210,7 +211,7 @@ export default function ProductsScreen({
               gap="12px"
             >
               <Box w="64px" h="80px" borderRadius="10px" bg="aoe.chip" overflow="hidden">
-                {thumb && <Image src={thumb} alt="" w="100%" h="100%" objectFit="cover" />}
+                {thumb && <Image {...cldThumb(thumb, 64)} alt="" w="100%" h="100%" objectFit="cover" />}
               </Box>
               <Box minW={0}>
                 <Flex justify="space-between" gap="10px" align="flex-start">

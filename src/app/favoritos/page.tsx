@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
+import { NO_INDEX } from "@/lib/seo";
 import { Box, Text } from "@chakra-ui/react";
 import { getFavoriteProducts } from "@/lib/actions/favorite.actions";
 import { getCurrentUserId } from "@/lib/actions/auth-wrapper";
 import FavoritesGrid from "@/_components/products/FavoritesGrid";
+
+export const metadata: Metadata = {
+  title: "Mis favoritos",
+  robots: NO_INDEX,
+};
 
 export default async function Page() {
   const userId = await getCurrentUserId();

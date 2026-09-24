@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getOffers } from "@/lib/actions/product.actions";
 import { Product } from "@/types/product.types";
+import { cldImage } from "@/utils/cloudinaryImage";
 
 interface OfferSliderProps {
   title?: string;
@@ -109,7 +110,11 @@ const OfferSlider = ({ title, offers: providedOffers }: OfferSliderProps) => {
                     {product.variants?.[0]?.images?.length ? (
                       <Box position="relative" aspectRatio="4 / 5">
                         <Image
-                          src={product.variants[0].images[0].url}
+                          {...cldImage(product.variants[0].images[0].url, {
+                            sizes:
+                              "(min-width: 1280px) 300px, (min-width: 1024px) 30vw, (min-width: 768px) 45vw, 90vw",
+                            maxWidth: 828,
+                          })}
                           alt={product.name}
                           objectFit="cover"
                           w="100%"

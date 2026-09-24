@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
+import { NO_INDEX } from "@/lib/seo";
 import { Box, Text } from "@chakra-ui/react";
 import { getOrdersByUser } from "@/lib/actions/order.actions";
 import { getCurrentUserId } from "@/lib/actions/auth-wrapper";
 import OrdersByUser from "@/_components/orders/OrdersByUser";
+
+export const metadata: Metadata = {
+  title: "Mis pedidos",
+  robots: NO_INDEX,
+};
 
 export default async function Page() {
   const userId = await getCurrentUserId();

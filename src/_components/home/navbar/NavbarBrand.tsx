@@ -7,7 +7,7 @@ import { Text, Box, Image } from "@chakra-ui/react";
 const NavbarBrand = () => (
   <Link href="/">
     <Box display="inline-flex" alignItems="center" gap="10px">
-      <Image src="/logo_aoe.png" alt="AOE" h="34px" w="auto" />
+      <Image src="/logo_aoe-small.webp" alt="AOE" h="34px" w="auto" />
       <Text
         as="span"
         display={{ base: "none", md: "inline" }}

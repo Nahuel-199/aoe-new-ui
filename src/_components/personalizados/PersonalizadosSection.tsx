@@ -10,21 +10,21 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const images = [
-    "/personalizados/p1.jpg",
-    "/personalizados/p2.jpg",
-    "/personalizados/p3.jpg",
-    "/personalizados/p4.jpg",
-    "/personalizados/p5.jpg",
-    "/personalizados/p6.jpg",
-    "/personalizados/p7.jpg",
-    "/personalizados/p8.jpg",
-    "/personalizados/p9.jpg",
-    "/personalizados/p10.jpg",
-    "/personalizados/p11.jpg",
-    "/personalizados/p12.jpg",
-    "/personalizados/p13.jpg",
-    "/personalizados/p14.jpg",
-    "/personalizados/p15.jpg",
+    "/personalizados/p1.webp",
+    "/personalizados/p2.webp",
+    "/personalizados/p3.webp",
+    "/personalizados/p4.webp",
+    "/personalizados/p5.webp",
+    "/personalizados/p6.webp",
+    "/personalizados/p7.webp",
+    "/personalizados/p8.webp",
+    "/personalizados/p9.webp",
+    "/personalizados/p10.webp",
+    "/personalizados/p11.webp",
+    "/personalizados/p12.webp",
+    "/personalizados/p13.webp",
+    "/personalizados/p14.webp",
+    "/personalizados/p15.webp",
 ];
 
 const pasos = [
@@ -37,17 +37,14 @@ const testimonios = [
     {
         nombre: "Lucía Fernández",
         texto: "Les mandé mi diseño y en menos de una semana tenía mi remera personalizada. ¡Excelente calidad y atención!",
-        avatar: "/avatars/lucia.jpg",
     },
     {
         nombre: "Juan López",
         texto: "Les pedí una campera con mi logo para mi emprendimiento y quedó perfecta. Recomendadísimos.",
-        avatar: "/avatars/juan.jpg",
     },
     {
         nombre: "Camila Torres",
         texto: "Me encantó poder personalizar mi prenda desde cero, el resultado fue incluso mejor de lo esperado.",
-        avatar: "/avatars/camila.jpg",
     },
 ];
 
@@ -106,6 +103,7 @@ export default function PersonalizadosSection() {
         <Box as="section" maxW="900px" mx="auto" py={{ base: 10, md: "48px" }} px={{ base: 4, md: 5 }}>
             <Box ref={heroRef}>
                 <Text
+                    as="h1"
                     fontFamily="heading"
                     fontSize={{ base: "38px", md: "clamp(38px, 8vw, 88px)" }}
                     lineHeight="0.88"
@@ -177,6 +175,8 @@ export default function PersonalizadosSection() {
                             key={i}
                             src={src}
                             alt={`Trabajo personalizado ${i + 1}`}
+                            loading="lazy"
+                            decoding="async"
                             borderRadius="14px"
                             objectFit="cover"
                             w="100%"
@@ -205,7 +205,6 @@ export default function PersonalizadosSection() {
                             <VStack gap={3} textAlign="center">
                                 <Avatar.Root size="lg">
                                     <Avatar.Fallback name={t.nombre} />
-                                    <Avatar.Image src={t.avatar} />
                                 </Avatar.Root>
                                 <Text fontStyle="italic" color="aoe.textSubtle" fontSize="14px">
                                     "{t.texto}"
