@@ -5,9 +5,9 @@ import { gsap } from 'gsap';
 import Link from 'next/link';
 
 const categories = [
-  { name: 'Remeras', image: '/remera1.jpg' },
-  { name: 'Buzos', image: '/buzo1.jpg' },
-  { name: 'Camperas', image: '/campera1.jpg' },
+  { name: 'Remeras', image: '/remera1.webp' },
+  { name: 'Buzos', image: '/buzo1.webp' },
+  { name: 'Camperas', image: '/campera1.webp' },
 ];
 
 const CategoryCard: React.FC<{ name: string; image: string }> = ({ name, image }) => {

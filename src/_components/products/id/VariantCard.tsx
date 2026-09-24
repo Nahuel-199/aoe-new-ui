@@ -20,13 +20,16 @@ import { getColorHex } from "../utils/ColorMaps";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useCart } from "@/context/CartContext";
 import { showToast } from "nextjs-toast-notify";
+import { cldImage, cldThumb } from "@/utils/cloudinaryImage";
 
 interface VariantCardProps {
   product: Product;
   variant: Variant;
+  /** Solo la primera variante visible lleva el h1 de la página. */
+  headingAs?: "h1" | "h2";
 }
 
-export default function VariantCard({ product, variant }: VariantCardProps) {
+export default function VariantCard({ product, variant, headingAs = "h2" }: VariantCardProps) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [mainImage, setMainImage] = useState(variant.images[0]?.url);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
@@ -77,8 +80,11 @@ export default function VariantCard({ product, variant }: VariantCardProps) {
           aspectRatio="4 / 5"
         >
           <Image
-            src={mainImage}
-            alt={`${variant.color}-${variant.type}`}
+            {...cldImage(mainImage, {
+              sizes: "(min-width: 1360px) 640px, (min-width: 768px) 50vw, 100vw",
+              priority: headingAs === "h1",
+            })}
+            alt={`${product.name} – ${variant.type} ${variant.color}`}
             objectFit="cover"
             w="100%"
             h="100%"
@@ -115,8 +121,8 @@ export default function VariantCard({ product, variant }: VariantCardProps) {
             <Dialog.Content bg="aoe.bgAlt" borderColor="aoe.borderSubtle">
               <Dialog.Body p={0}>
                 <Image
-                  src={mainImage}
-                  alt={`${variant.color}-${variant.type}`}
+                  {...cldImage(mainImage, { sizes: "(min-width: 640px) 576px, 100vw" })}
+                  alt={`${product.name} – ${variant.type} ${variant.color}`}
                   w="100%"
                   h="100%"
                   objectFit="contain"
@@ -133,8 +139,8 @@ export default function VariantCard({ product, variant }: VariantCardProps) {
           {variant.images.map((img) => (
             <Image
               key={img.id}
-              src={img.url}
-              alt={`${variant.color}-${variant.type}`}
+              {...cldThumb(img.url, 70)}
+              alt={`${product.name} – ${variant.type} ${variant.color}`}
               boxSize="70px"
               objectFit="cover"
               borderRadius="10px"
@@ -148,7 +154,7 @@ export default function VariantCard({ product, variant }: VariantCardProps) {
           {variant.size_chart && (
             <Image
               key="size-chart"
-              src={variant.size_chart}
+              {...cldThumb(variant.size_chart, 70)}
               alt={`Tabla de talles ${variant.type}`}
               boxSize="70px"
               objectFit="cover"
@@ -174,6 +180,7 @@ export default function VariantCard({ product, variant }: VariantCardProps) {
             {product.category?.name}
           </Text>
           <Text
+            as={headingAs}
             fontFamily="heading"
             fontSize={{ base: "34px", md: "clamp(34px, 5vw, 56px)" }}
             lineHeight="0.94"

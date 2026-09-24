@@ -46,3 +46,24 @@
   from { transform: translateX(102%); }
   to { transform: translateX(0); }
 }
+/* Entrada del título del hero: corta y en CSS para no demorar el LCP. */
+@keyframes aoe-hero-in {
+  from {
+    opacity: 0;
+    transform: translateX(-32px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.aoe-hero-in {
+  animation: aoe-hero-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aoe-hero-in {
+    animation: none;
+  }
+}

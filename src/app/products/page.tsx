@@ -1,8 +1,10 @@
+import type { Metadata } from "next";
 import ProductsSection from "@/_components/products/ProductsSection";
 import { getCategories } from "@/lib/actions/category.actions";
 import { getProducts } from "@/lib/actions/product.actions";
 import { getSubcategories } from "@/lib/actions/subcategory.actions";
 import { Category, PRODUCTS_PAGE_SIZE, ProductSort } from "@/types/product.types";
+import { pageMetadata } from "@/lib/seo";
 
 interface PageProps {
   searchParams: Promise<{
@@ -22,6 +24,29 @@ function resolveCategory(raw: string | undefined, categories: Category[]) {
   }
   const match = categories.find((c) => c.name.toLowerCase() === raw.toLowerCase());
   return { categoryId: match?._id, onlyOffers: false, label: match?.name };
+}
+
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const params = await searchParams;
+  const categories = await getCategories();
+  const { label } = resolveCategory(params.category, categories);
+
+  const path = label ? `/products?category=${encodeURIComponent(label)}` : "/products";
+  const title = label ?? "Catálogo";
+  const description = label === "Ofertas"
+    ? "Remeras y buzos en oferta con estampas de anime, rock y series. Aprovechá los descuentos de AOE Indumentaria."
+    : label
+      ? `${label} con estampas de anime, rock y series. Algodón peinado, talles reales y envíos a todo el país.`
+      : "Catálogo completo de remeras y buzos de anime, rock y series. Estampas propias, algodón peinado y talles reales.";
+
+  return pageMetadata({
+    title: params.q ? `Resultados para "${params.q}"` : title,
+    description,
+    path,
+    // Búsquedas y filtros por subcategoría son combinaciones infinitas: no indexar,
+    // pero sí seguir los links a los productos.
+    ...(params.q || params.subcategory ? { noIndex: true } : {}),
+  });
 }
 
 export default async function Page({ searchParams }: PageProps) {

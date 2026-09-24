@@ -7,6 +7,7 @@ import { showToast } from "nextjs-toast-notify";
 import { imageUpload } from "@/utils/uploadCloudinary";
 import { setHeroBanner, setHeroBannerLink, removeHeroBanner } from "@/lib/actions/heroBanner.actions";
 import { HeroBanner } from "@/types/heroBanner.types";
+import { cldImage } from "@/utils/cloudinaryImage";
 
 function notify(kind: "success" | "error", message: string) {
   showToast[kind](message, { duration: 3000, progress: true, position: "top-center" });
@@ -123,7 +124,7 @@ export default function HeroBannersScreen({ banners, isDesktop = false }: HeroBa
                   <Skeleton w="100%" h="100%" />
                 ) : banner ? (
                   <>
-                    <Image src={banner.url} alt="" w="100%" h="100%" objectFit="cover" />
+                    <Image {...cldImage(banner.url, { sizes: "50vw", maxWidth: 828 })} alt="" w="100%" h="100%" objectFit="cover" />
                     <Box
                       as="button"
                       aria-label="Quitar imagen"

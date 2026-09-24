@@ -4,6 +4,7 @@ import { Box, Grid, Input, NativeSelect, Skeleton, Text, Textarea } from "@chakr
 import { useProductForm } from "@/hooks/useProductForm";
 import { Category, Product, Subcategory } from "@/types/product.types";
 import { colorMap } from "@/_components/products/utils/ColorMaps";
+import { cldThumb } from "@/utils/cloudinaryImage";
 
 interface ProductFormScreenProps {
   product?: Product;
@@ -316,7 +317,7 @@ export default function ProductFormScreen({
                   {v.images.map((img, imgIdx) => (
                     <Box key={img.id} position="relative" aspectRatio="4 / 5" borderRadius="10px" overflow="hidden" bg="aoe.tile">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={img.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                      <img {...cldThumb(img.url, 120)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                       {imgIdx === 0 && (
                         <Box
                           position="absolute"

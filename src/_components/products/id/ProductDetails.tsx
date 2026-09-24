@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import NextLink from "next/link";
 import { Product } from "@/types/product.types";
 import { Box, Flex, VStack, Tabs, Button, Container } from "@chakra-ui/react";
 import OfferSlider from "@/_components/home/offer/OfferSlider";
@@ -13,7 +13,6 @@ interface ProductByIdProps {
 }
 
 export default function ProductDetails({ product }: ProductByIdProps) {
-  const router = useRouter();
   const types = Array.from(new Set(product.variants.map((v) => v.type)));
   const [tabValue, setTabValue] = useState<string>(types[0] || "");
 
@@ -21,6 +20,7 @@ export default function ProductDetails({ product }: ProductByIdProps) {
     <Container maxW="1360px" py={{ base: 7, md: "28px" }}>
       <Flex justify="space-between" align="center" mb={5}>
         <Button
+          asChild
           variant="ghost"
           color="aoe.textFaint"
           fontFamily="mono"
@@ -29,9 +29,8 @@ export default function ProductDetails({ product }: ProductByIdProps) {
           textTransform="uppercase"
           px={0}
           _hover={{ color: "aoe.text", bg: "transparent" }}
-          onClick={() => router.push("/products")}
         >
-          ← Volver al catálogo
+          <NextLink href="/products">← Volver al catálogo</NextLink>
         </Button>
 
         <FavoriteButton productId={product._id} variant="inline" />
@@ -62,7 +61,12 @@ export default function ProductDetails({ product }: ProductByIdProps) {
                 {product.variants
                   .filter((v) => v.type === type)
                   .map((variant, idx) => (
-                    <VariantCard key={idx} product={product} variant={variant} />
+                    <VariantCard
+                      key={idx}
+                      product={product}
+                      variant={variant}
+                      headingAs={type === types[0] && idx === 0 ? "h1" : "h2"}
+                    />
                   ))}
               </VStack>
             </Tabs.Content>

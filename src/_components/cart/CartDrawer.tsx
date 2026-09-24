@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { showToast } from "nextjs-toast-notify";
 import { useSession } from "next-auth/react";
 import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants/shipping";
+import { cldThumb } from "@/utils/cloudinaryImage";
 
 const ars = (n: number) => "$" + n.toLocaleString("es-AR");
 
@@ -166,7 +167,7 @@ export default function CartDrawer() {
               return (
                 <Flex key={idx} gap={3} align="start">
                   <Image
-                    src={item.variant.imageUrl}
+                    {...cldThumb(item.variant.imageUrl, 74)}
                     alt={item.name}
                     w="74px"
                     h="92px"

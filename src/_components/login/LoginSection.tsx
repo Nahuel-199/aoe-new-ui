@@ -55,7 +55,8 @@ export default function LoginSection({ handleLogin }: LoginSectionProps) {
           display={{ base: "none", md: "block" }}
         >
           <Image
-            src="/login_image.jpeg"
+            src="/login_image.webp"
+            loading="lazy"
             alt="AOE"
             position="absolute"
             inset={0}

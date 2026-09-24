@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { gsap } from 'gsap';
+import React from 'react';
+import NextLink from 'next/link';
 import { Box, Text, Grid, Image, Button, Flex } from '@chakra-ui/react';
 import { Product } from '@/types/product.types';
 import { HeroBanner } from '@/types/heroBanner.types';
+import { cldImage } from '@/utils/cloudinaryImage';
 
 interface HeaderSectionProps {
     offers: Product[];
@@ -13,17 +13,7 @@ interface HeaderSectionProps {
 }
 
 const HeaderSection: React.FC<HeaderSectionProps> = ({ offers, heroBanners = [] }) => {
-    const titleRef = useRef<HTMLDivElement>(null);
-    const router = useRouter();
     const shots = offers.slice(0, 4);
-
-    useEffect(() => {
-        gsap.fromTo(
-            titleRef.current,
-            { x: '-100vw', opacity: 0 },
-            { x: 0, opacity: 1, duration: 1.5, ease: 'power4.out' }
-        );
-    }, []);
 
     return (
         <Box
@@ -41,7 +31,8 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ offers, heroBanners = [] 
                 gap={10}
                 alignItems="start"
             >
-                <Box ref={titleRef} minW={0}>
+                {/* Animación CSS (no JS): arranca en el primer paint, sin esperar la hidratación. */}
+                <Box className="aoe-hero-in" minW={0}>
                     <Flex
                         align="center"
                         gap={2}
@@ -63,6 +54,7 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ offers, heroBanners = [] 
                     </Flex>
 
                     <Text
+                        as="h1"
                         fontFamily="heading"
                         fontSize="clamp(32px, 6vw, 76px)"
                         lineHeight="0.92"
@@ -81,6 +73,7 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ offers, heroBanners = [] 
 
                     <Flex flexWrap="wrap" gap={3} mt={8}>
                         <Button
+                            asChild
                             h="54px"
                             px="30px"
                             border="none"
@@ -93,11 +86,11 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ offers, heroBanners = [] 
                             letterSpacing="0.1em"
                             textTransform="uppercase"
                             _hover={{ bg: 'aoe.text', color: 'aoe.bg' }}
-                            onClick={() => router.push('/products')}
                         >
-                            Ver catálogo
+                            <NextLink href="/products">Ver catálogo</NextLink>
                         </Button>
                         <Button
+                            asChild
                             h="54px"
                             px="30px"
                             border="1px solid"
@@ -111,9 +104,8 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ offers, heroBanners = [] 
                             letterSpacing="0.1em"
                             textTransform="uppercase"
                             _hover={{ borderColor: 'aoe.text' }}
-                            onClick={() => router.push('/products?category=Ofertas')}
                         >
-                            Ofertas
+                            <NextLink href="/products?category=Ofertas">Ofertas</NextLink>
                         </Button>
                     </Flex>
 
@@ -131,24 +123,31 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ offers, heroBanners = [] 
                         // asignó a ELLA (o ninguno) — nunca el del producto que ocupaba
                         // el slot antes de que se subiera esta imagen.
                         const href = banner ? banner.link || undefined : product ? `/products/${product._id}` : undefined;
-                        return (
-                            <Box
-                                key={banner?.id ?? product?._id ?? i}
-                                as="button"
-                                position="relative"
-                                bg="aoe.tile"
-                                borderRadius="18px"
-                                overflow="hidden"
-                                aspectRatio="4 / 5"
-                                border="none"
-                                p={0}
-                                cursor={href ? 'pointer' : 'default'}
-                                _hover={href ? { outline: '2px solid', outlineColor: 'aoe.red' } : undefined}
-                                onClick={() => href && router.push(href)}
-                            >
-                                {img && (
-                                    <Image src={img} alt={banner ? '' : product?.name} w="100%" h="100%" objectFit="cover" />
-                                )}
+                        const image = img && (
+                            <Image
+                                {...cldImage(img, { sizes: '(min-width: 1360px) 330px, (min-width: 768px) 25vw, 50vw', maxWidth: 828, priority: true })}
+                                alt={banner ? 'AOE Indumentaria' : product?.name ?? ''}
+                                w="100%"
+                                h="100%"
+                                objectFit="cover"
+                            />
+                        );
+                        const tileProps = {
+                            position: 'relative',
+                            display: 'block',
+                            bg: 'aoe.tile',
+                            borderRadius: '18px',
+                            overflow: 'hidden',
+                            aspectRatio: '4 / 5',
+                        } as const;
+                        const key = banner?.id ?? product?._id ?? i;
+                        return href ? (
+                            <Box key={key} asChild {...tileProps} _hover={{ outline: '2px solid', outlineColor: 'aoe.red' }}>
+                                <NextLink href={href}>{image}</NextLink>
+                            </Box>
+                        ) : (
+                            <Box key={key} {...tileProps}>
+                                {image}
                             </Box>
                         );
                     })}
